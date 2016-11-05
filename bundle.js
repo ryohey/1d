@@ -4,15 +4,56 @@ text -> [parseCommands] -> commands -> [buildSVG] -> svg
 
 */
 
-function attr(name, value, defaultValue = "") {
-  return `${name}="${value || defaultValue}"`
-}
+/* helpers */
 
 function warn(value, message) {
   if (value) {
     console.warn(message)
   }
 }
+
+function attr(name, value, defaultValue = "") {
+  return `${name}="${value || defaultValue}"`
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n)
+}
+
+function tail(arr) {
+  return arr.slice(1, arr.length)
+}
+
+/**
+  [{ x: 10, y: 20 }, { x: 40, y: 30 }, { x: 9, y: 54 }]
+  => M10 20 L40 30 L9 54
+*/
+function toSVGPath(points, closed = false) {
+  const path = [`M${points[0].x} ${points[0].y}`, ...tail(points).map(p => `L${p.x} ${p.y}`)]
+  return `${path.join(" ")}${closed ? " Z" : ""}`
+}
+
+/**
+  ctx に設定された座標系に変換する
+  value は数値か座標
+*/
+function project(ctx, value) {
+  const scale = ctx.scale
+  if (!scale) {
+    return value
+  }
+  if (isNumber(value)) {
+    return value * scale
+  } else if (value instanceof Object && value.x !== undefined && value.y !== undefined) {
+    return {
+      x: value.x * scale,
+      y: value.y * scale
+    }
+  }
+  return value
+}
+
+/* Shapes */
 
 class Shape {
   render() {
@@ -28,9 +69,8 @@ class PathShape extends Shape {
   }
 
   render(ctx) {
-    const lines = this.path.slice(1, this.path.length).map(p => `L${p.x} ${p.y}`).join(" ")
-    const startPos = this.path[0]
-    const d = attr("d", `M${startPos.x} ${startPos.y} ${lines} ${this.closed ? "Z" : ""}`)
+    const path = toSVGPath(this.path.map(p => project(ctx, p)), this.closed)
+    const d = attr("d", path)
     const st = attr("stroke", ctx.stroke, "none")
     const fl = attr("fill", ctx.fill, "none")
     return `<path ${d} ${st} ${fl} />`
@@ -38,7 +78,7 @@ class PathShape extends Shape {
 }
 
 class RectShape extends Shape {
-  constructor(pos, w, h) {
+  constructor(pos = { x: 0, y: 0 }, w = 0, h = 0) {
     super()
     this.pathShape = new PathShape([
       {
@@ -67,27 +107,68 @@ class RectShape extends Shape {
 }
 
 class CircleShape extends Shape {
-  constructor() {
+  constructor(pos = { x: 0, y: 0 }, radius = 0) {
     super()
-    this.radius = 0
+    this.pos = pos
+    this.radius = radius
   }
 
   render(ctx) {
     const st = attr("stroke", ctx.stroke, "none")
     const fl = attr("fill", ctx.fill, "none")
-    const r = attr("r", this.radius)
-    const cx = attr("cx", ctx.pos.x)
-    const cy = attr("cy", ctx.pos.y)
+    const r = attr("r", project(ctx, this.radius))
+    const pos = project(ctx, this.pos)
+    const cx = attr("cx", pos.x)
+    const cy = attr("cy", pos.y)
     return `<circle ${r} ${st} ${fl} ${cx} ${cy} />`
   }
 }
+
+class GroupShape extends Shape {
+  constructor(shapes = []) {
+    super()
+    this.shapes = shapes
+  }
+
+  render(ctx) {
+    return "<g>"
+      + this.shapes.map(s => s.render(ctx)).join("")
+      + "</g>"
+  }
+}
+
+class GridShape extends Shape {
+  constructor(scale = 1) {
+    super()
+    this.scale = scale
+  }
+
+  render(ctx) {
+    const paths = []
+    const far = 9999
+    for (let x = 0; x < 100; x++) {
+      paths.push([{ x, y: 0 }, { x, y: far }])
+    }
+    for (let y = 0; y < 100; y++) {
+      paths.push([{ x: 0, y }, { x: far, y }])
+    }
+    const paths2 = paths.map(path => path.map(p => project(ctx, p)))
+    const d = attr("d", paths2.map(toSVGPath).join(" "))
+    const st = attr("stroke", ctx.stroke, "none")
+    const fl = attr("fill", ctx.fill, "none")
+    return `<path ${d} ${st} ${fl} />`
+  }
+}
+
+/* main functions */
 
 function buildSVG(commands) {
   const ctx = {
     pos: { x: 0, y: 0 },
     shape: undefined,
     stroke: undefined,
-    fill: undefined
+    fill: undefined,
+    scale: 1
   }
   const svg = []
 
@@ -106,12 +187,12 @@ function buildSVG(commands) {
     const opts = com.options
     switch (com.action) {
       case "moveTo":
-        ctx.pos.x = parseInt(opts[0])
-        ctx.pos.y = parseInt(opts[1])
+        ctx.pos.x = parseFloat(opts[0])
+        ctx.pos.y = parseFloat(opts[1])
         break
       case "move":
-        ctx.pos.x += parseInt(opts[0])
-        ctx.pos.y += parseInt(opts[1])
+        ctx.pos.x += parseFloat(opts[0])
+        ctx.pos.y += parseFloat(opts[1])
         break
       case "line":
         if (!ctx.shape) {
@@ -123,8 +204,8 @@ function buildSVG(commands) {
         }
         warn(!(ctx.shape instanceof PathShape), "invalid state: the shape is not PathShape")
         const path = ctx.shape.path
-        ctx.pos.x += parseInt(opts[0])
-        ctx.pos.y += parseInt(opts[1])
+        ctx.pos.x += parseFloat(opts[0])
+        ctx.pos.y += parseFloat(opts[1])
         path.push({
           x: ctx.pos.x,
           y: ctx.pos.y
@@ -136,12 +217,11 @@ function buildSVG(commands) {
         break
       case "rect":
         warn(ctx.shape, "invalid state: context already has a shape")
-        ctx.shape = new RectShape(ctx.pos, parseInt(opts[0]), parseInt(opts[1]))
+        ctx.shape = new RectShape(ctx.pos, parseFloat(opts[0]), parseFloat(opts[1]))
         break
       case "circle":
         warn(ctx.shape, "invalid state: context already has a shape")
-        ctx.shape = new CircleShape
-        ctx.shape.radius = parseInt(opts[0])
+        ctx.shape = new CircleShape({ x: ctx.pos.x, y: ctx.pos.y }, parseFloat(opts[0]))
         break
       case "stroke":
         warn(!ctx.shape, "invalid state: no shapes to draw")
@@ -152,6 +232,11 @@ function buildSVG(commands) {
         warn(!ctx.shape, "invalid state: no shapes to draw")
         ctx.fill = opts[0]
         draw()
+        break
+      case "grid":
+        const scale = parseFloat(opts[0])
+        ctx.shape = new GridShape(scale)
+        ctx.scale = scale
         break
       default:
         warn(true, `unknown action: ${com.action}`)
@@ -177,13 +262,13 @@ function parseCommands(text) {
     let options
 
     if (words[0].startsWith("@") && words.length > 2) {
-      target = words[0].slice(1, words[0].length)
+      target = tail(words[0])
       action = words[1]
       options = words.slice(2, words.length)
       list.push(...objs)
     } else {
       action = words[0]
-      options = words.slice(1, words.length)
+      options = tail(words)
     }
 
     list.push({ target, action, options })
