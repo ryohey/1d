@@ -1,4 +1,15 @@
 /**
+
+text -> commands -> completed commands -> svg
+
+command = {
+  type: move, line, stroke, fill,
+  options: [Number, ...]
+}
+
+*/
+
+/**
   draw display object
 */
 function draw(ctx, obj) {
@@ -9,6 +20,12 @@ function createAction(action, options = []) {
   return {
     action,
     options
+  }
+}
+
+function completeCommands(commands) {
+  for (com of commands) {
+
   }
 }
 
