@@ -15,18 +15,36 @@ line 4 3
 line -2 1
 close
 fill blue
+name tri
 
 moveTo 10 4
 rect 3 5
 fill yellow
 
-moveTo 5 12
+moveTo 5 15
 circle 2
-fill red
+fill orange
+
+move 3 0
+copy
+fill lightgreen
+
+move 3 0
+copy
+stroke lightgray
+
+move 3 0
+copy
+fill lightblue
+
+select tri
+copy
+stroke red
 </textarea>
 </div>
 <div id="beta">
   <svg id="svg" />
 </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.6/lodash.min.js"></script>
 <script src="./bundle.js"></script>
