@@ -12,38 +12,52 @@ text -> [parseCommands] -> commands -> [buildSVG] -> svg
 
 */
 
-function warn(value, message) {
-  if (value) {
-    console.warn(message)
-  }
-}
-
 export default function renderCommand(text) {
   const commands = parseCommands(text)
   const ctx = {
     pos: { x: 0, y: 0 },
-    shape: undefined,
-    selectedShape: undefined,
     stroke: undefined,
     fill: undefined,
-    scale: 1,
-    namedShapes: {} // {String: Shape}
+    scale: 1
   }
-  const svg = []
+  let selectedShape = null
+  const shapes = []
+  const rendered = []
 
-  function add(element) {
-    svg.push(element)
+  function warn(value, message) {
+    if (value) {
+      console.warn(message)
+    }
+  }
+
+  function add(shape) {
+    shapes.push(shape)
+    console.log("shape added", shape)
+    selectedShape = null
   }
 
   function draw() {
-    add(ctx.shape.render(ctx))
-    ctx.selectedShape = ctx.shape
+    const shape = currentShape()
+    if (shape) {
+      rendered.push(shape.render(ctx))
+    }
+    warn(!shape, "no shape to draw")
+    console.log("draw shape", shape)
     ctx.stroke = undefined
     ctx.fill = undefined
     ctx.shape = undefined
   }
 
+  function lastShape() {
+    return shapes[shapes.length - 1]
+  }
+
+  function currentShape() {
+    return lastShape() || selectedShape
+  }
+
   for (let com of commands) {
+    console.log(`command ${com.action}`)
     const opts = com.options
     switch (com.action) {
       case "moveTo":
@@ -54,69 +68,73 @@ export default function renderCommand(text) {
         ctx.pos.x += parseFloat(opts[0])
         ctx.pos.y += parseFloat(opts[1])
         break
-      case "line":
-        if (!ctx.shape) {
-          ctx.shape = new PathShape()
-          ctx.shape.path.push({
+      case "line": {
+        let shape = currentShape()
+        if (!(shape instanceof PathShape)) {
+          shape = new PathShape()
+          shape.path.push({
             x: ctx.pos.x,
             y: ctx.pos.y
           })
+          add(shape)
         }
-        warn(!(ctx.shape instanceof PathShape), "invalid state: the shape is not PathShape")
-        const path = ctx.shape.path
+        const path = shape.path
         ctx.pos.x += parseFloat(opts[0])
         ctx.pos.y += parseFloat(opts[1])
         path.push({
           x: ctx.pos.x,
           y: ctx.pos.y
         })
-        break
-      case "close":
-        warn(!(ctx.shape instanceof PathShape), "invalid state: the shape is not PathShape")
-        ctx.shape.closed = true
-        break
-      case "rect":
-        warn(ctx.shape, "invalid state: context already has a shape")
-        ctx.shape = new RectShape(ctx.pos, parseFloat(opts[0]), parseFloat(opts[1]))
-        break
-      case "circle":
-        warn(ctx.shape, "invalid state: context already has a shape")
-        ctx.shape = new CircleShape(ctx.pos, parseFloat(opts[0]))
-        break
-      case "stroke":
-        warn(!ctx.shape, "invalid state: no shapes to draw")
+        break }
+      case "close": {
+        const shape = currentShape()
+        warn(!(shape instanceof PathShape), "invalid state: the shape is not PathShape")
+        shape.closed = true
+        break }
+      case "rect": {
+        add(new RectShape(ctx.pos, parseFloat(opts[0]), parseFloat(opts[1])))
+        break }
+      case "circle": {
+        add(new CircleShape(ctx.pos, parseFloat(opts[0])))
+        break }
+      case "stroke": {
+        warn(!currentShape(), "invalid state: no shapes to draw")
         ctx.stroke = opts[0]
         draw()
-        break
-      case "fill":
-        warn(!ctx.shape, "invalid state: no shapes to draw")
+        break }
+      case "fill": {
+        warn(!currentShape(), "invalid state: no shapes to draw")
         ctx.fill = opts[0]
         draw()
-        break
-      case "grid":
+        break }
+      case "grid": {
         const scale = parseFloat(opts[0])
-        ctx.shape = new GridShape({x: 0, y: 0}, scale)
+        add(new GridShape({x: 0, y: 0}, scale))
         ctx.scale = scale
-        break
-      case "name":
-        warn(!ctx.selectedShape, "invalid state: no shapes to name")
-        ctx.namedShapes[opts[0]] = ctx.selectedShape.clone()
-        break
-      case "select":
-        warn(!ctx.namedShapes[opts[0]], "invalid state: no shapes to select")
-        ctx.selectedShape = ctx.namedShapes[opts[0]]
-        break
-      case "copy":
-        warn(!ctx.selectedShape, "invalid state: no shapes to copy")
-        ctx.shape = ctx.selectedShape.clone()
-        ctx.shape.pos = pointCopy(ctx.pos)
-        break
+        break }
+      case "name": {
+        const shape = currentShape()
+        warn(!shape, "invalid state: no shapes to name")
+        shape.name = opts[0]
+        break }
+      case "select": {
+        const shape = currentShape()
+        warn(!shape, "invalid state: no shapes to select")
+        selectedShape = shape
+        break }
+      case "copy": {
+        const shape = currentShape()
+        warn(!shape, "invalid state: no shapes to copy")
+        const newShape = shape.clone()
+        add(newShape)
+        newShape.pos = pointCopy(ctx.pos)
+        break }
       default:
         warn(true, `unknown action: ${com.action}`)
     }
   }
 
-  return svg
+  return rendered
 }
 
 /**
