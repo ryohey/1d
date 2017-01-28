@@ -58,42 +58,51 @@ export default function renderCommand(text) {
     return lastShape() || selectedShape
   }
 
-  function move(p) {
-    pos = pointAdd(pos, project(transform, p))
+  function moveTo(x, y) {
+    pos = project(transform, { x, y })
+  }
+
+  function move(x, y) {
+    pos = pointAdd(pos, project(transform, { x, y }))
+  }
+
+  function line(x, y) {
+    let shape = currentShape()
+    if (!(shape instanceof PathShape)) {
+      shape = new PathShape()
+      shape.path.push(pointCopy(pos))
+      add(shape)
+    }
+    const { path } = shape
+    move(x, y)
+    path.push(pointCopy(pos))
+  }
+
+  function copy() {
+    const shape = currentShape()
+    warn(!shape, "invalid state: no shapes to copy")
+    const newShape = shape.clone()
+    add(newShape)
+    newShape.pos = pointCopy(pos)
   }
 
   for (let com of commands) {
     console.log(`command ${com.action}`)
     const opts = com.options
+    const shape = currentShape()
+
+    // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
       case "moveTo":
-        pos = project(transform, {
-          x: parseFloat(opts[0]),
-          y: parseFloat(opts[1])
-        })
+        moveTo(parseFloat(opts[0]), parseFloat(opts[1]))
         break
       case "move":
-        move({
-          x: parseFloat(opts[0]),
-          y: parseFloat(opts[1])
-        })
+        move(parseFloat(opts[0]), parseFloat(opts[1]))
         break
       case "line": {
-        let shape = currentShape()
-        if (!(shape instanceof PathShape)) {
-          shape = new PathShape()
-          shape.path.push(pointCopy(pos))
-          add(shape)
-        }
-        const path = shape.path
-        move({
-          x: parseFloat(opts[0]),
-          y: parseFloat(opts[1])
-        })
-        path.push(pointCopy(pos))
+        line(parseFloat(opts[0]), parseFloat(opts[1]))
         break }
       case "close": {
-        const shape = currentShape()
         warn(!(shape instanceof PathShape), "invalid state: the shape is not PathShape")
         shape.closed = true
         break }
@@ -122,22 +131,16 @@ export default function renderCommand(text) {
         transform.scale = scale
         break }
       case "name": {
-        const shape = currentShape()
         warn(!shape, "invalid state: no shapes to name")
         shape.name = opts[0]
         break }
-      case "select": {
-        const shape = currentShape()
+      case "select":
         warn(!shape, "invalid state: no shapes to select")
         selectedShape = shape
-        break }
-      case "copy": {
-        const shape = currentShape()
-        warn(!shape, "invalid state: no shapes to copy")
-        const newShape = shape.clone()
-        add(newShape)
-        newShape.pos = pointCopy(pos)
-        break }
+        break
+      case "copy":
+        copy()
+        break
       default:
         warn(true, `unknown action: ${com.action}`)
     }
@@ -147,7 +150,7 @@ export default function renderCommand(text) {
 }
 
 /**
-  convert commands to display objects
+  parse text to command objects
 */
 function parseCommands(text) {
   const list = []
