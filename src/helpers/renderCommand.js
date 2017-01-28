@@ -14,13 +14,15 @@ text -> [parseCommands] -> commands -> [buildSVG] -> svg
 
 export default function renderCommand(text) {
   const commands = parseCommands(text)
-  const ctx = {
+  const brush = {
     stroke: undefined,
-    fill: undefined,
-    scale: 1
+    fill: undefined
   }
   let pos = { x: 0, y: 0 }
   let selectedShape = null
+  let transform = {
+    scale: 1
+  }
   const shapes = []
   const rendered = []
 
@@ -39,13 +41,13 @@ export default function renderCommand(text) {
   function draw() {
     const shape = currentShape()
     if (shape) {
-      rendered.push(shape.render(ctx))
+      rendered.push(shape.render(brush))
     }
     warn(!shape, "no shape to draw")
     console.log("draw shape", shape)
-    ctx.stroke = undefined
-    ctx.fill = undefined
-    ctx.shape = undefined
+    brush.stroke = undefined
+    brush.fill = undefined
+    brush.shape = undefined
   }
 
   function lastShape() {
@@ -57,7 +59,7 @@ export default function renderCommand(text) {
   }
 
   function move(p) {
-    pos = pointAdd(pos, project(ctx, p))
+    pos = pointAdd(pos, project(transform, p))
   }
 
   for (let com of commands) {
@@ -65,7 +67,7 @@ export default function renderCommand(text) {
     const opts = com.options
     switch (com.action) {
       case "moveTo":
-        pos = project(ctx, {
+        pos = project(transform, {
           x: parseFloat(opts[0]),
           y: parseFloat(opts[1])
         })
@@ -96,28 +98,28 @@ export default function renderCommand(text) {
         shape.closed = true
         break }
       case "rect": {
-        const w = project(ctx, parseFloat(opts[0]))
-        const h = project(ctx, parseFloat(opts[1]))
+        const w = project(transform, parseFloat(opts[0]))
+        const h = project(transform, parseFloat(opts[1]))
         add(new RectShape(pos, w, h))
         break }
       case "circle": {
-        const radius = project(ctx, parseFloat(opts[0]))
+        const radius = project(transform, parseFloat(opts[0]))
         add(new CircleShape(pos, radius))
         break }
       case "stroke": {
         warn(!currentShape(), "invalid state: no shapes to draw")
-        ctx.stroke = opts[0]
+        brush.stroke = opts[0]
         draw()
         break }
       case "fill": {
         warn(!currentShape(), "invalid state: no shapes to draw")
-        ctx.fill = opts[0]
+        brush.fill = opts[0]
         draw()
         break }
       case "grid": {
         const scale = parseFloat(opts[0])
         add(new GridShape({x: 0, y: 0}, scale))
-        ctx.scale = scale
+        transform.scale = scale
         break }
       case "name": {
         const shape = currentShape()

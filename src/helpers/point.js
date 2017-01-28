@@ -22,11 +22,11 @@ export function pointMul(p, s) {
 }
 
 /**
-  ctx に設定された座標系に変換する
+  transform に設定された座標系に変換する
   value は数値か座標
 */
-export function project(ctx, value) {
-  const scale = ctx.scale
+export function project(transform, value) {
+  const { scale } = transform
   if (!scale) {
     return value
   }

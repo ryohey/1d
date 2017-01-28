@@ -13,7 +13,7 @@ export default class RectShape extends Shape {
     this.pathShape.closed = true
   }
 
-  render(ctx) {
-    return this.pathShape.render(ctx)
+  render(brush) {
+    return this.pathShape.render(brush)
   }
 }
