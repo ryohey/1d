@@ -1,6 +1,6 @@
 import React from "react"
 import Shape from "./Shape"
-import { project, pointAdd, toSVGPath, rect } from "../helpers/point"
+import { pointAdd, toSVGPath, rect } from "../helpers/point"
 
 const HANDLE_SIZE = 3
 
@@ -11,9 +11,10 @@ export default class PathShape extends Shape {
     this.closed = false
   }
 
-  render(ctx) {
-    const points = this.path.map(p => project(ctx, pointAdd(p, this.pos)))
-    const path = toSVGPath(points, this.closed)
+  render({ stroke, fill }) {
+    const { pos, closed } = this
+    const points = this.path.map(p => pointAdd(p, pos))
+    const path = toSVGPath(points, closed)
     const onMouseOver = e => {
       console.log(e)
     }
@@ -22,8 +23,8 @@ export default class PathShape extends Shape {
       <path
         onMouseOver={onMouseOver}
         d={path}
-        stroke={ctx.stroke || "none"}
-        fill={ctx.fill || "none"}
+        stroke={stroke || "none"}
+        fill={fill || "none"}
         cursor="move"
       />
       {selected && points.map(p =>

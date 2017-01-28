@@ -1,6 +1,6 @@
 import React from "react"
 import Shape from "./Shape"
-import { project, pointAdd, toSVGPath } from "../helpers/point"
+import { pointMul, pointAdd, toSVGPath } from "../helpers/point"
 
 export default class GridShape extends Shape {
   constructor(pos = { x: 0, y: 0 }, scale = 1) {
@@ -8,7 +8,8 @@ export default class GridShape extends Shape {
     this.scale = scale
   }
 
-  render(ctx) {
+  render({ stroke, fill }) {
+    const { scale, pos } = this
     const paths = []
     const far = 9999
     for (let x = 0; x < 100; x++) {
@@ -17,12 +18,15 @@ export default class GridShape extends Shape {
     for (let y = 0; y < 100; y++) {
       paths.push([{ x: 0, y }, { x: far, y }])
     }
-    const paths2 = paths.map(path => path.map(p => project(ctx, pointAdd(p, this.pos))))
-    const path = paths2.map(toSVGPath).join(" ")
+    const path = paths
+      .map(path => path.map(p => pointMul(pointAdd(p, pos), scale)))
+      .map(toSVGPath)
+      .join(" ")
+
     return <path
       d={path}
-      stroke={ctx.stroke || "none"}
-      fill={ctx.fill || "none"}
+      stroke={stroke || "none"}
+      fill={fill || "none"}
     />
   }
 }

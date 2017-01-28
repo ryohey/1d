@@ -14,6 +14,13 @@ export function pointCopy(a) {
   }
 }
 
+export function pointMul(p, s) {
+  return {
+    x: p.x * s,
+    y: p.y * s
+  }
+}
+
 /**
   ctx に設定された座標系に変換する
   value は数値か座標

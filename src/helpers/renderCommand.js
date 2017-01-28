@@ -4,7 +4,7 @@ import RectShape from "../Shape/RectShape"
 import PathShape from "../Shape/PathShape"
 import GridShape from "../Shape/GridShape"
 import CircleShape from "../Shape/CircleShape"
-import { pointCopy } from "../helpers/point"
+import { pointCopy, pointAdd, project } from "../helpers/point"
 
 /**
 
@@ -15,11 +15,11 @@ text -> [parseCommands] -> commands -> [buildSVG] -> svg
 export default function renderCommand(text) {
   const commands = parseCommands(text)
   const ctx = {
-    pos: { x: 0, y: 0 },
     stroke: undefined,
     fill: undefined,
     scale: 1
   }
+  let pos = { x: 0, y: 0 }
   let selectedShape = null
   const shapes = []
   const rendered = []
@@ -56,35 +56,39 @@ export default function renderCommand(text) {
     return lastShape() || selectedShape
   }
 
+  function move(p) {
+    pos = pointAdd(pos, project(ctx, p))
+  }
+
   for (let com of commands) {
     console.log(`command ${com.action}`)
     const opts = com.options
     switch (com.action) {
       case "moveTo":
-        ctx.pos.x = parseFloat(opts[0])
-        ctx.pos.y = parseFloat(opts[1])
+        pos = project(ctx, {
+          x: parseFloat(opts[0]),
+          y: parseFloat(opts[1])
+        })
         break
       case "move":
-        ctx.pos.x += parseFloat(opts[0])
-        ctx.pos.y += parseFloat(opts[1])
+        move({
+          x: parseFloat(opts[0]),
+          y: parseFloat(opts[1])
+        })
         break
       case "line": {
         let shape = currentShape()
         if (!(shape instanceof PathShape)) {
           shape = new PathShape()
-          shape.path.push({
-            x: ctx.pos.x,
-            y: ctx.pos.y
-          })
+          shape.path.push(pointCopy(pos))
           add(shape)
         }
         const path = shape.path
-        ctx.pos.x += parseFloat(opts[0])
-        ctx.pos.y += parseFloat(opts[1])
-        path.push({
-          x: ctx.pos.x,
-          y: ctx.pos.y
+        move({
+          x: parseFloat(opts[0]),
+          y: parseFloat(opts[1])
         })
+        path.push(pointCopy(pos))
         break }
       case "close": {
         const shape = currentShape()
@@ -92,10 +96,13 @@ export default function renderCommand(text) {
         shape.closed = true
         break }
       case "rect": {
-        add(new RectShape(ctx.pos, parseFloat(opts[0]), parseFloat(opts[1])))
+        const w = project(ctx, parseFloat(opts[0]))
+        const h = project(ctx, parseFloat(opts[1]))
+        add(new RectShape(pos, w, h))
         break }
       case "circle": {
-        add(new CircleShape(ctx.pos, parseFloat(opts[0])))
+        const radius = project(ctx, parseFloat(opts[0]))
+        add(new CircleShape(pos, radius))
         break }
       case "stroke": {
         warn(!currentShape(), "invalid state: no shapes to draw")
@@ -127,7 +134,7 @@ export default function renderCommand(text) {
         warn(!shape, "invalid state: no shapes to copy")
         const newShape = shape.clone()
         add(newShape)
-        newShape.pos = pointCopy(ctx.pos)
+        newShape.pos = pointCopy(pos)
         break }
       default:
         warn(true, `unknown action: ${com.action}`)
