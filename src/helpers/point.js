@@ -42,3 +42,12 @@ export function toSVGPath(points, closed = false) {
   const path = [`M${points[0].x} ${points[0].y}`, ..._.tail(points).map(p => `L${p.x} ${p.y}`)]
   return `${path.join(" ")}${closed ? " Z" : ""}`
 }
+
+export function rect(center, size) {
+  return [
+    { x: center.x - size, y: center.y - size },
+    { x: center.x + size, y: center.y - size },
+    { x: center.x + size, y: center.y + size },
+    { x: center.x - size, y: center.y + size }
+  ]
+}
