@@ -12,19 +12,15 @@ text -> [parseCommands] -> commands -> [buildSVG] -> svg
 
 */
 
-export default function renderCommand(text) {
+export default function renderCommand(text, mouseHandler) {
   const commands = parseCommands(text)
-  const brush = {
-    stroke: undefined,
-    fill: undefined
-  }
+  let lastId = 0
   let pos = { x: 0, y: 0 }
   let selectedShape = null
   let transform = {
     scale: 1
   }
   const shapes = []
-  const rendered = []
 
   function warn(value, message) {
     if (value) {
@@ -33,21 +29,13 @@ export default function renderCommand(text) {
   }
 
   function add(shape) {
+    console.log("add", lastId)
+    shape.id = lastId
+    shape.mouseHandler = mouseHandler
     shapes.push(shape)
     console.log("shape added", shape)
     selectedShape = null
-  }
-
-  function draw() {
-    const shape = currentShape()
-    if (shape) {
-      rendered.push(shape.render(brush))
-    }
-    warn(!shape, "no shape to draw")
-    console.log("draw shape", shape)
-    brush.stroke = undefined
-    brush.fill = undefined
-    brush.shape = undefined
+    lastId++
   }
 
   function lastShape() {
@@ -55,7 +43,7 @@ export default function renderCommand(text) {
   }
 
   function currentShape() {
-    return lastShape() || selectedShape
+    return selectedShape || lastShape()
   }
 
   function moveTo(x, y) {
@@ -78,18 +66,28 @@ export default function renderCommand(text) {
     path.push(pointCopy(pos))
   }
 
-  function copy() {
-    const shape = currentShape()
+  function copy(shape) {
     warn(!shape, "invalid state: no shapes to copy")
     const newShape = shape.clone()
     add(newShape)
     newShape.pos = pointCopy(pos)
   }
 
+  function findShape(nameOrId) {
+    if (!nameOrId) {
+      return
+    }
+    return shapes.filter(s => `${s.id}` === nameOrId || s.name === nameOrId)[0]
+  }
+
+  function translate(shape, x, y) {
+    shape.pos = pointAdd(shape.pos, project(transform, { x, y }))
+  }
+
   for (let com of commands) {
     console.log(`command ${com.action}`)
     const opts = com.options
-    const shape = currentShape()
+    const shape = findShape(com.target) || currentShape()
 
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
@@ -116,14 +114,12 @@ export default function renderCommand(text) {
         add(new CircleShape(pos, radius))
         break }
       case "stroke": {
-        warn(!currentShape(), "invalid state: no shapes to draw")
-        brush.stroke = opts[0]
-        draw()
+        warn(!shape, "invalid state: no shapes to draw")
+        shape.brush.stroke = opts[0]
         break }
       case "fill": {
-        warn(!currentShape(), "invalid state: no shapes to draw")
-        brush.fill = opts[0]
-        draw()
+        warn(!shape, "invalid state: no shapes to draw")
+        shape.brush.fill = opts[0]
         break }
       case "grid": {
         const scale = parseFloat(opts[0])
@@ -135,18 +131,24 @@ export default function renderCommand(text) {
         shape.name = opts[0]
         break }
       case "select":
-        warn(!shape, "invalid state: no shapes to select")
-        selectedShape = shape
+        const nameOrId = opts[0]
+        const found = findShape(nameOrId) || shape
+        warn(!found, "invalid state: no shapes to select")
+        selectedShape = found
+        break
+      case "translate":
+        translate(shape, parseFloat(opts[0]), parseFloat(opts[1]))
         break
       case "copy":
-        copy()
+        copy(shape)
         break
       default:
         warn(true, `unknown action: ${com.action}`)
+        break
     }
   }
 
-  return rendered
+  return shapes.map(s => s.render())
 }
 
 /**
@@ -164,8 +166,8 @@ function parseCommands(text) {
     let action
     let options
 
-    if (words[0].startsWith("@") && words.length > 2) {
-      target = _.tail(words[0])
+    if (words[0].startsWith("@") && words.length > 1) {
+      target = words[0].slice(1, words[0].length)
       action = words[1]
       options = words.slice(2, words.length)
     } else {

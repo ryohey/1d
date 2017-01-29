@@ -4,6 +4,7 @@ import { pointCopy } from "../helpers/point"
 export default class Shape {
   constructor(pos = { x: 0, y: 0 }) {
     this.pos = pointCopy(pos)
+    this.brush = {}
   }
 
   render() {
@@ -11,6 +12,10 @@ export default class Shape {
   }
 
   clone() {
-    return _.clone(this)
+    const s = _.clone(this)
+    s.name = undefined
+    s.id = undefined
+    s.brush = {}
+    return s
   }
 }

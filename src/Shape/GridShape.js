@@ -8,8 +8,8 @@ export default class GridShape extends Shape {
     this.scale = scale
   }
 
-  render({ stroke, fill }) {
-    const { scale, pos } = this
+  render() {
+    const { scale, pos, brush } = this
     const paths = []
     const far = 9999
     for (let x = 0; x < 100; x++) {
@@ -25,8 +25,8 @@ export default class GridShape extends Shape {
 
     return <path
       d={path}
-      stroke={stroke || "none"}
-      fill={fill || "none"}
+      stroke={brush.stroke || "none"}
+      fill={brush.fill || "none"}
     />
   }
 }

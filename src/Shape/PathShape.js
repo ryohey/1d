@@ -5,26 +5,26 @@ import { pointAdd, toSVGPath, rect } from "../helpers/point"
 const HANDLE_SIZE = 3
 
 export default class PathShape extends Shape {
-  constructor(pos = { x: 0, y: 0 }, path = []) {
+  constructor(pos = { x: 0, y: 0 }, path = [], closed = false) {
     super(pos)
     this.path = path
-    this.closed = false
+    this.closed = closed
   }
 
-  render({ stroke, fill }) {
-    const { pos, closed } = this
+  render() {
+    const { pos, closed, mouseHandler, brush } = this
     const points = this.path.map(p => pointAdd(p, pos))
     const path = toSVGPath(points, closed)
-    const onMouseOver = e => {
-      console.log(e)
-    }
     const selected = true
-    return <g>
+    return <g
+      onMouseOver={e => mouseHandler.onMouseOver(e, this)}
+      onMouseDown={e => mouseHandler.onMouseDown(e, this)}
+      onMouseMove={e => mouseHandler.onMouseMove(e, this)}
+      onMouseUp={e => mouseHandler.onMouseUp(e, this)}>
       <path
-        onMouseOver={onMouseOver}
         d={path}
-        stroke={stroke || "none"}
-        fill={fill || "none"}
+        stroke={brush.stroke || "none"}
+        fill={brush.fill || "none"}
         cursor="move"
       />
       {selected && points.map(p =>

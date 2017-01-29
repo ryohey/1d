@@ -7,14 +7,20 @@ export default class CircleShape extends Shape {
     this.radius = radius
   }
 
-  render({ stroke, fill }) {
-    const { pos, radius } = this
-    return <circle
-      r={radius}
-      stroke={stroke || "none"}
-      fill={fill || "none"}
-      cx={pos.x}
-      cy={pos.y}
-    />
+  render() {
+    const { pos, radius, brush, mouseHandler } = this
+    return <g
+      onMouseOver={e => mouseHandler.onMouseOver(e, this)}
+      onMouseDown={e => mouseHandler.onMouseDown(e, this)}
+      onMouseMove={e => mouseHandler.onMouseMove(e, this)}
+      onMouseUp={e => mouseHandler.onMouseUp(e, this)}>
+      <circle
+        r={radius}
+        stroke={brush.stroke || "none"}
+        fill={brush.fill || "none"}
+        cx={pos.x}
+        cy={pos.y}
+      />
+    </g>
   }
 }

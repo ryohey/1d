@@ -7,10 +7,10 @@ export default class GroupShape extends Shape {
     this.shapes = shapes
   }
 
-  render(brush) {
+  render() {
     // TODO: support this.pos
     return <g>
-      {this.shapes.map(s => s.render(brush))}
+      {this.shapes.map(s => s.render())}
     </g>
   }
 }
