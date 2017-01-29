@@ -92,25 +92,25 @@ export default function renderCommand(text, mouseHandler) {
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
       case "moveTo":
-        moveTo(parseFloat(opts[0]), parseFloat(opts[1]))
+        moveTo(opts[0], opts[1])
         break
       case "move":
-        move(parseFloat(opts[0]), parseFloat(opts[1]))
+        move(opts[0], opts[1])
         break
       case "line": {
-        line(parseFloat(opts[0]), parseFloat(opts[1]))
+        line(opts[0], opts[1])
         break }
       case "close": {
         warn(!(shape instanceof PathShape), "invalid state: the shape is not PathShape")
         shape.closed = true
         break }
       case "rect": {
-        const w = project(transform, parseFloat(opts[0]))
-        const h = project(transform, parseFloat(opts[1]))
+        const w = project(transform, opts[0])
+        const h = project(transform, opts[1])
         add(new RectShape(pos, w, h))
         break }
       case "circle": {
-        const radius = project(transform, parseFloat(opts[0]))
+        const radius = project(transform, opts[0])
         add(new CircleShape(pos, radius))
         break }
       case "stroke": {
@@ -137,7 +137,7 @@ export default function renderCommand(text, mouseHandler) {
         selectedShape = found
         break
       case "translate":
-        translate(shape, parseFloat(opts[0]), parseFloat(opts[1]))
+        translate(shape, opts[0], opts[1])
         break
       case "copy":
         copy(shape)

@@ -8,10 +8,7 @@
   box-sizing: border-box;
   margin: 0;
   display: flex;
-}
-
-.App>div>* {
-  flex-grow: 1;
+  flex-direction: column;
 }
 
 .App {
@@ -37,4 +34,18 @@ textarea {
   box-sizing: border-box;
   font-family: inherit;
   font-size: 100%;
+}
+
+textarea,
+#svg {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.tempScript {
+  text-align: left;
+  padding: 1em;
+  color: rgb(181, 181, 181);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  min-height: 1em;
 }

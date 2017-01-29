@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import _ from "lodash"
 import renderCommand from "./helpers/renderCommand"
+import MouseHandler from "./MouseHandler"
 
 import './App.css';
 
@@ -50,8 +51,10 @@ translate -12 1
 class App extends Component {
   constructor(props) {
     super(props)
+    this.mouseHandler = new MouseHandler(this)
     this.state = {
       scriptText: defaultScript,
+      tempScript: ""
     }
   }
   render() {
@@ -59,37 +62,22 @@ class App extends Component {
       const scriptText = e.target.value
       this.setState({ scriptText })
     }
-    const { scriptText } = this.state
+    const { mouseHandler } = this
+    const { scriptText, tempScript } = this.state
 
-    const addScript = (line) => {
-      this.setState({
-        scriptText: scriptText + "\n" + line
-      })
-    }
-
-    const mouseHandler = {
-      onMouseOver: (e, shape) => {
-        console.log("onMouseOver", e, shape)
-      },
-      onMouseUp: (e, shape) => {
-        console.log("onMouseUp", e, shape)
-        addScript(`@${shape.name || shape.id} translate 1 5`)
-      },
-      onMouseDown: (e, shape) => {
-        console.log("onMouseDown", e, shape)
-      },
-      onMouseMove: (e, shape) => {
-        console.log("onMouseMove", e, shape)
-      },
-    }
-    const svgContent = renderCommand(scriptText, mouseHandler)
+    const svgContent = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
     return (
       <div className="App">
         <div>
           <textarea value={scriptText} onChange={onChangeText} />
+          <div className="tempScript">{tempScript}</div>
         </div>
         <div>
-          <svg id="svg">{svgContent}</svg>
+          <svg id="svg"
+            onMouseUp={e => mouseHandler.onMouseUp(e)}
+            onMouseMove={e => mouseHandler.onMouseMove(e)}>
+            {svgContent}
+          </svg>
         </div>
       </div>
     )

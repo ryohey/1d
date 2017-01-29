@@ -18,9 +18,7 @@ export default class PathShape extends Shape {
     const selected = true
     return <g
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
-      onMouseDown={e => mouseHandler.onMouseDown(e, this)}
-      onMouseMove={e => mouseHandler.onMouseMove(e, this)}
-      onMouseUp={e => mouseHandler.onMouseUp(e, this)}>
+      onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <path
         d={path}
         stroke={brush.stroke || "none"}

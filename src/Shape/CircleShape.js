@@ -11,9 +11,7 @@ export default class CircleShape extends Shape {
     const { pos, radius, brush, mouseHandler } = this
     return <g
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
-      onMouseDown={e => mouseHandler.onMouseDown(e, this)}
-      onMouseMove={e => mouseHandler.onMouseMove(e, this)}
-      onMouseUp={e => mouseHandler.onMouseUp(e, this)}>
+      onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <circle
         r={radius}
         stroke={brush.stroke || "none"}

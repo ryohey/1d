@@ -7,6 +7,14 @@ export function pointAdd(a, b) {
   }
 }
 
+// a - b
+export function pointSub(a, b) {
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y,
+  }
+}
+
 export function pointCopy(a) {
   return {
     x: a.x,
@@ -21,24 +29,37 @@ export function pointMul(p, s) {
   }
 }
 
+function projectValue(transform, value) {
+  return value * (transform.scale || 1)
+}
+
+function resolveDimension(transform, value) {
+  if (_.isNil(value)) {
+    return 0
+  }
+  const v = parseFloat(value)
+  if (value.endsWith("px")) {
+    return v
+  }
+  if (!_.isNaN(v)) {
+    return projectValue(transform, v)
+  }
+  return 0
+}
+
 /**
   transform に設定された座標系に変換する
-  value は数値か座標
+  value: Number or Point Object
+}
 */
 export function project(transform, value) {
-  const { scale } = transform
-  if (!scale) {
-    return value
-  }
-  if (_.isNumber(value)) {
-    return value * scale
-  } else if (value instanceof Object && value.x !== undefined && value.y !== undefined) {
+  if (value instanceof Object) {
     return {
-      x: value.x * scale,
-      y: value.y * scale
+      x: resolveDimension(transform, value.x),
+      y: resolveDimension(transform, value.y)
     }
   }
-  return value
+  return resolveDimension(transform, value)
 }
 
 /**
@@ -57,4 +78,11 @@ export function rect(center, size) {
     { x: center.x + size, y: center.y + size },
     { x: center.x - size, y: center.y + size }
   ]
+}
+
+export function pointFromEvent(e) {
+  return {
+    x: e.clientX,
+    y: e.clientY
+  }
 }
