@@ -6,12 +6,6 @@ import GridShape from "../Shape/GridShape"
 import CircleShape from "../Shape/CircleShape"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 
-/**
-
-text -> [parseCommands] -> commands -> [buildSVG] -> svg
-
-*/
-
 export default function renderCommand(text, mouseHandler) {
   const commands = parseCommands(text)
   let lastId = 0
@@ -148,7 +142,12 @@ export default function renderCommand(text, mouseHandler) {
     }
   }
 
-  return shapes.map(s => s.render())
+  // add selected property to shapes
+  shapes.forEach(s => {
+    s.selected = s === selectedShape
+  })
+
+  return shapes
 }
 
 /**

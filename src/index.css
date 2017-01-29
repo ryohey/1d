@@ -1,21 +1,4 @@
-.App, textarea, .input {
-    color: #32327f;
-}
-
-.App>div {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.App {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: stretch;
+body {
   font-family: "Consolas";
 }
 
@@ -25,21 +8,53 @@ html, body {
   margin: 0;
 }
 
-textarea {
-  background: rgba(0, 0, 0, 0.01);
-  border: none;
-  border-right: 5px solid rgb(245, 245, 245);
-  outline: none;
-  padding: 1em;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 100%;
+body, textarea, .input {
+  color: #32327f;
 }
 
-textarea,
+.alpha,
+.beta {
+  box-sizing: border-box;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+}
+
+.App .content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  flex-grow: 1;
+}
+
+.content textarea {
+  background: rgba(0, 0, 0, 0.01);
+  border: none;
+  outline: none;
+  padding: 1em;
+  font-family: inherit;
+  font-size: 100%;
+  box-sizing: border-box;
+  flex-grow: 1;
+}
+
+.alpha {
+  border-right: 5px solid rgb(245, 245, 245);
+  min-width: 20em;
+}
+
+.beta {
+  flex-grow: 1;
+}
+
 #svg {
   flex-grow: 1;
-  width: 100%;
 }
 
 .tempScript {
@@ -48,4 +63,53 @@ textarea,
   color: rgb(181, 181, 181);
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   min-height: 1em;
+}
+
+.toolbar {
+  border-bottom: 1px solid rgb(245, 245, 245);
+  display: flex;
+  box-shadow: 0 0 5px rgba(171, 203, 247, 0.3);
+}
+
+.toolbar .button {
+  padding: 1em 1.5em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toolbar .button:hover {
+  opacity: 0.8;
+}
+
+.toolbar .button:active {
+  opacity: 0.3;
+}
+
+.gamma {
+  min-width: 14em;
+  box-sizing: border-box;
+}
+
+.form .row {
+  display: flex;
+}
+
+.form .row label {
+  min-width: 5em;
+  font-weight: bold;
+}
+
+.ColorButton .box {
+  width: 1em;
+  height: 1em;
+}
+
+.ColorButton {
+  padding: 0.2em;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  cursor: pointer;
+}
+
+.form .row {
+  margin: 1em;
 }

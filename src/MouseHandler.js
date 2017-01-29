@@ -3,20 +3,7 @@ import { pointFromEvent, pointSub } from "./helpers/point"
 export default class MouseHandler {
   constructor(app) {
     this.app = app
-    this.startPos = { x: 0, y: 0 }
-    this.target = null
-  }
-
-  previewScript(line) {
-    this.app.setState({
-      tempScript: line
-    })
-  }
-
-  addScript(line) {
-    this.app.setState({
-      scriptText: this.app.state.scriptText + "\n" + line
-    })
+    this.dragEvent = null
   }
 
   onMouseOver(e, shape) {
@@ -24,25 +11,40 @@ export default class MouseHandler {
   }
 
   onMouseUp(e) {
-    console.log("onMouseUp", e)
-    this.target = null
-    this.addScript(this.app.state.tempScript)
-    this.previewScript("")
+    const { dragEvent } = this
+    if (!dragEvent) {
+      return
+    }
+    if (!dragEvent.moved) {
+      // 移動せずクリックが終了した場合は選択状態にする
+      const nameOrId = dragEvent.target.name || dragEvent.target.id
+      this.app.addScript(`select ${nameOrId}`)
+    } else {
+      // 移動してクリックが終了した場合は target の移動を確定する
+      this.app.addScript(this.app.state.tempScript)
+      this.app.previewScript("")
+    }
+    this.dragEvent = null
   }
 
   onMouseDown(e, shape) {
-    this.startPos = pointFromEvent(e)
-    this.target = shape
+    this.dragEvent = {
+      startPos: pointFromEvent(e),
+      target: shape,
+      moved: false
+    }
     console.log("onMouseDown", e, shape)
   }
 
   onMouseMove(e) {
-    if (!this.target) {
+    const { dragEvent } = this
+    if (!dragEvent) {
       return
     }
-    const delta = pointSub(pointFromEvent(e), this.startPos)
+    dragEvent.moved = true
+    const delta = pointSub(pointFromEvent(e), dragEvent.startPos)
     console.log("onMouseMove", delta)
-    const nameOrId = this.target.name || this.target.id
-    this.previewScript(`@${nameOrId} translate ${delta.x}px ${delta.y}px`)
+    const nameOrId = dragEvent.target.name || dragEvent.target.id
+    this.app.previewScript(`@${nameOrId} translate ${delta.x}px ${delta.y}px`)
   }
 }
