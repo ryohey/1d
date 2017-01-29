@@ -91,13 +91,13 @@ export default function renderCommand(text, mouseHandler) {
       case "move":
         move(opts[0], opts[1])
         break
-      case "line": {
+      case "line":
         line(opts[0], opts[1])
-        break }
-      case "close": {
+        break
+      case "close":
         warn(!(shape instanceof PathShape), "invalid state: the shape is not PathShape")
         shape.closed = true
-        break }
+        break
       case "rect": {
         const w = project(transform, opts[0])
         const h = project(transform, opts[1])
@@ -107,14 +107,18 @@ export default function renderCommand(text, mouseHandler) {
         const radius = project(transform, opts[0])
         add(new CircleShape(pos, radius))
         break }
-      case "stroke": {
-        warn(!shape, "invalid state: no shapes to draw")
+      case "stroke":
+        warn(!shape, "invalid state: no shapes to change stroke color")
         shape.brush.stroke = opts[0]
-        break }
-      case "fill": {
-        warn(!shape, "invalid state: no shapes to draw")
+        break
+      case "fill":
+        warn(!shape, "invalid state: no shapes to change fill color")
         shape.brush.fill = opts[0]
-        break }
+        break
+      case "strokeWidth":
+        warn(!shape, "invalid state: no shapes to change line width")
+        shape.brush.strokeWidth = project(transform, opts[0])
+        break
       case "grid": {
         const scale = parseFloat(opts[0])
         add(new GridShape({x: 0, y: 0}, scale))

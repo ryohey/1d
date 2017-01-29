@@ -26,6 +26,7 @@ export default class GridShape extends Shape {
     return <path
       d={path}
       stroke={brush.stroke || "none"}
+      strokeWidth={brush.strokeWidth || 1}
       fill={brush.fill || "none"}
     />
   }

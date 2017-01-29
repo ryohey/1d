@@ -32,6 +32,7 @@ fill lightgreen
 
 move 3 0
 copy
+strokeWidth 4px
 stroke lightgray
 
 move 3 0
@@ -118,6 +119,14 @@ class App extends Component {
       this.previewScript("")
     }
 
+    const onChangeLineWidth = e => {
+      this.previewScript(`strokeWidth ${e.target.value}px`)
+    }
+
+    const onChangeLineWidthComplete = e => {
+      this.addScript(`strokeWidth ${e.target.value}px`)
+    }
+
     const shapes = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
     const selectedShape = shapes.filter(s => s.selected)[0]
     const svgContent = shapes.map(s => s.render())
@@ -156,6 +165,13 @@ class App extends Component {
                     color={selectedShape.brush.stroke}
                     onChange={onChangeStrokeColor}
                     onChangeComplete={onChangeStrokeColorComplete} />
+                </div>
+                <div className="row">
+                  <label>line width</label>
+                  <input
+                    type="range"
+                    onInput={onChangeLineWidth}
+                    onChange={onChangeLineWidthComplete} />
                 </div>
               </div>
             }

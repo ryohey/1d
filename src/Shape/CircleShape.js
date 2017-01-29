@@ -16,6 +16,7 @@ export default class CircleShape extends Shape {
       <circle
         r={radius}
         stroke={brush.stroke || "none"}
+        strokeWidth={brush.strokeWidth || 1}
         fill={brush.fill || "none"}
         cx={pos.x}
         cy={pos.y}

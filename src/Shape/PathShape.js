@@ -22,6 +22,7 @@ export default class PathShape extends Shape {
       <path
         d={path}
         stroke={brush.stroke || "none"}
+        strokeWidth={brush.strokeWidth || 1}
         fill={brush.fill || "none"}
         cursor="move"
       />
