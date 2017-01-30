@@ -78,6 +78,14 @@ export default function renderCommand(text, mouseHandler) {
     shape.pos = pointAdd(shape.pos, project(transform, { x, y }))
   }
 
+  function translateTo(shape, x, y) {
+    shape.pos = project(transform, { x, y })
+  }
+
+  function resize(shape, x, y) {
+    shape.resize(project(transform, { x, y }))
+  }
+
   for (let com of commands) {
     console.log(`command ${com.action}`)
     const opts = com.options
@@ -137,8 +145,14 @@ export default function renderCommand(text, mouseHandler) {
       case "translate":
         translate(shape, opts[0], opts[1])
         break
+      case "translateTo":
+        translateTo(shape, opts[0], opts[1])
+        break
       case "copy":
         copy(shape)
+        break
+      case "resize":
+        resize(shape, opts[0], opts[1])
         break
       default:
         warn(true, `unknown action: ${com.action}`)

@@ -80,6 +80,10 @@ class App extends Component {
     const { mouseHandler } = this
     const { scriptText, tempScript } = this.state
 
+    const shapes = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
+    const selectedShape = shapes.filter(s => s.selected)[0]
+    const svgContent = shapes.map(s => s.render())
+
     const onChangeText = e => {
       const scriptText = e.target.value
       this.setState({ scriptText })
@@ -127,9 +131,13 @@ class App extends Component {
       this.addScript(`strokeWidth ${e.target.value}px`)
     }
 
-    const shapes = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
-    const selectedShape = shapes.filter(s => s.selected)[0]
-    const svgContent = shapes.map(s => s.render())
+    const onChangePositionX = e => {
+      this.addScript(`translateTo ${e.target.value}px ${selectedShape.pos.y}px`)
+    }
+
+    const onChangePositionY = e => {
+      this.addScript(`translateTo ${selectedShape.pos.x}px ${e.target.value}px`)
+    }
 
     return (
       <div className="App">
@@ -152,6 +160,25 @@ class App extends Component {
           <div className="gamma">
             {selectedShape &&
               <div className="form">
+                <div className="row">
+                  <label>position</label>
+                  <div className="input-group">
+                    <div className="named-input">
+                      <label>x</label>
+                      <input
+                        type="number"
+                        value={selectedShape.pos.x}
+                        onChange={onChangePositionX} />
+                    </div>
+                    <div className="named-input">
+                      <label>y</label>
+                      <input
+                        type="number"
+                        value={selectedShape.pos.y}
+                        onChange={onChangePositionY} />
+                    </div>
+                    </div>
+                </div>
                 <div className="row">
                   <label>fill</label>
                   <ColorButton

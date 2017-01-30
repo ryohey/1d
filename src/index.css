@@ -113,3 +113,21 @@ body, textarea, .input {
 .form .row {
   margin: 1em;
 }
+
+.input-group {
+  display: flex;
+  max-width: 13em;
+  overflow: hidden;
+}
+
+.named-input label {
+  margin-right: 0.25em;
+}
+
+.named-input {
+  margin-right: 0.25em;
+}
+
+.input-group input {
+  width: 3em;
+}
