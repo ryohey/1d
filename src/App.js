@@ -170,8 +170,10 @@ class App extends Component {
                   <label>line width</label>
                   <input
                     type="range"
+                    min={0} max={10}
+                    value={selectedShape.brush.strokeWidth || 0}
                     onInput={onChangeLineWidth}
-                    onChange={onChangeLineWidthComplete} />
+                    onMouseUp={onChangeLineWidthComplete} />
                 </div>
               </div>
             }
