@@ -94,7 +94,7 @@ body, textarea, .input {
   display: flex;
 }
 
-.form .row label {
+.form .row>label {
   min-width: 5em;
   font-weight: bold;
 }
@@ -118,6 +118,8 @@ body, textarea, .input {
   display: flex;
   max-width: 13em;
   overflow: hidden;
+  justify-content: space-around;
+  flex-grow: 1;
 }
 
 .named-input label {
@@ -126,6 +128,9 @@ body, textarea, .input {
 
 .named-input {
   margin-right: 0.25em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .input-group input {

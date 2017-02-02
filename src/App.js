@@ -93,6 +93,7 @@ class App extends Component {
 
     const shapes = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
     const selectedShape = shapes.filter(s => s.selected)[0]
+    const selectedShapeSize = selectedShape && selectedShape.size()
     const svgContent = shapes.map(s => s.render())
 
     const onChangeText = e => {
@@ -148,6 +149,14 @@ class App extends Component {
 
     const onChangePositionY = e => {
       this.addScript(`translateTo ${selectedShape.pos.x}px ${e.target.value}px`)
+    }
+
+    const onChangeSizeWidth = e => {
+      this.addScript(`resize ${e.target.value}px ${selectedShapeSize.y}px`)
+    }
+
+    const onChangeSizeHeight = e => {
+      this.addScript(`resize ${selectedShapeSize.y}px ${e.target.value}px`)
     }
 
     const onFileOpen = e => {
@@ -211,21 +220,40 @@ class App extends Component {
             {selectedShape &&
               <div className="form">
                 <div className="row">
+                  <label>size</label>
+                  <div className="input-group">
+                    <div className="named-input">
+                      <input
+                        type="number"
+                        value={selectedShapeSize.x}
+                        onChange={onChangeSizeWidth} />
+                      <label>width</label>
+                    </div>
+                    <div className="named-input">
+                      <input
+                        type="number"
+                        value={selectedShapeSize.y}
+                        onChange={onChangeSizeHeight} />
+                      <label>height</label>
+                    </div>
+                    </div>
+                </div>
+                <div className="row">
                   <label>position</label>
                   <div className="input-group">
                     <div className="named-input">
-                      <label>x</label>
                       <input
                         type="number"
                         value={selectedShape.pos.x}
                         onChange={onChangePositionX} />
+                      <label>x</label>
                     </div>
                     <div className="named-input">
-                      <label>y</label>
                       <input
                         type="number"
                         value={selectedShape.pos.y}
                         onChange={onChangePositionY} />
+                      <label>y</label>
                     </div>
                     </div>
                 </div>
@@ -234,7 +262,7 @@ class App extends Component {
                   <ColorButton
                     color={selectedShape.brush.fill}
                     onChange={onChangeFillColor}
-                    onChangeComplete={onChangeFillColorComplete}  />
+                    onChangeComplete={onChangeFillColorComplete} />
                 </div>
                 <div className="row">
                   <label>stroke</label>

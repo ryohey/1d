@@ -14,15 +14,6 @@ function toPoint(value) {
   return value
 }
 
-function pointsAround(pos, radius) {
-  return [
-    { x: pos.x, y: pos.y - radius.y },
-    { x: pos.x + radius.x, y: pos.y },
-    { x: pos.x, y: pos.y + radius.y },
-    { x: pos.x - radius.x, y: pos.y },
-  ]
-}
-
 // スケーリングした時の位置のずれを計算する
 export function moveByAnchor(pos, delta, anchor) {
   return pointAdd(pos,
@@ -41,6 +32,10 @@ export default class CircleShape extends Shape {
     const delta = pointMul(pointSub(this.radius, radius), 2)
     this.radius = radius
     this.pos = moveByAnchor(this.pos, delta, anchor)
+  }
+
+  size() {
+    return pointMul(this.radius, 2)
   }
 
   render() {

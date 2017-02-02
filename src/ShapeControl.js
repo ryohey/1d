@@ -33,7 +33,10 @@ export default function ShapeControl({ pos, size, onMouseDown }) {
     {corners.map(c =>
       <ControlRect
         center={c[1]}
-        onMouseDown={e => onMouseDown(e, c[0])}
+        onMouseDown={e => {
+          e.stopPropagation()
+          onMouseDown(e, c[0])
+        }}
       />
     )}
   </g>

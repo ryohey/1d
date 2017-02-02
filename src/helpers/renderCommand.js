@@ -23,11 +23,9 @@ export default function renderCommand(text, mouseHandler) {
   }
 
   function add(shape) {
-    console.log("add", lastId)
     shape.id = lastId
     shape.mouseHandler = mouseHandler
     shapes.push(shape)
-    console.log("shape added", shape)
     selectedShape = null
     lastId++
   }
@@ -105,7 +103,6 @@ export default function renderCommand(text, mouseHandler) {
   }
 
   for (let com of commands) {
-    console.log(`command ${com.action}`)
     const opts = com.options
     const shape = findShape(com.target) || currentShape()
 
