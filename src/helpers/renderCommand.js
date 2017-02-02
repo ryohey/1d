@@ -95,8 +95,13 @@ export default function renderCommand(text, mouseHandler) {
     shape.pos = project(transform, { x, y })
   }
 
-  function resize(shape, x, y) {
-    shape.resize(project(transform, { x, y }))
+  function resize(shape, x, y, ax, ay) {
+    const anchor = {
+      x: _.isNil(ax) ? 0.5 : ax,
+      y: _.isNil(ay) ? 0.5 : ay
+    }
+
+    shape.resize(project(transform, { x, y }), anchor)
   }
 
   for (let com of commands) {
@@ -168,7 +173,7 @@ export default function renderCommand(text, mouseHandler) {
         copy(shape)
         break
       case "resize":
-        resize(shape, opts[0], opts[1])
+        resize(shape, opts[0], opts[1], opts[2], opts[3])
         break
       default:
         warn(true, `unknown action: ${com.action}`)

@@ -36,6 +36,13 @@ export function pointDot(a, b) {
   }
 }
 
+export function pointDiv(a, b) {
+  return {
+    x: a.x / b.x,
+    y: a.y / b.y
+  }
+}
+
 function projectValue(transform, value) {
   return value * (transform.scale || 1)
 }
