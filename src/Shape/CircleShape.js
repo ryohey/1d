@@ -2,7 +2,7 @@ import React from "react"
 import Shape from "./Shape"
 import _ from "lodash"
 import { pointMul, pointSub, pointAdd, pointDot } from "../helpers/point"
-import renderPathHandle from "../helpers/renderPathHandle"
+import ShapeControl from "../ShapeControl"
 
 function toPoint(value) {
   if (_.isNumber(value)) {
@@ -58,7 +58,13 @@ export default class CircleShape extends Shape {
         cx={pos.x}
         cy={pos.y}
       />
-      {selected && renderPathHandle(pointsAround(pos, radius))}
+      {selected && <ShapeControl
+        pos={pointSub(pos, radius)}
+        size={pointMul(radius, 2)}
+        onMouseDown={(e, anchor) => {
+          mouseHandler.onMouseDown(e, this, anchor)
+        }} />
+      }
     </g>
   }
 }

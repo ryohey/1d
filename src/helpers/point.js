@@ -100,3 +100,17 @@ export function pointFromEvent(e) {
     y: e.clientY
   }
 }
+
+export function pointsMin(points) {
+  return {
+    x: _.min(points.map(p => p.x)),
+    y: _.min(points.map(p => p.y))
+  }
+}
+
+export function pointsMax(points) {
+  return {
+    x: _.max(points.map(p => p.x)),
+    y: _.max(points.map(p => p.y))
+  }
+}

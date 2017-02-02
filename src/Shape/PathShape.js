@@ -1,7 +1,7 @@
 import React from "react"
 import Shape from "./Shape"
-import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath } from "../helpers/point"
-import renderPathHandle from "../helpers/renderPathHandle"
+import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath, pointsMax, pointsMin } from "../helpers/point"
+import ShapeControl from "../ShapeControl"
 import _ from "lodash"
 
 export default class PathShape extends Shape {
@@ -12,14 +12,8 @@ export default class PathShape extends Shape {
   }
 
   resize(size, anchor) {
-    const leftTop = {
-      x: _.min(this.path.map(p => p.x)),
-      y: _.min(this.path.map(p => p.y))
-    }
-    const rightBottom = {
-      x: _.max(this.path.map(p => p.x)),
-      y: _.max(this.path.map(p => p.y))
-    }
+    const leftTop = pointsMin(this.path)
+    const rightBottom = pointsMax(this.path)
     const originalSize = pointSub(rightBottom, leftTop)
     const scale = pointDiv(size, originalSize)
     this.path = this.path.map(p =>
@@ -33,6 +27,8 @@ export default class PathShape extends Shape {
     const { pos, closed, mouseHandler, brush, selected } = this
     const points = this.path.map(p => pointAdd(p, pos))
     const path = toSVGPath(points, closed)
+    const leftTop = pointsMin(points)
+    const size = pointSub(pointsMax(points), leftTop)
     return <g
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
@@ -43,7 +39,13 @@ export default class PathShape extends Shape {
         fill={brush.fill || "none"}
         cursor="move"
       />
-      {selected && renderPathHandle(points)}
+      {selected && <ShapeControl
+        pos={leftTop}
+        size={size}
+        onMouseDown={(e, anchor) => {
+          mouseHandler.onMouseDown(e, this, anchor)
+        }} />
+      }
     </g>
   }
 }
