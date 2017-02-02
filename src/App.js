@@ -160,6 +160,22 @@ class App extends Component {
           if (e.nodeName === "path") {
             const path = svgPathParser(e.attributes.d.value)
             console.log(path)
+            const commands = _.flatMap(path, p => {
+              switch (p.command) {
+              case "moveto":
+                return `moveTo ${p.x} ${p.y}`
+              case "lineto":
+                return `lineTo ${p.x} ${p.y}`
+              case "curveto":
+              case "closepath":
+                return `fill ${e.parentNode.fill || "none"}`
+              default:
+                return null
+              }
+            })
+            commands.forEach(c =>
+              this.addScript(c)
+            )
             // TODO: このパスを使って PathShape を作るコマンドを追加する
           }
         })
@@ -173,7 +189,7 @@ class App extends Component {
       <div className="App">
         <div className="toolbar">
           <label className="button">open
-            <input style={{display: "none"}} type="file" onChange={onFileOpen} />
+            <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
           </label>
           <div className="button" onClick={onClickRect}>rect</div>
           <div className="button" onClick={onClickCircle}>circle</div>

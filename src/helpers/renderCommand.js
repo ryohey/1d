@@ -48,16 +48,29 @@ export default function renderCommand(text, mouseHandler) {
     pos = pointAdd(pos, project(transform, { x, y }))
   }
 
-  function line(x, y) {
+  function addPosToCurrentShapePath() {
+    currentShape().path.push(pointCopy(pos))
+  }
+
+  function preparePathShape() {
     let shape = currentShape()
     if (!(shape instanceof PathShape)) {
       shape = new PathShape()
-      shape.path.push(pointCopy(pos))
       add(shape)
+      addPosToCurrentShapePath()
     }
-    const { path } = shape
+  }
+
+  function lineTo(x, y) {
+    preparePathShape()
+    moveTo(x, y)
+    addPosToCurrentShapePath()
+  }
+
+  function line(x, y) {
+    preparePathShape()
     move(x, y)
-    path.push(pointCopy(pos))
+    addPosToCurrentShapePath()
   }
 
   function copy(shape) {
@@ -98,6 +111,9 @@ export default function renderCommand(text, mouseHandler) {
         break
       case "move":
         move(opts[0], opts[1])
+        break
+      case "lineTo":
+        lineTo(opts[0], opts[1])
         break
       case "line":
         line(opts[0], opts[1])
