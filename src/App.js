@@ -48,6 +48,7 @@ move 0 5
 stroke green
 
 translate -12 1
+@rect resize 50px 10px
 `
 
 function cleanupText(text) {

@@ -7,6 +7,10 @@ export default class Shape {
     this.brush = {}
   }
 
+  resize() {
+    throw new Error("not implemented")
+  }
+
   render() {
     throw new Error("not implemented")
   }

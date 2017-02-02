@@ -7,6 +7,10 @@ export default class CircleShape extends Shape {
     this.radius = radius
   }
 
+  resize(size) {
+    // TODO: リサイズと楕円の実装
+  }
+
   render() {
     const { pos, radius, brush, mouseHandler } = this
     return <g
