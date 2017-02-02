@@ -3,6 +3,8 @@ import _ from "lodash"
 import renderCommand from "./helpers/renderCommand"
 import MouseHandler from "./MouseHandler"
 import ColorButton from "./ColorButton"
+import SVG from "svg.js"
+import svgPathParser from "svg-path-parser"
 
 import './App.css';
 
@@ -50,6 +52,13 @@ stroke green
 translate -12 1
 @rect resize 50px 10px
 `
+
+function walkElements(element, callback) {
+  for (let e of element.children) {
+    walkElements(e, callback)
+  }
+  callback(element)
+}
 
 function cleanupText(text) {
   return text.replace(/[ \t]{2,}/g, "")
@@ -140,9 +149,32 @@ class App extends Component {
       this.addScript(`translateTo ${selectedShape.pos.x}px ${e.target.value}px`)
     }
 
+    const onFileOpen = e => {
+      const reader = new FileReader()
+
+      reader.onload = () => {
+        const canvas = document.createElement("canvas")
+        const draw = SVG(canvas)
+        draw.svg(reader.result)
+        walkElements(draw.node, e => {
+          if (e.nodeName === "path") {
+            const path = svgPathParser(e.attributes.d.value)
+            console.log(path)
+            // TODO: このパスを使って PathShape を作るコマンドを追加する
+          }
+        })
+      }
+
+      const file = e.target.files[0]
+      reader.readAsText(file)
+    }
+
     return (
       <div className="App">
         <div className="toolbar">
+          <label className="button">open
+            <input style={{display: "none"}} type="file" onChange={onFileOpen} />
+          </label>
           <div className="button" onClick={onClickRect}>rect</div>
           <div className="button" onClick={onClickCircle}>circle</div>
         </div>
