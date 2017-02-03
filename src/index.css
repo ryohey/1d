@@ -136,3 +136,7 @@ body, textarea, .input {
 .input-group input {
   width: 3em;
 }
+
+svg text {
+  user-select:none;
+}
