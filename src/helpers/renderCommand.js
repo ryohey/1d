@@ -138,9 +138,11 @@ export default function renderCommand(text, mouseHandler) {
         }
         add(new CircleShape(pos, radius))
         break }
-      case "text":
-        add(new TextShape(pos, opts[0]))
-        break
+      case "text":{
+        // remove quotes
+        const text = opts[0].replace(/^"(.+)"$/, "$1")
+        add(new TextShape(pos, text))
+        break}
       case "stroke":
         warn(!shape, "invalid state: no shapes to change stroke color")
         shape.brush.stroke = opts[0]
@@ -208,8 +210,7 @@ function parseCommands(text) {
       continue
     }
 
-    // TODO: クオートで括った部分はひとまとまりの文字列として扱う
-    const words = line.split(" ")
+    const words = line.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g)
     let target = null
     let action
     let options

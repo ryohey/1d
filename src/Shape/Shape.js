@@ -2,7 +2,7 @@ import _ from "lodash"
 import { pointCopy } from "../helpers/point"
 
 export default class Shape {
-  constructor(pos = { x: 0, y: 0 }) {
+  constructor(pos) {
     this.pos = pointCopy(pos)
     this.brush = {}
   }
@@ -11,7 +11,7 @@ export default class Shape {
     throw new Error("not implemented")
   }
 
-  size() {
+  get size() {
     throw new Error("not implemented")
   }
 

@@ -23,12 +23,12 @@ export default class PathShape extends Shape {
     this.pos = pointAdd(this.pos, pointDot(delta, anchor))
   }
 
-  size() {
+  get size() {
     return pointSub(pointsMax(this.path), pointsMin(this.path))
   }
 
   render() {
-    const { pos, closed, mouseHandler, brush, selected } = this
+    const { pos, closed, mouseHandler, brush, selected, size } = this
     const points = this.path.map(p => pointAdd(p, pos))
     const path = toSVGPath(points, closed)
     const leftTop = pointsMin(points)
@@ -44,7 +44,7 @@ export default class PathShape extends Shape {
       />
       {selected && <ShapeControl
         pos={leftTop}
-        size={this.size()}
+        size={size}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, this, anchor)
         }} />

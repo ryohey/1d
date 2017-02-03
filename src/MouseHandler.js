@@ -40,7 +40,7 @@ export default class MouseHandler {
   onMouseDown(e, shape, anchor) {
     this.dragEvent = {
       startPos: pointFromEvent(e),
-      startSize: shape.size(),
+      startSize: shape.size,
       target: shape,
       moved: false,
       anchor

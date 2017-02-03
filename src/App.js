@@ -99,7 +99,7 @@ class App extends Component {
 
     const shapes = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
     const selectedShape = shapes.filter(s => s.selected)[0]
-    const selectedShapeSize = selectedShape && selectedShape.size()
+    const selectedShapeSize = selectedShape && selectedShape.size
     const svgContent = shapes.map(s => s.render())
 
     const onChangeText = e => {

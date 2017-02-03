@@ -24,12 +24,12 @@ export default class CircleShape extends Shape {
     this.pos = moveByAnchor(this.pos, delta, anchor)
   }
 
-  size() {
+  get size() {
     return pointMul(this.radius, 2)
   }
 
   render() {
-    const { pos, radius, brush, mouseHandler, selected } = this
+    const { pos, radius, brush, mouseHandler, selected, size } = this
     return <g
       cursor="move"
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
@@ -45,7 +45,7 @@ export default class CircleShape extends Shape {
       />
       {selected && <ShapeControl
         pos={pointSub(pos, radius)}
-        size={pointMul(radius, 2)}
+        size={size}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, this, anchor)
         }} />
