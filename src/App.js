@@ -3,8 +3,7 @@ import _ from "lodash"
 import renderCommand from "./helpers/renderCommand"
 import MouseHandler from "./MouseHandler"
 import ColorButton from "./ColorButton"
-import SVG from "svg.js"
-import svgPathParser from "svg-path-parser"
+import svgToCommands from "./helpers/svgToCommands"
 
 import './App.css';
 
@@ -54,12 +53,18 @@ translate -12 1
 @rect resize 50px 10px
 `
 
-function walkElements(element, callback) {
-  for (let e of element.children) {
-    walkElements(e, callback)
-  }
-  callback(element)
-}
+const testSvg = `
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
+<svg xml:space="default" width="300" height="200">
+<text x="10" y="30" font-size="15pt">
+1d test svg file content
+newline
+</text>
+<circle cx="150" cy="120" r="60" fill="white" stroke="red" stroke-width="5"/>
+<ellipse cx="150" cy="120" rx="80" ry="30" fill="lightblue" stroke="green" stroke-width="5"/>
+</svg>
+`
 
 function cleanupText(text) {
   return text.replace(/[ \t]{2,}/g, "")
@@ -69,8 +74,9 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.mouseHandler = new MouseHandler(this)
+
     this.state = {
-      scriptText: defaultScript,
+      scriptText: defaultScript + "\n" + svgToCommands(testSvg).join("\n"),
       tempScript: ""
     }
   }
@@ -163,32 +169,9 @@ class App extends Component {
       const reader = new FileReader()
 
       reader.onload = () => {
-        const canvas = document.createElement("canvas")
-        const draw = SVG(canvas)
-        draw.svg(reader.result)
-        walkElements(draw.node, e => {
-          if (e.nodeName === "path") {
-            const path = svgPathParser(e.attributes.d.value)
-            console.log(path)
-            const commands = _.flatMap(path, p => {
-              switch (p.command) {
-              case "moveto":
-                return `moveTo ${p.x} ${p.y}`
-              case "lineto":
-                return `lineTo ${p.x} ${p.y}`
-              case "curveto":
-              case "closepath":
-                return `fill ${e.parentNode.fill || "none"}`
-              default:
-                return null
-              }
-            })
-            commands.forEach(c =>
-              this.addScript(c)
-            )
-            // TODO: このパスを使って PathShape を作るコマンドを追加する
-          }
-        })
+        svgToCommands(reader.result).forEach(c =>
+          this.addScript(c)
+        )
       }
 
       const file = e.target.files[0]

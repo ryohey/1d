@@ -4,16 +4,6 @@ import _ from "lodash"
 import { pointMul, pointSub, pointAdd, pointDot } from "../helpers/point"
 import ShapeControl from "../ShapeControl"
 
-function toPoint(value) {
-  if (_.isNumber(value)) {
-    return {
-      x: value,
-      y: value
-    }
-  }
-  return value
-}
-
 // スケーリングした時の位置のずれを計算する
 export function moveByAnchor(pos, delta, anchor) {
   return pointAdd(pos,
@@ -22,9 +12,9 @@ export function moveByAnchor(pos, delta, anchor) {
 }
 
 export default class CircleShape extends Shape {
-  constructor(pos = { x: 0, y: 0 }, radius = 0) {
+  constructor(pos = { x: 0, y: 0 }, radius) {
     super(pos)
-    this.radius = toPoint(radius)
+    this.radius = radius
   }
 
   resize(size, anchor) {

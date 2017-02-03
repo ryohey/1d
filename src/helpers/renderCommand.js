@@ -4,6 +4,7 @@ import RectShape from "../Shape/RectShape"
 import PathShape from "../Shape/PathShape"
 import GridShape from "../Shape/GridShape"
 import CircleShape from "../Shape/CircleShape"
+import TextShape from "../Shape/TextShape"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 
 export default function renderCommand(text, mouseHandler) {
@@ -130,9 +131,16 @@ export default function renderCommand(text, mouseHandler) {
         add(new RectShape(pos, w, h))
         break }
       case "circle": {
-        const radius = project(transform, opts[0])
+        const rx = project(transform, opts[0])
+        const radius = { x: rx, y: rx }
+        if (!_.isNil(opts[1])) {
+          radius.y = project(transform, opts[1])
+        }
         add(new CircleShape(pos, radius))
         break }
+      case "text":
+        add(new TextShape(pos, opts[0]))
+        break
       case "stroke":
         warn(!shape, "invalid state: no shapes to change stroke color")
         shape.brush.stroke = opts[0]
@@ -144,6 +152,10 @@ export default function renderCommand(text, mouseHandler) {
       case "strokeWidth":
         warn(!shape, "invalid state: no shapes to change line width")
         shape.brush.strokeWidth = project(transform, opts[0])
+        break
+      case "fontSize":
+        warn(!(shape instanceof TextShape), "invalid state: the shape is not TextShape")
+        shape.fontSize = project(transform, opts[0])
         break
       case "grid": {
         const scale = parseFloat(opts[0])
@@ -196,6 +208,7 @@ function parseCommands(text) {
       continue
     }
 
+    // TODO: クオートで括った部分はひとまとまりの文字列として扱う
     const words = line.split(" ")
     let target = null
     let action
