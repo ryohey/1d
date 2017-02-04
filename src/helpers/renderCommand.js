@@ -72,6 +72,48 @@ export default function renderCommand(text, mouseHandler) {
     addPosToCurrentShapePath()
   }
 
+  function curveTo(x, y, x1, y1, x2, y2) {
+    preparePathShape()
+    const p = project(transform, { x, y })
+    const c = project(transform, { x: x1, y: y1 })
+    const c2 = project(transform, { x: x2, y: y2 })
+    move(x, y)
+    currentShape().path.push({
+      x: p.x, y: p.y,
+      x1: c.x, y1: c.y,
+      x2: c2.x, y2: c2.y,
+      command: "curveto",
+      code: "C"
+    })
+  }
+
+  function smoothCurveTo(x, y, x1, y1) {
+    preparePathShape()
+    const p = project(transform, { x, y })
+    const c = project(transform, { x: x1, y: y1 })
+    move(x, y)
+    currentShape().path.push({
+      x: p.x, y: p.y,
+      x1: c.x, y1: c.y,
+      command: "smooth curveto",
+      code: "S"
+    })
+  }
+
+  function ellipticalArc(x, y, rx, ry, xAxisRotation, largeArc, sweep) {
+    preparePathShape()
+    const p = project(transform, { x, y })
+    const r = project(transform, { x: rx, y: ry })
+    move(x, y)
+    currentShape().path.push({
+      x: p.x, y: p.y,
+      rx: r.x, ry: r.y,
+      xAxisRotation, largeArc, sweep,
+      command: "elliptical arc",
+      code: "A"
+    })
+  }
+
   function copy(shape) {
     warn(!shape, "invalid state: no shapes to copy")
     const newShape = shape.clone()
@@ -120,6 +162,9 @@ export default function renderCommand(text, mouseHandler) {
         break
       case "line":
         line(opts[0], opts[1])
+        break
+      case "curveTo":
+        curveTo(opts[0], opts[1], opts[2], opts[3], opts[4], opts[5])
         break
       case "close":
         warn(!(shape instanceof PathShape), "invalid state: the shape is not PathShape")

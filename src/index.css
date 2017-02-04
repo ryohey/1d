@@ -46,7 +46,7 @@ body, textarea, .input {
 
 .alpha {
   border-right: 5px solid rgb(245, 245, 245);
-  min-width: 20em;
+  width: 20em;
 }
 
 .beta {
@@ -66,9 +66,8 @@ body, textarea, .input {
 }
 
 .toolbar {
-  border-bottom: 1px solid rgb(245, 245, 245);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
-  box-shadow: 0 0 5px rgba(171, 203, 247, 0.3);
 }
 
 .toolbar .button {
@@ -88,6 +87,7 @@ body, textarea, .input {
 .gamma {
   min-width: 14em;
   box-sizing: border-box;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .form .row {

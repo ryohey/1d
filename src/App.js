@@ -93,6 +93,12 @@ class App extends Component {
     })
   }
 
+  addScriptLines(lines) {
+    this.setState({
+      scriptText: this.state.scriptText + "\n" + lines.join("\n")
+    })
+  }
+
   render() {
     const { mouseHandler } = this
     const { scriptText, tempScript } = this.state
@@ -169,9 +175,8 @@ class App extends Component {
       const reader = new FileReader()
 
       reader.onload = () => {
-        svgToCommands(reader.result).forEach(c =>
-          this.addScript(c)
-        )
+        const commands = svgToCommands(reader.result)
+        this.addScriptLines(commands)
       }
 
       const file = e.target.files[0]

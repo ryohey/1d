@@ -76,12 +76,27 @@ export function project(transform, value) {
   return resolveDimension(transform, value)
 }
 
+function conform(obj, keys) {
+  return keys.filter(key => !_.has(obj, key)).length === 0
+}
+
+function toPathCommand(p) {
+  if (p.command === "curveto") {
+    if (conform(p, ["x1", "y1", "x2", "y2"])) {
+      return `C${p.x1} ${p.y1} ${p.x2} ${p.y2} ${p.x} ${p.y}`
+    } else {
+      console.warn("invalid curve: ", p)
+    }
+  }
+  return `L${p.x} ${p.y}`
+}
+
 /**
   [{ x: 10, y: 20 }, { x: 40, y: 30 }, { x: 9, y: 54 }]
   => M10 20 L40 30 L9 54
 */
 export function toSVGPath(points, closed = false) {
-  const path = [`M${points[0].x} ${points[0].y}`, ..._.tail(points).map(p => `L${p.x} ${p.y}`)]
+  const path = [`M${points[0].x} ${points[0].y}`, ..._.tail(points).map(toPathCommand)]
   return `${path.join(" ")}${closed ? " Z" : ""}`
 }
 

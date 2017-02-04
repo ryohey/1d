@@ -25,6 +25,7 @@ function pathConverter(e) {
     case "lineto":
       return `lineTo ${p.x} ${p.y}`
     case "curveto":
+      return `curveTo ${p.x} ${p.y} ${p.x1} ${p.y1} ${p.x2} ${p.y2}`
     case "closepath":
       return `fill ${e.parentNode.fill || "none"}`
     default:

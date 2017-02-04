@@ -12,6 +12,7 @@ export default class PathShape extends Shape {
   }
 
   resize(size, anchor) {
+    // TODO: support curveto
     const leftTop = pointsMin(this.path)
     const rightBottom = pointsMax(this.path)
     const originalSize = pointSub(rightBottom, leftTop)
@@ -29,10 +30,10 @@ export default class PathShape extends Shape {
 
   render() {
     const { pos, closed, mouseHandler, brush, selected, size } = this
-    const points = this.path.map(p => pointAdd(p, pos))
-    const path = toSVGPath(points, closed)
-    const leftTop = pointsMin(points)
+    const path = toSVGPath(this.path, closed)
+    const leftTop = pointsMin(this.path)
     return <g
+      transform={`translate(${pos.x}, ${pos.y})`}
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <path
