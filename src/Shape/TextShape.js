@@ -63,6 +63,10 @@ export default class TextShape extends Shape {
     return this._size
   }
 
+  resize(size, anchor) {
+    this.fontSize = size.y / 1.2
+  }
+
   render() {
     return <TextWrapper shape={this} />
   }
