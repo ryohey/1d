@@ -1,5 +1,4 @@
 import { validateOptionWithName } from "./optionValidator"
-import { pointAdd, project } from "../helpers/point"
 
 export default {
   action: "move",

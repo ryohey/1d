@@ -1,7 +1,7 @@
 import { validateOptionWithName } from "./optionValidator"
 
 export default {
-  action: "line",
+  action: "lineTo",
 
   validateOptions: (opts) => {
     return validateOptionWithName(opts, ["x", "y"])
@@ -9,7 +9,7 @@ export default {
 
   perform: (state, com) => {
     state.preparePathShape()
-    state.move(com.options[0], com.options[1])
+    state.moveTo(com.options[0], com.options[1])
     state.addPosToCurrentShapePath()
   }
 }

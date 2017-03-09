@@ -1,10 +1,7 @@
 import _ from "lodash"
 
-import RectShape from "../Shape/RectShape"
 import PathShape from "../Shape/PathShape"
 import GridShape from "../Shape/GridShape"
-import CircleShape from "../Shape/CircleShape"
-import TextShape from "../Shape/TextShape"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 import { InvalidStateError, InvalidCommandError } from "../Command/Error.js"
 import copyCommand from "../Command/CopyCommand"
@@ -12,6 +9,27 @@ import rectCommand from "../Command/RectCommand"
 import moveCommand from "../Command/MoveCommand"
 import moveToCommand from "../Command/MoveToCommand"
 import lineCommand from "../Command/LineCommand"
+import lineToCommand from "../Command/LineToCommand"
+import closeCommand from "../Command/CloseCommand"
+import circleCommand from "../Command/CircleCommand"
+import textCommand from "../Command/TextCommand"
+import translateCommand from "../Command/TranslateCommand"
+import strokeCommand from "../Command/StrokeCommand"
+import TextShape from "../Shape/TextShape"
+
+const plugins = [
+  rectCommand,
+  copyCommand,
+  moveCommand,
+  moveToCommand,
+  lineCommand,
+  lineToCommand,
+  closeCommand,
+  circleCommand,
+  textCommand,
+  translateCommand,
+  strokeCommand
+]
 
 class State {
   get lastShape() {
@@ -34,6 +52,11 @@ class State {
     return this.currentShapes[0]
   }
 
+  targetShapes(com) {
+    const target = this.findShape(com.target)
+    return target ? [target] : this.currentShapes
+  }
+
   addShape(shape) {
     shape.id = this.lastId
     shape.mouseHandler = this.mouseHandler
@@ -41,6 +64,13 @@ class State {
     this.deselectAll()
     shape.selected = true
     this.lastId++
+  }
+
+  findShape(nameOrId) {
+    if (!nameOrId) {
+      return
+    }
+    return this.shapes.filter(s => `${s.id}` === nameOrId || s.name === nameOrId)[0]
   }
 
   deselectAll() {
@@ -122,18 +152,15 @@ export default function renderCommand(text, mouseHandler) {
     }
   }
 
-  function moveTo(x, y) {
-    pos = project(transform, { x, y })
+  function findShape(nameOrId) {
+    if (!nameOrId) {
+      return
+    }
+    return shapes.filter(s => `${s.id}` === nameOrId || s.name === nameOrId)[0]
   }
 
   function move(x, y) {
     pos = pointAdd(pos, project(transform, { x, y }))
-  }
-
-  function lineTo(x, y) {
-    preparePathShape()
-    moveTo(x, y)
-    addPosToCurrentShapePath()
   }
 
   function curveTo(x, y, x1, y1, x2, y2) {
@@ -177,17 +204,6 @@ export default function renderCommand(text, mouseHandler) {
     })
   }
 
-  function findShape(nameOrId) {
-    if (!nameOrId) {
-      return
-    }
-    return shapes.filter(s => `${s.id}` === nameOrId || s.name === nameOrId)[0]
-  }
-
-  function translate(shape, x, y) {
-    shape.pos = pointAdd(shape.pos, project(transform, { x, y }))
-  }
-
   function translateTo(shape, x, y) {
     shape.pos = project(transform, { x, y })
   }
@@ -213,14 +229,6 @@ export default function renderCommand(text, mouseHandler) {
     found.selected = true
   }
 
-  const plugins = [
-    rectCommand,
-    copyCommand,
-    moveCommand,
-    moveToCommand,
-    lineCommand
-  ]
-
   for (let com of commands) {
     const opts = com.options
     const target = findShape(com.target)
@@ -238,7 +246,7 @@ export default function renderCommand(text, mouseHandler) {
         state.transform = transform
         state.shapes = shapes
         state.mouseHandler = mouseHandler
-        plugin.perform(state, com)
+        error = plugin.perform(state, com)
         pos = state.pos
         lastId = state.lastId
         transform = state.transform
@@ -247,59 +255,12 @@ export default function renderCommand(text, mouseHandler) {
 
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
-      case "lineTo":
-        if (opts.length !== 2) {
-          error = InvalidCommandError("insufficient parameters")
-          break
-        }
-        lineTo(opts[0], opts[1])
-        break
       case "curveTo":
         if (opts.length !== 6) {
           error = InvalidCommandError("insufficient parameters")
           break
         }
         curveTo(opts[0], opts[1], opts[2], opts[3], opts[4], opts[5])
-        break
-      case "close":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to close path")
-          break
-        }
-        if (!(shape instanceof PathShape)) {
-          error = InvalidStateError("the shape is not PathShape")
-          break
-        }
-        shape.closed = true
-        break
-      case "circle": {
-        if (opts.length === 0) {
-          error = InvalidCommandError("rx not specified")
-          break
-        }
-        const rx = project(transform, opts[0])
-        const radius = { x: rx, y: rx }
-        if (!_.isNil(opts[1])) {
-          radius.y = project(transform, opts[1])
-        }
-        add(new CircleShape(pos, radius))
-        break }
-      case "text":{
-        if (opts.length === 0) {
-          error = InvalidCommandError("text not specified")
-          break
-        }
-        // remove quotes
-        const text = opts[0].replace(/^"(.+)"$/, "$1")
-        add(new TextShape(pos, text))
-        break}
-      case "stroke":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to change stroke color")
-          break
-        }
-        targetShapes.forEach(shape =>
-          shape.brush.stroke = opts[0])
         break
       case "fill":
         if (targetShapes.length === 0) {
@@ -357,22 +318,6 @@ export default function renderCommand(text, mouseHandler) {
         }
         deselectAll()
         select(opts[0])
-        break
-      case "translate":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to translate")
-          break
-        }
-        if (opts[0] === undefined) {
-          error = InvalidCommandError("x not specified")
-          break
-        }
-        if (opts[1] === undefined) {
-          error = InvalidCommandError("y not specified")
-          break
-        }
-        targetShapes.forEach(shape =>
-          translate(shape, opts[0], opts[1]))
         break
       case "translateTo":
         if (targetShapes.length === 0) {
