@@ -6,13 +6,63 @@ import GridShape from "../Shape/GridShape"
 import CircleShape from "../Shape/CircleShape"
 import TextShape from "../Shape/TextShape"
 import { pointCopy, pointAdd, project } from "../helpers/point"
+import { InvalidStateError, InvalidCommandError } from "../Command/Error.js"
+import copyCommand from "../Command/CopyCommand"
+import rectCommand from "../Command/RectCommand"
+import moveCommand from "../Command/MoveCommand"
+import moveToCommand from "../Command/MoveToCommand"
+import lineCommand from "../Command/LineCommand"
 
-function InvalidStateError(message) {
-  return new Error(`invalid state error: ${message}`)
-}
+class State {
+  get lastShape() {
+    return this.shapes[this.shapes.length - 1]
+  }
 
-function InvalidCommandError(message) {
-  return new Error(`invalid command error: ${message}`)
+  get selectedShapes() {
+    return this.shapes.filter(s => s.selected)
+  }
+
+  get currentShapes() {
+    const selected = this.selectedShapes
+    if (selected.length > 0) {
+      return selected
+    }
+    return [this.lastShape]
+  }
+
+  get currentShape() {
+    return this.currentShapes[0]
+  }
+
+  addShape(shape) {
+    shape.id = this.lastId
+    shape.mouseHandler = this.mouseHandler
+    this.shapes.push(shape)
+    this.deselectAll()
+    shape.selected = true
+    this.lastId++
+  }
+
+  deselectAll() {
+    this.shapes.forEach(s => s.selected = false)
+  }
+
+  move(x, y) {
+    this.pos = pointAdd(this.pos, project(this.transform, { x, y }))
+  }
+
+  addPosToCurrentShapePath() {
+    this.currentShape.path.push(pointCopy(this.pos))
+  }
+
+  preparePathShape() {
+    let shape = this.currentShape
+    if (!(shape instanceof PathShape)) {
+      shape = new PathShape()
+      this.addShape(shape)
+      this.addPosToCurrentShapePath()
+    }
+  }
 }
 
 export default function renderCommand(text, mouseHandler) {
@@ -59,14 +109,6 @@ export default function renderCommand(text, mouseHandler) {
     return currentShapes()[0]
   }
 
-  function moveTo(x, y) {
-    pos = project(transform, { x, y })
-  }
-
-  function move(x, y) {
-    pos = pointAdd(pos, project(transform, { x, y }))
-  }
-
   function addPosToCurrentShapePath() {
     currentShape().path.push(pointCopy(pos))
   }
@@ -80,15 +122,17 @@ export default function renderCommand(text, mouseHandler) {
     }
   }
 
+  function moveTo(x, y) {
+    pos = project(transform, { x, y })
+  }
+
+  function move(x, y) {
+    pos = pointAdd(pos, project(transform, { x, y }))
+  }
+
   function lineTo(x, y) {
     preparePathShape()
     moveTo(x, y)
-    addPosToCurrentShapePath()
-  }
-
-  function line(x, y) {
-    preparePathShape()
-    move(x, y)
     addPosToCurrentShapePath()
   }
 
@@ -133,13 +177,6 @@ export default function renderCommand(text, mouseHandler) {
     })
   }
 
-  function copy(shape) {
-    warn(!shape, "invalid state: no shapes to copy")
-    const newShape = shape.clone()
-    add(newShape)
-    newShape.pos = pointCopy(pos)
-  }
-
   function findShape(nameOrId) {
     if (!nameOrId) {
       return
@@ -150,9 +187,6 @@ export default function renderCommand(text, mouseHandler) {
   function translate(shape, x, y) {
     shape.pos = pointAdd(shape.pos, project(transform, { x, y }))
   }
-
-  const pluralify = (func) => () =>
-    shapes.map(s => func(s, ..._.tail(arguments)))
 
   function translateTo(shape, x, y) {
     shape.pos = project(transform, { x, y })
@@ -173,9 +207,19 @@ export default function renderCommand(text, mouseHandler) {
 
   function select(nameOrId) {
     const found = findShape(nameOrId)
-    warn(!found, "invalid state: no shapes to select")
+    if (!found) {
+      return InvalidStateError("no shapes to select")
+    }
     found.selected = true
   }
+
+  const plugins = [
+    rectCommand,
+    copyCommand,
+    moveCommand,
+    moveToCommand,
+    lineCommand
+  ]
 
   for (let com of commands) {
     const opts = com.options
@@ -184,35 +228,31 @@ export default function renderCommand(text, mouseHandler) {
     const shape = targetShapes[0]
     let error
 
+    const plugin = _.find(plugins, p => p.action === com.action)
+    if (plugin) {
+      error = plugin.validateOptions(opts)
+      if (!error) {
+        const state = new State()
+        state.lastId = lastId,
+        state.pos = pos
+        state.transform = transform
+        state.shapes = shapes
+        state.mouseHandler = mouseHandler
+        plugin.perform(state, com)
+        pos = state.pos
+        lastId = state.lastId
+        transform = state.transform
+      }
+    }
+
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
-      case "moveTo":
-        if (opts.length !== 2) {
-          error = InvalidCommandError("insufficient parameters")
-          break
-        }
-        moveTo(opts[0], opts[1])
-        break
-      case "move":
-        if (opts.length !== 2) {
-          error = InvalidCommandError("insufficient parameters")
-          break
-        }
-        move(opts[0], opts[1])
-        break
       case "lineTo":
         if (opts.length !== 2) {
           error = InvalidCommandError("insufficient parameters")
           break
         }
         lineTo(opts[0], opts[1])
-        break
-      case "line":
-        if (opts.length !== 2) {
-          error = InvalidCommandError("insufficient parameters")
-          break
-        }
-        line(opts[0], opts[1])
         break
       case "curveTo":
         if (opts.length !== 6) {
@@ -232,19 +272,6 @@ export default function renderCommand(text, mouseHandler) {
         }
         shape.closed = true
         break
-      case "rect": {
-        if (opts[0] === undefined) {
-          error = InvalidCommandError("width not specified")
-          break
-        }
-        if (opts[1] === undefined) {
-          error = InvalidCommandError("height not specified")
-          break
-        }
-        const w = project(transform, opts[0])
-        const h = project(transform, opts[1])
-        add(new RectShape(pos, w, h))
-        break }
       case "circle": {
         if (opts.length === 0) {
           error = InvalidCommandError("rx not specified")
@@ -363,13 +390,6 @@ export default function renderCommand(text, mouseHandler) {
         targetShapes.forEach(shape =>
           translateTo(shape, opts[0], opts[1]))
         break
-      case "copy":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to copy")
-          break
-        }
-        copy(shape)
-        break
       case "resize":
         if (opts.length < 2) {
           error = InvalidCommandError("insufficient parameters")
@@ -379,12 +399,16 @@ export default function renderCommand(text, mouseHandler) {
           resize(shape, opts[0], opts[1], opts[2], opts[3]))
         break
       default:
-        error = InvalidCommandError(`unknown action: ${com.action}`)
+        if (!plugin) {
+          error = InvalidCommandError(`unknown action: ${com.action}`)
+        }
         break
     }
 
     if (error) {
-      console.warn(`error: ${error.message} for action "${com.action}" at line ${com.lineNumber}`)
+      if (!plugin) {
+        console.warn(`error: ${error.message} for action "${com.action}" at line ${com.lineNumber}`)
+      }
     }
   }
 
