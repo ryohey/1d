@@ -7,11 +7,18 @@ import CircleShape from "../Shape/CircleShape"
 import TextShape from "../Shape/TextShape"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 
+function InvalidStateError(message) {
+  return new Error(`invalid state error: ${message}`)
+}
+
+function InvalidCommandError(message) {
+  return new Error(`invalid command error: ${message}`)
+}
+
 export default function renderCommand(text, mouseHandler) {
   const commands = parseCommands(text)
   let lastId = 0
   let pos = { x: 0, y: 0 }
-  let selectedShape = null
   let transform = {
     scale: 1
   }
@@ -27,7 +34,8 @@ export default function renderCommand(text, mouseHandler) {
     shape.id = lastId
     shape.mouseHandler = mouseHandler
     shapes.push(shape)
-    selectedShape = null
+    deselectAll()
+    shape.selected = true
     lastId++
   }
 
@@ -35,8 +43,20 @@ export default function renderCommand(text, mouseHandler) {
     return shapes[shapes.length - 1]
   }
 
+  function selectedShapes() {
+    return shapes.filter(s => s.selected)
+  }
+
+  function currentShapes() {
+    const selected = selectedShapes()
+    if (selected.length > 0) {
+      return selected
+    }
+    return [lastShape()]
+  }
+
   function currentShape() {
-    return selectedShape || lastShape()
+    return currentShapes()[0]
   }
 
   function moveTo(x, y) {
@@ -75,13 +95,12 @@ export default function renderCommand(text, mouseHandler) {
   function curveTo(x, y, x1, y1, x2, y2) {
     preparePathShape()
     const p = project(transform, { x, y })
-    const c = project(transform, { x: x1, y: y1 })
+    const c1 = project(transform, { x: x1, y: y1 })
     const c2 = project(transform, { x: x2, y: y2 })
     move(x, y)
     currentShape().path.push({
       x: p.x, y: p.y,
-      x1: c.x, y1: c.y,
-      x2: c2.x, y2: c2.y,
+      c1, c2,
       command: "curveto",
       code: "C"
     })
@@ -94,7 +113,7 @@ export default function renderCommand(text, mouseHandler) {
     move(x, y)
     currentShape().path.push({
       x: p.x, y: p.y,
-      x1: c.x, y1: c.y,
+      c,
       command: "smooth curveto",
       code: "S"
     })
@@ -107,7 +126,7 @@ export default function renderCommand(text, mouseHandler) {
     move(x, y)
     currentShape().path.push({
       x: p.x, y: p.y,
-      rx: r.x, ry: r.y,
+      r,
       xAxisRotation, largeArc, sweep,
       command: "elliptical arc",
       code: "A"
@@ -132,6 +151,9 @@ export default function renderCommand(text, mouseHandler) {
     shape.pos = pointAdd(shape.pos, project(transform, { x, y }))
   }
 
+  const pluralify = (func) => () =>
+    shapes.map(s => func(s, ..._.tail(arguments)))
+
   function translateTo(shape, x, y) {
     shape.pos = project(transform, { x, y })
   }
@@ -145,37 +167,89 @@ export default function renderCommand(text, mouseHandler) {
     shape.resize(project(transform, { x, y }), anchor)
   }
 
+  function deselectAll() {
+    shapes.forEach(s => s.selected = false)
+  }
+
+  function select(nameOrId) {
+    const found = findShape(nameOrId)
+    warn(!found, "invalid state: no shapes to select")
+    found.selected = true
+  }
+
   for (let com of commands) {
     const opts = com.options
-    const shape = findShape(com.target) || currentShape()
+    const target = findShape(com.target)
+    const targetShapes = target ? [target] : currentShapes()
+    const shape = targetShapes[0]
+    let error
 
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
       case "moveTo":
+        if (opts.length !== 2) {
+          error = InvalidCommandError("insufficient parameters")
+          break
+        }
         moveTo(opts[0], opts[1])
         break
       case "move":
+        if (opts.length !== 2) {
+          error = InvalidCommandError("insufficient parameters")
+          break
+        }
         move(opts[0], opts[1])
         break
       case "lineTo":
+        if (opts.length !== 2) {
+          error = InvalidCommandError("insufficient parameters")
+          break
+        }
         lineTo(opts[0], opts[1])
         break
       case "line":
+        if (opts.length !== 2) {
+          error = InvalidCommandError("insufficient parameters")
+          break
+        }
         line(opts[0], opts[1])
         break
       case "curveTo":
+        if (opts.length !== 6) {
+          error = InvalidCommandError("insufficient parameters")
+          break
+        }
         curveTo(opts[0], opts[1], opts[2], opts[3], opts[4], opts[5])
         break
       case "close":
-        warn(!(shape instanceof PathShape), "invalid state: the shape is not PathShape")
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to close path")
+          break
+        }
+        if (!(shape instanceof PathShape)) {
+          error = InvalidStateError("the shape is not PathShape")
+          break
+        }
         shape.closed = true
         break
       case "rect": {
+        if (opts[0] === undefined) {
+          error = InvalidCommandError("width not specified")
+          break
+        }
+        if (opts[1] === undefined) {
+          error = InvalidCommandError("height not specified")
+          break
+        }
         const w = project(transform, opts[0])
         const h = project(transform, opts[1])
         add(new RectShape(pos, w, h))
         break }
       case "circle": {
+        if (opts.length === 0) {
+          error = InvalidCommandError("rx not specified")
+          break
+        }
         const rx = project(transform, opts[0])
         const radius = { x: rx, y: rx }
         if (!_.isNil(opts[1])) {
@@ -184,63 +258,135 @@ export default function renderCommand(text, mouseHandler) {
         add(new CircleShape(pos, radius))
         break }
       case "text":{
+        if (opts.length === 0) {
+          error = InvalidCommandError("text not specified")
+          break
+        }
         // remove quotes
         const text = opts[0].replace(/^"(.+)"$/, "$1")
         add(new TextShape(pos, text))
         break}
       case "stroke":
-        warn(!shape, "invalid state: no shapes to change stroke color")
-        shape.brush.stroke = opts[0]
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to change stroke color")
+          break
+        }
+        targetShapes.forEach(shape =>
+          shape.brush.stroke = opts[0])
         break
       case "fill":
-        warn(!shape, "invalid state: no shapes to change fill color")
-        shape.brush.fill = opts[0]
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to change fill color")
+          break
+        }
+        targetShapes.forEach(shape =>
+          shape.brush.fill = opts[0])
         break
       case "strokeWidth":
-        warn(!shape, "invalid state: no shapes to change line width")
-        shape.brush.strokeWidth = project(transform, opts[0])
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to change line width")
+          break
+        }
+        targetShapes.forEach(shape =>
+          shape.brush.strokeWidth = project(transform, opts[0]))
         break
       case "fontSize":
-        warn(!(shape instanceof TextShape), "invalid state: the shape is not TextShape")
-        shape.fontSize = project(transform, opts[0])
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to change font size")
+          break
+        }
+        targetShapes.forEach(shape => {
+          warn(!(shape instanceof TextShape), "invalid state: the shape is not TextShape")
+          shape.fontSize = project(transform, opts[0])
+        })
         break
       case "grid": {
+        if (opts.length === 0) {
+          error = InvalidCommandError("scale not specified")
+          break
+        }
         const scale = parseFloat(opts[0])
         add(new GridShape({x: 0, y: 0}, scale))
         transform.scale = scale
         break }
       case "name": {
-        warn(!shape, "invalid state: no shapes to name")
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to name")
+          break
+        }
         shape.name = opts[0]
         break }
       case "select":
-        const nameOrId = opts[0]
-        const found = findShape(nameOrId) || shape
-        warn(!found, "invalid state: no shapes to select")
-        selectedShape = found
+        if (opts.length === 0) {
+          error = InvalidCommandError("target not specified")
+          break
+        }
+        select(opts[0])
+        break
+      case "select1":
+        if (opts.length === 0) {
+          error = InvalidCommandError("target not specified")
+          break
+        }
+        deselectAll()
+        select(opts[0])
         break
       case "translate":
-        translate(shape, opts[0], opts[1])
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to translate")
+          break
+        }
+        if (opts[0] === undefined) {
+          error = InvalidCommandError("x not specified")
+          break
+        }
+        if (opts[1] === undefined) {
+          error = InvalidCommandError("y not specified")
+          break
+        }
+        targetShapes.forEach(shape =>
+          translate(shape, opts[0], opts[1]))
         break
       case "translateTo":
-        translateTo(shape, opts[0], opts[1])
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to apply translateTo")
+          break
+        }
+        if (opts[0] === undefined) {
+          error = InvalidCommandError("x not specified")
+          break
+        }
+        if (opts[1] === undefined) {
+          error = InvalidCommandError("y not specified")
+          break
+        }
+        targetShapes.forEach(shape =>
+          translateTo(shape, opts[0], opts[1]))
         break
       case "copy":
+        if (targetShapes.length === 0) {
+          error = InvalidStateError("no shapes to copy")
+          break
+        }
         copy(shape)
         break
       case "resize":
-        resize(shape, opts[0], opts[1], opts[2], opts[3])
+        if (opts.length < 2) {
+          error = InvalidCommandError("insufficient parameters")
+          break
+        }
+        targetShapes.forEach(shape =>
+          resize(shape, opts[0], opts[1], opts[2], opts[3]))
         break
       default:
-        warn(true, `unknown action: ${com.action}`)
+        error = InvalidCommandError(`unknown action: ${com.action}`)
         break
     }
-  }
 
-  // add selected property to shapes
-  shapes.forEach(s => {
-    s.selected = s === selectedShape
-  })
+    if (error) {
+      console.warn(`error: ${error.message} for action "${com.action}" at line ${com.lineNumber}`)
+    }
+  }
 
   return shapes
 }
@@ -250,9 +396,9 @@ export default function renderCommand(text, mouseHandler) {
 */
 function parseCommands(text) {
   const list = []
-  for (let line of text.split("\n")) {
+  text.split("\n").forEach((line, lineNumber) => {
     if (line.length === 0) {
-      continue
+      return
     }
 
     const words = line.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g)
@@ -269,7 +415,7 @@ function parseCommands(text) {
       options = _.tail(words)
     }
 
-    list.push({ target, action, options })
-  }
+    list.push({ target, action, options, lineNumber })
+  })
   return list
 }

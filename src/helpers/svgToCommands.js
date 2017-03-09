@@ -27,7 +27,7 @@ function pathConverter(e) {
     case "curveto":
       return `curveTo ${p.x} ${p.y} ${p.x1} ${p.y1} ${p.x2} ${p.y2}`
     case "closepath":
-      return `fill ${e.parentNode.fill || "none"}`
+      return `fill ${e.parentNode.fill || "black"}`
     default:
       return null
     }

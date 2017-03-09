@@ -1,47 +1,62 @@
 import _ from "lodash"
 
-export function pointAdd(a, b) {
+function doWithKey(a, b, key, func) {
+  if (a[key] !== undefined) {
+    return func(a[key], b[key])
+  }
+  return undefined
+}
+
+// x, y をもつオブジェクトに対する関数を曲線のコントロールポイントにも適用する関数に拡張する
+function extendCurve(func) {
+  return function(a, b) {
+    const p = func(a, b)
+    p.c = doWithKey(a, b, "c", func)
+    p.c1 = doWithKey(a, b, "c1", func)
+    p.c2 = doWithKey(a, b, "c2", func)
+    return p
+  }
+}
+
+export const pointAdd = extendCurve((a, b) => {
   return {
     x: a.x + b.x,
     y: a.y + b.y,
   }
-}
+})
 
 // a - b
-export function pointSub(a, b) {
+export const pointSub = extendCurve((a, b) => {
   return {
     x: a.x - b.x,
     y: a.y - b.y,
   }
-}
+})
 
 export function pointCopy(a) {
-  return {
-    x: a.x,
-    y: a.y
-  }
+  return _.clone(a)
 }
 
-export function pointMul(p, s) {
+export const pointMul = extendCurve((p, s) => {
   return {
     x: p.x * s,
     y: p.y * s
   }
-}
+})
 
-export function pointDot(a, b) {
+export const pointDot = extendCurve((a, b) => {
   return {
     x: a.x * b.x,
     y: a.y * b.y
   }
-}
+})
 
-export function pointDiv(a, b) {
+export const pointDiv = extendCurve((a, b) => {
   return {
     x: a.x / b.x,
     y: a.y / b.y
   }
-}
+})
 
 function projectValue(transform, value) {
   return value * (transform.scale || 1)

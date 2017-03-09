@@ -41,7 +41,7 @@ copy
 fill lightblue
 resize 5 2 0 0
 
-select tri
+select1 tri
 copy
 stroke red
 
