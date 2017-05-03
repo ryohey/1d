@@ -1,5 +1,4 @@
 import { validateOptionWithName } from "./optionValidator"
-import { project } from "../helpers/point"
 import GridShape from "../Shape/GridShape"
 
 export default {

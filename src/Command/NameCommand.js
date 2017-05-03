@@ -2,21 +2,20 @@ import { validateOptionWithName } from "./optionValidator"
 import { InvalidStateError } from "./Error.js"
 
 export default {
-  action: "translateTo",
+  action: "name",
 
   validateOptions: (opts) => {
-    return validateOptionWithName(opts, ["x", "y"])
+    return validateOptionWithName(opts, ["name"])
   },
 
   perform: (state, com) => {
-    const [x, y] = com.options
+    const [name] = com.options
     const targetShapes = state.targetShapes(com)
 
     if (targetShapes.length === 0) {
-      return InvalidStateError("no shapes to apply translateTo")
+      return InvalidStateError("no shapes to name")
     }
 
-    targetShapes.forEach(shape =>
-      state.translateTo(shape, x, y))
+    targetShapes[0].name = name
   }
 }

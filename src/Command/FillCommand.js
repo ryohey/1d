@@ -1,7 +1,6 @@
 import _ from "lodash"
 import { validateOptionWithName } from "./optionValidator"
-import { InvalidCommandError, InvalidStateError } from "./Error.js"
-import { project } from "../helpers/point"
+import { InvalidStateError } from "./Error.js"
 
 export default {
   action: "fill",
@@ -14,7 +13,7 @@ export default {
     const [ fillColor ] = com.options
 
     const targetShapes = state.targetShapes(com)
-    
+
     if (targetShapes.length === 0) {
       return InvalidStateError("no shapes to change fill color")
     }

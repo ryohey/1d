@@ -20,6 +20,9 @@ import gridCommand from "../Command/GridCommand"
 import resizeCommand from "../Command/ResizeCommand"
 import fontSizeCommand from "../Command/FontSizeCommand"
 import fillCommand from "../Command/FillCommand"
+import strokeWidthCommand from "../Command/StrokeWidthCommand"
+import nameCommand from "../Command/NameCommand"
+import selectCommand from "../Command/SelectCommand"
 
 const plugins = [
   rectCommand,
@@ -38,9 +41,16 @@ const plugins = [
   curveToCommand,
   gridCommand,
   resizeCommand,
-  fillCommand
+  fillCommand,
+  strokeWidthCommand,
+  nameCommand,
+  selectCommand
 ]
 
+/**
+ コマンド実行中に生成された Shape などの状態を
+ コマンドをまたいで利用する処理などをまとめる
+ */
 class State {
   get lastShape() {
     return this.shapes[this.shapes.length - 1]
@@ -138,16 +148,6 @@ class State {
     shape.pos = project(transform, { x, y })
   }
 
-  resize(shape, x, y, ax, ay) {
-    const { transform } = this
-    const anchor = {
-      x: _.isNil(ax) ? 0.5 : ax,
-      y: _.isNil(ay) ? 0.5 : ay
-    }
-
-    shape.resize(project(transform, { x, y }), anchor)
-  }
-
   select(nameOrId) {
     const found = this.findShape(nameOrId)
     if (!found) {
@@ -167,73 +167,25 @@ export default function renderCommand(text, mouseHandler) {
   state.shapes = []
   state.mouseHandler = mouseHandler
 
-  function warn(value, message) {
-    if (value) {
-      console.warn(message)
-    }
-  }
-
   const commands = parseCommands(text)
 
   for (let com of commands) {
-    const { transform, shapes, currentShapes } = state
     const opts = com.options
-    const target = state.findShape(com.target)
-    const targetShapes = target ? [target] : currentShapes
-    const shape = targetShapes[0]
     let error
 
+    // コマンドに対応する plugin を探してコマンドを実行する
     const plugin = _.find(plugins, p => p.action === com.action)
     if (plugin) {
       error = plugin.validateOptions(opts)
       if (!error) {
         error = plugin.perform(state, com)
       }
-    }
-
-    // コマンドを解釈して適切な関数を呼ぶ
-    switch (com.action) {
-      case "strokeWidth":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to change line width")
-          break
-        }
-        targetShapes.forEach(shape =>
-          shape.brush.strokeWidth = project(transform, opts[0]))
-        break
-      case "name": {
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to name")
-          break
-        }
-        shape.name = opts[0]
-        break }
-      case "select":
-        if (opts.length === 0) {
-          error = InvalidCommandError("target not specified")
-          break
-        }
-        state.select(opts[0])
-        break
-      case "select1":
-        if (opts.length === 0) {
-          error = InvalidCommandError("target not specified")
-          break
-        }
-        state.deselectAll()
-        state.select(opts[0])
-        break
-      default:
-        if (!plugin) {
-          error = InvalidCommandError(`unknown action: ${com.action}`)
-        }
-        break
+    } else {
+      error = InvalidCommandError(`unknown action: ${com.action}`)
     }
 
     if (error) {
-      if (!plugin) {
-        console.warn(`error: ${error.message} for action "${com.action}" at line ${com.lineNumber}`)
-      }
+      console.warn(`error: ${error.message} for action "${com.action}" at line ${com.lineNumber}`)
     }
   }
 
