@@ -1,7 +1,6 @@
 import _ from "lodash"
 
 import PathShape from "../Shape/PathShape"
-import GridShape from "../Shape/GridShape"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 import { InvalidStateError, InvalidCommandError } from "../Command/Error.js"
 import copyCommand from "../Command/CopyCommand"
@@ -15,6 +14,8 @@ import circleCommand from "../Command/CircleCommand"
 import textCommand from "../Command/TextCommand"
 import translateCommand from "../Command/TranslateCommand"
 import strokeCommand from "../Command/StrokeCommand"
+import curveToCommand from "../Command/CurveToCommand"
+import gridCommand from "../Command/GridCommand"
 import TextShape from "../Shape/TextShape"
 
 const plugins = [
@@ -28,7 +29,9 @@ const plugins = [
   circleCommand,
   textCommand,
   translateCommand,
-  strokeCommand
+  strokeCommand,
+  curveToCommand,
+  gridCommand
 ]
 
 class State {
@@ -92,21 +95,6 @@ class State {
       this.addShape(shape)
       this.addPosToCurrentShapePath()
     }
-  }
-
-  curveTo(x, y, x1, y1, x2, y2) {
-    const { transform, currentShape } = this
-    this.preparePathShape()
-    const p = project(transform, { x, y })
-    const c1 = project(transform, { x: x1, y: y1 })
-    const c2 = project(transform, { x: x2, y: y2 })
-    this.move(x, y)
-    currentShape.path.push({
-      x: p.x, y: p.y,
-      c1, c2,
-      command: "curveto",
-      code: "C"
-    })
   }
 
   smoothCurveTo(x, y, x1, y1) {
@@ -198,13 +186,6 @@ export default function renderCommand(text, mouseHandler) {
 
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
-      case "curveTo":
-        if (opts.length !== 6) {
-          error = InvalidCommandError("insufficient parameters")
-          break
-        }
-        state.curveTo(opts[0], opts[1], opts[2], opts[3], opts[4], opts[5])
-        break
       case "fill":
         if (targetShapes.length === 0) {
           error = InvalidStateError("no shapes to change fill color")
@@ -231,15 +212,6 @@ export default function renderCommand(text, mouseHandler) {
           shape.fontSize = project(transform, opts[0])
         })
         break
-      case "grid": {
-        if (opts.length === 0) {
-          error = InvalidCommandError("scale not specified")
-          break
-        }
-        const scale = parseFloat(opts[0])
-        state.addShape(new GridShape({x: 0, y: 0}, scale))
-        transform.scale = scale
-        break }
       case "name": {
         if (targetShapes.length === 0) {
           error = InvalidStateError("no shapes to name")

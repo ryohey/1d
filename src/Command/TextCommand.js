@@ -1,5 +1,4 @@
 import { validateOptionWithName } from "./optionValidator"
-import { InvalidCommandError } from "./Error.js"
 import TextShape from "../Shape/TextShape"
 
 export default {
