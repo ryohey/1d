@@ -93,83 +93,15 @@ class State {
       this.addPosToCurrentShapePath()
     }
   }
-}
 
-export default function renderCommand(text, mouseHandler) {
-  const commands = parseCommands(text)
-  let lastId = 0
-  let pos = { x: 0, y: 0 }
-  let transform = {
-    scale: 1
-  }
-  const shapes = []
-
-  function warn(value, message) {
-    if (value) {
-      console.warn(message)
-    }
-  }
-
-  function add(shape) {
-    shape.id = lastId
-    shape.mouseHandler = mouseHandler
-    shapes.push(shape)
-    deselectAll()
-    shape.selected = true
-    lastId++
-  }
-
-  function lastShape() {
-    return shapes[shapes.length - 1]
-  }
-
-  function selectedShapes() {
-    return shapes.filter(s => s.selected)
-  }
-
-  function currentShapes() {
-    const selected = selectedShapes()
-    if (selected.length > 0) {
-      return selected
-    }
-    return [lastShape()]
-  }
-
-  function currentShape() {
-    return currentShapes()[0]
-  }
-
-  function addPosToCurrentShapePath() {
-    currentShape().path.push(pointCopy(pos))
-  }
-
-  function preparePathShape() {
-    let shape = currentShape()
-    if (!(shape instanceof PathShape)) {
-      shape = new PathShape()
-      add(shape)
-      addPosToCurrentShapePath()
-    }
-  }
-
-  function findShape(nameOrId) {
-    if (!nameOrId) {
-      return
-    }
-    return shapes.filter(s => `${s.id}` === nameOrId || s.name === nameOrId)[0]
-  }
-
-  function move(x, y) {
-    pos = pointAdd(pos, project(transform, { x, y }))
-  }
-
-  function curveTo(x, y, x1, y1, x2, y2) {
-    preparePathShape()
+  curveTo(x, y, x1, y1, x2, y2) {
+    const { transform, currentShape } = this
+    this.preparePathShape()
     const p = project(transform, { x, y })
     const c1 = project(transform, { x: x1, y: y1 })
     const c2 = project(transform, { x: x2, y: y2 })
-    move(x, y)
-    currentShape().path.push({
+    this.move(x, y)
+    currentShape.path.push({
       x: p.x, y: p.y,
       c1, c2,
       command: "curveto",
@@ -177,12 +109,13 @@ export default function renderCommand(text, mouseHandler) {
     })
   }
 
-  function smoothCurveTo(x, y, x1, y1) {
-    preparePathShape()
+  smoothCurveTo(x, y, x1, y1) {
+    const { transform, currentShape } = this
+    this.preparePathShape()
     const p = project(transform, { x, y })
     const c = project(transform, { x: x1, y: y1 })
-    move(x, y)
-    currentShape().path.push({
+    this.move(x, y)
+    currentShape.path.push({
       x: p.x, y: p.y,
       c,
       command: "smooth curveto",
@@ -190,12 +123,13 @@ export default function renderCommand(text, mouseHandler) {
     })
   }
 
-  function ellipticalArc(x, y, rx, ry, xAxisRotation, largeArc, sweep) {
-    preparePathShape()
+  ellipticalArc(x, y, rx, ry, xAxisRotation, largeArc, sweep) {
+    const { transform, currentShape } = this
+    this.preparePathShape()
     const p = project(transform, { x, y })
     const r = project(transform, { x: rx, y: ry })
-    move(x, y)
-    currentShape().path.push({
+    this.move(x, y)
+    currentShape.path.push({
       x: p.x, y: p.y,
       r,
       xAxisRotation, largeArc, sweep,
@@ -204,11 +138,13 @@ export default function renderCommand(text, mouseHandler) {
     })
   }
 
-  function translateTo(shape, x, y) {
+  translateTo(shape, x, y) {
+    const { transform } = this
     shape.pos = project(transform, { x, y })
   }
 
-  function resize(shape, x, y, ax, ay) {
+  resize(shape, x, y, ax, ay) {
+    const { transform } = this
     const anchor = {
       x: _.isNil(ax) ? 0.5 : ax,
       y: _.isNil(ay) ? 0.5 : ay
@@ -217,22 +153,38 @@ export default function renderCommand(text, mouseHandler) {
     shape.resize(project(transform, { x, y }), anchor)
   }
 
-  function deselectAll() {
-    shapes.forEach(s => s.selected = false)
-  }
-
-  function select(nameOrId) {
-    const found = findShape(nameOrId)
+  select(nameOrId) {
+    const found = this.findShape(nameOrId)
     if (!found) {
       return InvalidStateError("no shapes to select")
     }
     found.selected = true
   }
+}
+
+export default function renderCommand(text, mouseHandler) {
+  const state = new State()
+  state.lastId = 0
+  state.pos = { x: 0, y: 0 }
+  state.transform = {
+    scale: 1
+  }
+  state.shapes = []
+  state.mouseHandler = mouseHandler
+
+  function warn(value, message) {
+    if (value) {
+      console.warn(message)
+    }
+  }
+
+  const commands = parseCommands(text)
 
   for (let com of commands) {
+    const { transform, shapes, currentShapes } = state
     const opts = com.options
-    const target = findShape(com.target)
-    const targetShapes = target ? [target] : currentShapes()
+    const target = state.findShape(com.target)
+    const targetShapes = target ? [target] : currentShapes
     const shape = targetShapes[0]
     let error
 
@@ -240,16 +192,7 @@ export default function renderCommand(text, mouseHandler) {
     if (plugin) {
       error = plugin.validateOptions(opts)
       if (!error) {
-        const state = new State()
-        state.lastId = lastId,
-        state.pos = pos
-        state.transform = transform
-        state.shapes = shapes
-        state.mouseHandler = mouseHandler
         error = plugin.perform(state, com)
-        pos = state.pos
-        lastId = state.lastId
-        transform = state.transform
       }
     }
 
@@ -260,7 +203,7 @@ export default function renderCommand(text, mouseHandler) {
           error = InvalidCommandError("insufficient parameters")
           break
         }
-        curveTo(opts[0], opts[1], opts[2], opts[3], opts[4], opts[5])
+        state.curveTo(opts[0], opts[1], opts[2], opts[3], opts[4], opts[5])
         break
       case "fill":
         if (targetShapes.length === 0) {
@@ -294,7 +237,7 @@ export default function renderCommand(text, mouseHandler) {
           break
         }
         const scale = parseFloat(opts[0])
-        add(new GridShape({x: 0, y: 0}, scale))
+        state.addShape(new GridShape({x: 0, y: 0}, scale))
         transform.scale = scale
         break }
       case "name": {
@@ -309,15 +252,15 @@ export default function renderCommand(text, mouseHandler) {
           error = InvalidCommandError("target not specified")
           break
         }
-        select(opts[0])
+        state.select(opts[0])
         break
       case "select1":
         if (opts.length === 0) {
           error = InvalidCommandError("target not specified")
           break
         }
-        deselectAll()
-        select(opts[0])
+        state.deselectAll()
+        state.select(opts[0])
         break
       case "translateTo":
         if (targetShapes.length === 0) {
@@ -333,7 +276,7 @@ export default function renderCommand(text, mouseHandler) {
           break
         }
         targetShapes.forEach(shape =>
-          translateTo(shape, opts[0], opts[1]))
+          state.translateTo(shape, opts[0], opts[1]))
         break
       case "resize":
         if (opts.length < 2) {
@@ -341,7 +284,7 @@ export default function renderCommand(text, mouseHandler) {
           break
         }
         targetShapes.forEach(shape =>
-          resize(shape, opts[0], opts[1], opts[2], opts[3]))
+          state.resize(shape, opts[0], opts[1], opts[2], opts[3]))
         break
       default:
         if (!plugin) {
@@ -357,7 +300,7 @@ export default function renderCommand(text, mouseHandler) {
     }
   }
 
-  return shapes
+  return state.shapes
 }
 
 /**

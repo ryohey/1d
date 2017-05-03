@@ -3,7 +3,7 @@ import { InvalidCommandError } from "./Error.js"
 import TextShape from "../Shape/TextShape"
 
 export default {
-  action: "circle",
+  action: "text",
 
   validateOptions: (opts) => {
     return validateOptionWithName(opts, ["text"])
@@ -12,6 +12,6 @@ export default {
   perform: (state, com) => {
     // remove quotes
     const text = com.options[0].replace(/^"(.+)"$/, "$1")
-    state.add(new TextShape(state.pos, text))
+    state.addShape(new TextShape(state.pos, text))
   }
 }
