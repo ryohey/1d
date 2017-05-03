@@ -3,7 +3,7 @@ import { InvalidStateError } from "./Error.js"
 import { project, pointAdd } from "../helpers/point"
 
 export default {
-  action: "translate",
+  action: "translateTo",
 
   validateOptions: (opts) => {
     return validateOptionWithName(opts, ["x", "y"])
@@ -11,13 +11,13 @@ export default {
 
   perform: (state, com) => {
     const [x, y] = com.options
-
     const targetShapes = state.targetShapes(com)
+
     if (targetShapes.length === 0) {
-      return InvalidStateError("no shapes to close path")
+      return InvalidStateError("no shapes to apply translateTo")
     }
 
     targetShapes.forEach(shape =>
-      shape.pos = pointAdd(shape.pos, project(state.transform, { x, y })))
+      state.translateTo(shape, x, y))
   }
 }

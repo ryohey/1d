@@ -13,9 +13,11 @@ import closeCommand from "../Command/CloseCommand"
 import circleCommand from "../Command/CircleCommand"
 import textCommand from "../Command/TextCommand"
 import translateCommand from "../Command/TranslateCommand"
+import translateToCommand from "../Command/TranslateToCommand"
 import strokeCommand from "../Command/StrokeCommand"
 import curveToCommand from "../Command/CurveToCommand"
 import gridCommand from "../Command/GridCommand"
+import resizeCommand from "../Command/ResizeCommand"
 import TextShape from "../Shape/TextShape"
 
 const plugins = [
@@ -29,9 +31,11 @@ const plugins = [
   circleCommand,
   textCommand,
   translateCommand,
+  translateToCommand,
   strokeCommand,
   curveToCommand,
-  gridCommand
+  gridCommand,
+  resizeCommand
 ]
 
 class State {
@@ -233,30 +237,6 @@ export default function renderCommand(text, mouseHandler) {
         }
         state.deselectAll()
         state.select(opts[0])
-        break
-      case "translateTo":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to apply translateTo")
-          break
-        }
-        if (opts[0] === undefined) {
-          error = InvalidCommandError("x not specified")
-          break
-        }
-        if (opts[1] === undefined) {
-          error = InvalidCommandError("y not specified")
-          break
-        }
-        targetShapes.forEach(shape =>
-          state.translateTo(shape, opts[0], opts[1]))
-        break
-      case "resize":
-        if (opts.length < 2) {
-          error = InvalidCommandError("insufficient parameters")
-          break
-        }
-        targetShapes.forEach(shape =>
-          state.resize(shape, opts[0], opts[1], opts[2], opts[3]))
         break
       default:
         if (!plugin) {

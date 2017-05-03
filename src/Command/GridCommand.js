@@ -1,4 +1,4 @@
-import { InvalidCommandError } from "./Error.js"
+import { validateOptionWithName } from "./optionValidator"
 import { project } from "../helpers/point"
 import GridShape from "../Shape/GridShape"
 
@@ -6,9 +6,7 @@ export default {
   action: "grid",
 
   validateOptions: (opts) => {
-    if (opts.length === 0) {
-      return InvalidCommandError("scale not specified")
-    }
+    return validateOptionWithName(opts, ["scale"])
   },
 
   perform: (state, com) => {

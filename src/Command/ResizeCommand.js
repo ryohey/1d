@@ -1,23 +1,25 @@
-import { validateOptionWithName } from "./optionValidator"
+import { InvalidCommandError } from "./Error.js"
 import { InvalidStateError } from "./Error.js"
 import { project, pointAdd } from "../helpers/point"
 
 export default {
-  action: "translate",
+  action: "resize",
 
   validateOptions: (opts) => {
-    return validateOptionWithName(opts, ["x", "y"])
+    if (opts.length < 2) {
+      return InvalidCommandError("insufficient parameters")
+    }
   },
 
   perform: (state, com) => {
-    const [x, y] = com.options
+    const [x, y, anchorX, anchorY] = com.options
 
     const targetShapes = state.targetShapes(com)
     if (targetShapes.length === 0) {
-      return InvalidStateError("no shapes to close path")
+      return InvalidStateError("no shapes to resize")
     }
 
     targetShapes.forEach(shape =>
-      shape.pos = pointAdd(shape.pos, project(state.transform, { x, y })))
+      state.resize(shape, x, y, anchorX, anchorY))
   }
 }
