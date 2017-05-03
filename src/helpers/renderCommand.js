@@ -18,7 +18,8 @@ import strokeCommand from "../Command/StrokeCommand"
 import curveToCommand from "../Command/CurveToCommand"
 import gridCommand from "../Command/GridCommand"
 import resizeCommand from "../Command/ResizeCommand"
-import TextShape from "../Shape/TextShape"
+import fontSizeCommand from "../Command/FontSizeCommand"
+import fillCommand from "../Command/FillCommand"
 
 const plugins = [
   rectCommand,
@@ -30,12 +31,14 @@ const plugins = [
   closeCommand,
   circleCommand,
   textCommand,
+  fontSizeCommand,
   translateCommand,
   translateToCommand,
   strokeCommand,
   curveToCommand,
   gridCommand,
-  resizeCommand
+  resizeCommand,
+  fillCommand
 ]
 
 class State {
@@ -190,14 +193,6 @@ export default function renderCommand(text, mouseHandler) {
 
     // コマンドを解釈して適切な関数を呼ぶ
     switch (com.action) {
-      case "fill":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to change fill color")
-          break
-        }
-        targetShapes.forEach(shape =>
-          shape.brush.fill = opts[0])
-        break
       case "strokeWidth":
         if (targetShapes.length === 0) {
           error = InvalidStateError("no shapes to change line width")
@@ -205,16 +200,6 @@ export default function renderCommand(text, mouseHandler) {
         }
         targetShapes.forEach(shape =>
           shape.brush.strokeWidth = project(transform, opts[0]))
-        break
-      case "fontSize":
-        if (targetShapes.length === 0) {
-          error = InvalidStateError("no shapes to change font size")
-          break
-        }
-        targetShapes.forEach(shape => {
-          warn(!(shape instanceof TextShape), "invalid state: the shape is not TextShape")
-          shape.fontSize = project(transform, opts[0])
-        })
         break
       case "name": {
         if (targetShapes.length === 0) {
