@@ -24,6 +24,7 @@ import strokeWidthCommand from "../Command/StrokeWidthCommand"
 import nameCommand from "../Command/NameCommand"
 import selectCommand from "../Command/SelectCommand"
 import smoothCurveToCommand from "../Command/SmoothCurveToCommand"
+import ellipticalArcCommand from "../Command/EllipticalArcCommand"
 
 const plugins = [
   rectCommand,
@@ -46,7 +47,8 @@ const plugins = [
   strokeWidthCommand,
   nameCommand,
   selectCommand,
-  smoothCurveToCommand
+  smoothCurveToCommand,
+  ellipticalArcCommand
 ]
 
 /**
@@ -114,21 +116,6 @@ class State {
       this.addShape(shape)
       this.addPosToCurrentShapePath()
     }
-  }
-
-  ellipticalArc(x, y, rx, ry, xAxisRotation, largeArc, sweep) {
-    const { transform, currentShape } = this
-    this.preparePathShape()
-    const p = project(transform, { x, y })
-    const r = project(transform, { x: rx, y: ry })
-    this.move(x, y)
-    currentShape.path.push({
-      x: p.x, y: p.y,
-      r,
-      xAxisRotation, largeArc, sweep,
-      command: "elliptical arc",
-      code: "A"
-    })
   }
 
   translateTo(shape, x, y) {

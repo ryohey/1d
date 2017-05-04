@@ -2,25 +2,26 @@ import { validateOptionWithName } from "./optionValidator"
 import { project } from "../helpers/point"
 
 export default {
-  action: "smoothCurveTo",
+  action: "ellipticalArc",
 
   validateOptions: (opts) => {
-    return validateOptionWithName(opts, ["x", "y", "x1", "y1"])
+    return validateOptionWithName(opts, ["x", "y", "rx", "ry", "xAxisRotation", "largeArc", "sweep"])
   },
 
   perform: (state, com) => {
     const { transform, currentShape } = state
-    const [ x, y, x1, y1 ] = com.options
+    const [ x, y, rx, ry, xAxisRotation, largeArc, sweep ] = com.options
 
     state.preparePathShape()
     const p = project(transform, { x, y })
-    const c = project(transform, { x: x1, y: y1 })
+    const r = project(transform, { x: rx, y: ry })
     state.move(x, y)
     currentShape.path.push({
       x: p.x, y: p.y,
-      c,
-      command: "smooth curveto",
-      code: "S"
+      r,
+      xAxisRotation, largeArc, sweep,
+      command: "elliptical arc",
+      code: "A"
     })
   }
 }
