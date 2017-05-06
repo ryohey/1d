@@ -28,7 +28,9 @@ export default class MouseHandler {
     if (!dragEvent.moved) {
       // 移動せずクリックが終了した場合は選択状態にする
       const nameOrId = dragEvent.target.name || dragEvent.target.id
-      this.app.addScript(`select1 ${nameOrId}`)
+      // shift を押していたら複数選択
+      const com = e.shiftKey ? "select" : "select1"
+      this.app.addScript(`${com} ${nameOrId}`)
     } else {
       // 移動してクリックが終了した場合は target の移動・リサイズを確定する
       this.app.addScript(this.app.state.tempScript)

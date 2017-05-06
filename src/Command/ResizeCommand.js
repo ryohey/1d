@@ -1,13 +1,6 @@
 import { InvalidCommandError, InvalidStateError } from "../Error.js"
 import { project } from "../helpers/point"
 
-function resize(shape, transform, x, y, anchorX = 0.5, anchorY = 0.5) {
-  shape.resize(project(transform, { x, y }), {
-    x: anchorX,
-    y: anchorY
-  })
-}
-
 export default {
   action: "resize",
 
@@ -18,7 +11,8 @@ export default {
   },
 
   perform: (state, com) => {
-    const [x, y, anchorX, anchorY] = com.options
+    const [x, y, anchorX = 0.5, anchorY = 0.5] = com.options
+    const anchor = { x: anchorX, y: anchorY }
     const { transform } = state
 
     const targetShapes = state.targetShapes(com)
@@ -27,6 +21,6 @@ export default {
     }
 
     targetShapes.forEach(shape =>
-      resize(shape, transform, x, y, anchorX, anchorY))
+      shape.resize(project(transform, { x, y }), anchor))
   }
 }

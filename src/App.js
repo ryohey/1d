@@ -102,10 +102,6 @@ class App extends Component {
     })
   }
 
-  componentDidMount() {
-    document.addEventListener("keydown", this.onKeyDown)
-  }
-
   onKeyDown(e) {
     const translate = (dx, dy) => {
       this.addScript(`translate ${dx} ${dy}`)
@@ -115,6 +111,7 @@ class App extends Component {
       case "ArrowRight": return translate(1, 0)
       case "ArrowUp": return translate(0, -1)
       case "ArrowDown": return translate(0, 1)
+      default: break
     }
   }
 
@@ -220,6 +217,8 @@ class App extends Component {
           </div>
           <div className="beta">
             <svg id="svg"
+              tabIndex="0"
+              onKeyDown={this.onKeyDown}
               onMouseUp={e => mouseHandler.onMouseUp(e)}
               onMouseMove={e => mouseHandler.onMouseMove(e)}>
               {svgContent}

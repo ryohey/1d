@@ -21,6 +21,7 @@ import selectCommand from "./SelectCommand"
 import select1Command from "./Select1Command"
 import smoothCurveToCommand from "./SmoothCurveToCommand"
 import ellipticalArcCommand from "./EllipticalArcCommand"
+import alignCommand from "./AlignCommand"
 
 export default [
   rectCommand,
@@ -45,5 +46,6 @@ export default [
   selectCommand,
   select1Command,
   smoothCurveToCommand,
-  ellipticalArcCommand
+  ellipticalArcCommand,
+  alignCommand
 ]
