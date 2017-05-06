@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import _ from "lodash"
-import renderCommand from "./helpers/renderCommand"
+import renderCommand from "./Parser/renderCommand"
+import parseCommands from "./Parser/parser"
 import MouseHandler from "./MouseHandler"
 import ColorButton from "./ColorButton"
 import svgToCommands from "./helpers/svgToCommands"
@@ -79,6 +80,8 @@ class App extends Component {
       scriptText: defaultScript + "\n" + svgToCommands(testSvg).join("\n"),
       tempScript: ""
     }
+
+    this.onKeyDown = this.onKeyDown.bind(this)
   }
 
   previewScript(line) {
@@ -99,11 +102,29 @@ class App extends Component {
     })
   }
 
+  componentDidMount() {
+    document.addEventListener("keydown", this.onKeyDown)
+  }
+
+  onKeyDown(e) {
+    const translate = (dx, dy) => {
+      this.addScript(`translate ${dx} ${dy}`)
+    }
+    switch(e.key) {
+      case "ArrowLeft": return translate(-1, 0)
+      case "ArrowRight": return translate(1, 0)
+      case "ArrowUp": return translate(0, -1)
+      case "ArrowDown": return translate(0, 1)
+    }
+  }
+
   render() {
     const { mouseHandler } = this
     const { scriptText, tempScript } = this.state
 
-    const shapes = renderCommand(scriptText + "\n" + tempScript, mouseHandler)
+    const script = scriptText + "\n" + tempScript
+    const commands = parseCommands(script)
+    const shapes = renderCommand(commands, mouseHandler)
     const selectedShape = shapes.filter(s => s.selected)[0]
     const selectedShapeSize = selectedShape && selectedShape.size
     const svgContent = shapes.map(s => s.render())

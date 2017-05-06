@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { InvalidCommandError } from "./Error.js"
+import { InvalidCommandError } from "../Error.js"
 import { project } from "../helpers/point"
 import CircleShape from "../Shape/CircleShape"
 

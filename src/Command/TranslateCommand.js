@@ -1,5 +1,5 @@
 import { validateOptionWithName } from "./optionValidator"
-import { InvalidStateError } from "./Error.js"
+import { InvalidStateError } from "../Error.js"
 import { project, pointAdd } from "../helpers/point"
 
 export default {

@@ -1,5 +1,10 @@
 import { validateOptionWithName } from "./optionValidator"
-import { InvalidStateError } from "./Error.js"
+import { InvalidStateError } from "../Error.js"
+import { project } from "../helpers/point"
+
+function translateTo(shape, transform, x, y) {
+  shape.pos = project(transform, { x, y })
+}
 
 export default {
   action: "translateTo",
@@ -9,7 +14,8 @@ export default {
   },
 
   perform: (state, com) => {
-    const [x, y] = com.options
+    const [ x, y ] = com.options
+    const { transform } = state
     const targetShapes = state.targetShapes(com)
 
     if (targetShapes.length === 0) {
@@ -17,6 +23,6 @@ export default {
     }
 
     targetShapes.forEach(shape =>
-      state.translateTo(shape, x, y))
+      translateTo(shape, transform, x, y))
   }
 }

@@ -1,4 +1,4 @@
-import { InvalidCommandError } from "./Error.js"
+import { InvalidCommandError } from "../Error.js"
 
 // オプションの数を検証する
 export const validateOptionWithName = (options, optionNames) => {

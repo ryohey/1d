@@ -1,4 +1,4 @@
-import { InvalidStateError } from "./Error.js"
+import { InvalidStateError } from "../Error.js"
 import { pointCopy } from "../helpers/point"
 
 export default {

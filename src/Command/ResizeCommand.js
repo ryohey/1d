@@ -1,5 +1,4 @@
-import { InvalidCommandError } from "./Error.js"
-import { InvalidStateError } from "./Error.js"
+import { InvalidCommandError, InvalidStateError } from "../Error.js"
 import { project } from "../helpers/point"
 
 function resize(shape, transform, x, y, anchorX = 0.5, anchorY = 0.5) {
