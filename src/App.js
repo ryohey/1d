@@ -74,7 +74,10 @@ function cleanupText(text) {
 class App extends Component {
   constructor(props) {
     super(props)
-    this.mouseHandler = new MouseHandler(this)
+    this.mouseHandler = new MouseHandler(
+      t => this.addScript(t),
+      t => this.previewScript(t)
+    )
 
     this.state = {
       scriptText: defaultScript + "\n" + svgToCommands(testSvg).join("\n"),
@@ -219,8 +222,7 @@ class App extends Component {
             <svg id="svg"
               tabIndex="0"
               onKeyDown={this.onKeyDown}
-              onMouseUp={e => mouseHandler.onMouseUp(e)}
-              onMouseMove={e => mouseHandler.onMouseMove(e)}>
+              onMouseDown={e => mouseHandler.onMouseDownStage(e)}>
               {svgContent}
             </svg>
           </div>

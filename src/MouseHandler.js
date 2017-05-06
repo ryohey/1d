@@ -11,9 +11,19 @@ function anchorToDirection(a) {
 }
 
 export default class MouseHandler {
-  constructor(app) {
-    this.app = app
+  constructor(addScript, previewScript) {
+    this.addScript = addScript
+    this._previewScript = previewScript
+
+    this.onMouseMove = this.onMouseMove.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
+
     this.dragEvent = null
+  }
+
+  previewScript(t) {
+    this.tempScript = t
+    this._previewScript(t)
   }
 
   onMouseOver(e, shape) {
@@ -21,6 +31,9 @@ export default class MouseHandler {
   }
 
   onMouseUp(e) {
+    window.removeEventListener("mousemove", this.onMouseMove)
+    window.removeEventListener("mouseup", this.onMouseUp)
+
     const { dragEvent } = this
     if (!dragEvent) {
       return
@@ -30,16 +43,22 @@ export default class MouseHandler {
       const nameOrId = dragEvent.target.name || dragEvent.target.id
       // shift を押していたら複数選択
       const com = e.shiftKey ? "select" : "select1"
-      this.app.addScript(`${com} ${nameOrId}`)
+      this.addScript(`${com} ${nameOrId}`)
     } else {
       // 移動してクリックが終了した場合は target の移動・リサイズを確定する
-      this.app.addScript(this.app.state.tempScript)
-      this.app.previewScript("")
+      this.addScript(this.tempScript)
+      this.previewScript("")
     }
     this.dragEvent = null
   }
 
+  onMouseDownStage(e) {
+    console.log("stage", e)
+    this.addScript("deselectAll")
+  }
+
   onMouseDown(e, shape, anchor) {
+    e.stopPropagation()
     this.dragEvent = {
       startPos: pointFromEvent(e),
       startSize: shape.size,
@@ -48,6 +67,8 @@ export default class MouseHandler {
       anchor
     }
     console.log("onMouseDown", e, shape)
+    window.addEventListener("mousemove", this.onMouseMove)
+    window.addEventListener("mouseup", this.onMouseUp)
   }
 
   onMouseMove(e) {
@@ -65,11 +86,11 @@ export default class MouseHandler {
       const delta = pointDot(moved, anchorToDirection(dragEvent.anchor))
       const size = pointAdd(delta, dragEvent.startSize)
       console.log(dragEvent.anchor, anchor)
-      this.app.previewScript(`@${nameOrId} resize ${size.x}px ${size.y}px ${anchor.x} ${anchor.y}`)
+      this.previewScript(`@${nameOrId} resize ${size.x}px ${size.y}px ${anchor.x} ${anchor.y}`)
     } else {
       // 移動
       const delta = pointSub(pointFromEvent(e), dragEvent.startPos)
-      this.app.previewScript(`@${nameOrId} translate ${delta.x}px ${delta.y}px`)
+      this.previewScript(`@${nameOrId} translate ${delta.x}px ${delta.y}px`)
     }
   }
 }
