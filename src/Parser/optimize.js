@@ -49,7 +49,9 @@ export default function optimize(commands) {
         optimized = true
       }
 
-      if (c.action === "resize") {
+      if (c.action === "resize"
+          && c.options[2] === prev.options[2]
+          && c.options[3] === prev.options[3]) {
         // 後の値で上書き
         prev.options[0] = c.options[0]
         prev.options[1] = c.options[1]
