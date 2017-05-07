@@ -59,6 +59,10 @@ translate -12 1
 translate 1 0
 translate 1 1
 translate 10 10
+
+deselectAll
+select 1 3 4 5 6 7
+dist x
 `
 
 function cleanupText(text) {
@@ -121,7 +125,7 @@ class App extends Component {
       return contains(lt) || contains(rb)
     }
 
-    const shapeElements = [...this.svgComponent.querySelectorAll("g")]
+    const shapeElements = Array.from(this.svgComponent.querySelectorAll("g"))
 
     return shapeElements
       .filter(e => e.attributes["data-shape-id"] !== undefined)
@@ -261,6 +265,14 @@ class App extends Component {
       this.addScript(`align bottom`)
     }
 
+    const onClickDistX = () => {
+      this.addScript(`dist x`)
+    }
+
+    const onClickDistY = () => {
+      this.addScript(`dist y`)
+    }
+
     return (
       <div className="App">
         <div className="toolbar">
@@ -290,6 +302,8 @@ class App extends Component {
             {selectedShape &&
               <div className="form">
                 <div className="row buttons">
+                  <div className="button" onClick={onClickDistX}><Icon name="reorder-vertical" /></div>
+                  <div className="button" onClick={onClickDistY}><Icon name="reorder-horizontal" /></div>
                   <div className="button" onClick={onClickAlignLeft}><Icon name="format-horizontal-align-left" /></div>
                   <div className="button" onClick={onClickAlignCenter}><Icon name="format-horizontal-align-center" /></div>
                   <div className="button" onClick={onClickAlignRight}><Icon name="format-horizontal-align-right" /></div>

@@ -23,6 +23,7 @@ import smoothCurveToCommand from "./SmoothCurveToCommand"
 import ellipticalArcCommand from "./EllipticalArcCommand"
 import alignCommand from "./AlignCommand"
 import deselectAllCommand from "./DeselectAllCommand"
+import distCommand from "./DistCommand"
 
 export default [
   rectCommand,
@@ -49,5 +50,6 @@ export default [
   smoothCurveToCommand,
   ellipticalArcCommand,
   alignCommand,
-  deselectAllCommand
+  deselectAllCommand,
+  distCommand
 ]
