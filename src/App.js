@@ -12,26 +12,52 @@ import Icon from "./Icon"
 import './App.css';
 
 const defaultScript = `
+grid 16
+stroke rgba(0,0,0,0.03)
+
+move 1 1
+line 4 3
+line -2 1
+close
+fill blue
+name tri
+
+moveTo 10 4
+rect 3 5
+fill yellow
+name rect
+
+moveTo 5 15
+circle 2
+fill orange
+
+move 3 0
+copy
+fill lightgreen
+
+move 3 0
+copy
+strokeWidth 4px
+stroke lightgray
+
+move 3 0
+copy
+fill lightblue
+resize 5 2 0 0
+
+select1 tri
+copy
+stroke red
+
+move 0 5
+@rect copy
+stroke green
+
+translate -12 1
+@rect resize 50px 10px
 translate 1 0
 translate 1 1
 translate 10 10
-`
-
-const testSvg = `
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
-<svg xml:space="default" width="300" height="200">
-<text x="10" y="30" font-size="15pt">
-1d test svg file content
-newline
-</text>
-<circle cx="150" cy="120" r="60" fill="white" stroke="red" stroke-width="5"/>
-<ellipse cx="150" cy="120" rx="80" ry="30" fill="lightblue" stroke="green" stroke-width="5"/>
-<text x="10" y="30" font-size="15pt">
-1d test svg file content
-newline
-</text>
-</svg>
 `
 
 function cleanupText(text) {
@@ -47,7 +73,7 @@ class App extends Component {
     )
 
     this.state = {
-      scriptText: defaultScript + "\n" + svgToCommands(testSvg).join("\n"),
+      scriptText: defaultScript,
       tempScript: ""
     }
 
