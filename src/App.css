@@ -1,3 +1,20 @@
 .App {
   user-select: none;
 }
+
+.form .row.buttons {
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.form .row .button {
+  padding: 0.5em;
+  cursor: pointer;
+  font-size: 110%;
+}
+
+.button:hover {
+  opacity: 0.5;
+}

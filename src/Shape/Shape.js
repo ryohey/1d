@@ -15,6 +15,11 @@ export default class Shape {
     throw new Error("not implemented")
   }
 
+  // 実際の表示領域を返す
+  get bounds() {
+    throw new Error("not implemented")
+  }
+
   render() {
     throw new Error("not implemented")
   }

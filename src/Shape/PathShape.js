@@ -28,10 +28,17 @@ export default class PathShape extends Shape {
     return pointSub(pointsMax(this.path), pointsMin(this.path))
   }
 
+  get bounds() {
+    const origin = pointsMin(this.path)
+    return {
+      origin,
+      size: this.size
+    }
+  }
+
   render() {
-    const { pos, closed, mouseHandler, brush, selected, size } = this
+    const { pos, closed, mouseHandler, brush, selected, bounds } = this
     const path = toSVGPath(this.path, closed)
-    const leftTop = pointsMin(this.path)
     return <g
       transform={`translate(${pos.x}, ${pos.y})`}
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
@@ -44,8 +51,9 @@ export default class PathShape extends Shape {
         cursor="move"
       />
       {selected && <ShapeControl
-        pos={leftTop}
-        size={size}
+        pos={bounds.origin}
+        size={bounds.size}
+        anchor={pos}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, this, anchor)
         }} />

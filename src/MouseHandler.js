@@ -76,6 +76,10 @@ export default class MouseHandler {
     if (!dragEvent) {
       return
     }
+    if (e.clientX === dragEvent.startPos.x &&
+        e.clientY === dragEvent.startPos.y) {
+      return
+    }
     dragEvent.moved = true
     const nameOrId = dragEvent.target.name || dragEvent.target.id
 

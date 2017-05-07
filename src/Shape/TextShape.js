@@ -14,7 +14,6 @@ class TextWrapper extends Component {
 
   render() {
     const { shape } = this.props
-    const { pos, text, fontSize, brush, mouseHandler, selected } = shape
 
     const { textComponent } = this.state
     if (textComponent) {
@@ -24,6 +23,8 @@ class TextWrapper extends Component {
         y: bbox.height
       }
     }
+
+    const { pos, text, fontSize, brush, mouseHandler, selected, bounds } = shape
 
     return <g
       cursor="move"
@@ -41,8 +42,9 @@ class TextWrapper extends Component {
         {text.replace(/\\n/g, "\n")}
       </text>
       {selected && <ShapeControl
-        pos={pos}
-        size={shape.size}
+        pos={bounds.origin}
+        size={bounds.size}
+        anchor={pos}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, shape, anchor)
         }} />
@@ -61,6 +63,14 @@ export default class TextShape extends Shape {
 
   get size() {
     return this._size
+  }
+
+  get bounds() {
+    const { pos, size } = this
+    return {
+      origin: pos,
+      size
+    }
   }
 
   resize(size, anchor) {

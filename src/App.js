@@ -7,6 +7,7 @@ import MouseHandler from "./MouseHandler"
 import ColorButton from "./ColorButton"
 import svgToCommands from "./helpers/svgToCommands"
 import commandToText from "./Parser/commandToText"
+import Icon from "./Icon"
 
 import './App.css';
 
@@ -72,14 +73,15 @@ class App extends Component {
   }
 
   onKeyDown(e) {
+    const d = e.shiftKey ? 10 : 1
     const translate = (dx, dy) => {
       this.addScript(`translate ${dx} ${dy}`)
     }
     switch(e.key) {
-      case "ArrowLeft": return translate(-1, 0)
-      case "ArrowRight": return translate(1, 0)
-      case "ArrowUp": return translate(0, -1)
-      case "ArrowDown": return translate(0, 1)
+      case "ArrowLeft": return translate(-d, 0)
+      case "ArrowRight": return translate(d, 0)
+      case "ArrowUp": return translate(0, -d)
+      case "ArrowDown": return translate(0, d)
       default: break
     }
   }
@@ -178,6 +180,30 @@ class App extends Component {
       })
     }
 
+    const onClickAlignLeft = () => {
+      this.addScript(`align left`)
+    }
+
+    const onClickAlignCenter = () => {
+      this.addScript(`align center`)
+    }
+
+    const onClickAlignRight = () => {
+      this.addScript(`align right`)
+    }
+
+    const onClickAlignTop = () => {
+      this.addScript(`align top`)
+    }
+
+    const onClickAlignMiddle = () => {
+      this.addScript(`align middle`)
+    }
+
+    const onClickAlignBottom = () => {
+      this.addScript(`align bottom`)
+    }
+
     return (
       <div className="App">
         <div className="toolbar">
@@ -204,6 +230,15 @@ class App extends Component {
           <div className="gamma">
             {selectedShape &&
               <div className="form">
+                <div className="row buttons">
+                  <div className="button" onClick={onClickAlignLeft}><Icon name="format-horizontal-align-left" /></div>
+                  <div className="button" onClick={onClickAlignCenter}><Icon name="format-horizontal-align-center" /></div>
+                  <div className="button" onClick={onClickAlignRight}><Icon name="format-horizontal-align-right" /></div>
+                  <div className="button" onClick={onClickAlignTop}><Icon name="format-vertical-align-top" /></div>
+                  <div className="button" onClick={onClickAlignMiddle}><Icon name="format-vertical-align-center" /></div>
+                  <div className="button" onClick={onClickAlignBottom}><Icon name="format-vertical-align-bottom" /></div>
+                </div>
+                <div className="separator" />
                 <div className="row">
                   <label>size</label>
                   <div className="input-group">
