@@ -302,14 +302,14 @@ class App extends Component {
             {selectedShape &&
               <div className="form">
                 <div className="row buttons">
-                  <div className="button" onClick={onClickDistX}><Icon name="reorder-vertical" /></div>
-                  <div className="button" onClick={onClickDistY}><Icon name="reorder-horizontal" /></div>
-                  <div className="button" onClick={onClickAlignLeft}><Icon name="format-horizontal-align-left" /></div>
-                  <div className="button" onClick={onClickAlignCenter}><Icon name="format-horizontal-align-center" /></div>
-                  <div className="button" onClick={onClickAlignRight}><Icon name="format-horizontal-align-right" /></div>
-                  <div className="button" onClick={onClickAlignTop}><Icon name="format-vertical-align-top" /></div>
-                  <div className="button" onClick={onClickAlignMiddle}><Icon name="format-vertical-align-center" /></div>
-                  <div className="button" onClick={onClickAlignBottom}><Icon name="format-vertical-align-bottom" /></div>
+                  <Icon name="reorder-vertical" onClick={onClickDistX} />
+                  <Icon name="reorder-horizontal" onClick={onClickDistY} />
+                  <Icon name="format-horizontal-align-left" onClick={onClickAlignLeft} />
+                  <Icon name="format-horizontal-align-center" onClick={onClickAlignCenter} />
+                  <Icon name="format-horizontal-align-right" onClick={onClickAlignRight} />
+                  <Icon name="format-vertical-align-top" onClick={onClickAlignTop} />
+                  <Icon name="format-vertical-align-center" onClick={onClickAlignMiddle} />
+                  <Icon name="format-vertical-align-bottom" onClick={onClickAlignBottom} />
                 </div>
                 <div className="separator" />
                 <div className="row">

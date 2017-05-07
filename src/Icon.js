@@ -8,10 +8,12 @@ function flatJoin(...classes) {
 export default function Icon({
   component,
   name,
-  className
+  className,
+  onClick
 }) {
   const ElementType = component || "div"
   return <ElementType
+    onClick={onClick}
     className={flatJoin("Icon", "mdi", `mdi-${name}`, className)}
   />
 }
