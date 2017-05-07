@@ -60,6 +60,11 @@ export default function optimize(commands) {
         // 削除
         optimized = true
       }
+
+      if (c.action === "align" && c.options[0] === prev.options[0]) {
+        // 削除
+        optimized = true
+      }
     }
 
     if (c.action === "deselectAll" && (prev.action === "select" || prev.action === "select1")) {

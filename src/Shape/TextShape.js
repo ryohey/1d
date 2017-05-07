@@ -66,12 +66,8 @@ export default class TextShape extends Shape {
     return this._size
   }
 
-  get bounds() {
-    const { pos, size } = this
-    return {
-      origin: pos,
-      size
-    }
+  get origin() {
+    return this.pos
   }
 
   resize(size, anchor) {

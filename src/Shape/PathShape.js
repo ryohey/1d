@@ -28,11 +28,8 @@ export default class PathShape extends Shape {
     return pointSub(pointsMax(this.path), pointsMin(this.path))
   }
 
-  get bounds() {
-    return {
-      origin: this.pos,
-      size: pointsMax(this.path)
-    }
+  get origin() {
+    return pointAdd(this.pos, pointsMin(this.path))
   }
 
   render() {

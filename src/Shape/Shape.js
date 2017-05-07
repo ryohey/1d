@@ -17,7 +17,30 @@ export default class Shape {
 
   // 実際の表示領域を返す
   get bounds() {
+    return {
+      origin: this.origin,
+      size: this.size
+    }
+  }
+
+  // 表示上の位置
+  get origin() {
     throw new Error("not implemented")
+  }
+
+  set origin(origin) {
+    this.originY = origin.y
+    this.originX = origin.x
+  }
+
+  set originX(x) {
+    const { pos, bounds } = this
+    this.pos.x = x + (pos.x - bounds.origin.x)
+  }
+
+  set originY(y) {
+    const { pos, bounds } = this
+    this.pos.y = y + (pos.y - bounds.origin.y)
   }
 
   render() {

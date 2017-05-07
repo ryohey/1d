@@ -11,24 +11,22 @@ function anchorToDirection(a) {
 }
 
 export default class MouseHandler {
-  constructor(addScript, previewScript, getShapesInsideRect) {
+  constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect) {
     this.addScript = addScript
     this.previewScript = previewScript
     this.getShapesInsideRect = getShapesInsideRect
+    this.setSelectionRect = setSelectionRect
   }
 
   onMouseOver(e, shape) {
-    console.log("onMouseOver", e, shape)
   }
 
   onMouseDownStage(e) {
-    console.log("stage", e)
-
-    const rect = e.target.getBoundingClientRect()
+    const bounds = e.target.getBoundingClientRect()
     function getLocalPosition(e) {
       return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: e.clientX - bounds.left,
+        y: e.clientY - bounds.top
       }
     }
 
@@ -40,6 +38,11 @@ export default class MouseHandler {
       return `select ${selectedShapes.join(" ")}`
     }
 
+    this.setSelectionRect({
+      origin: startPos,
+      size: { x: 0, y: 0 }
+    })
+
     const onMouseMove = e => {
       const endPos = getLocalPosition(e)
       console.log(endPos, e.clientX, e.pageX, e.offsetX)
@@ -50,7 +53,9 @@ export default class MouseHandler {
       }
       moved = true
 
-      selectedShapes = this.getShapesInsideRect(rectFromPoints(startPos, endPos))
+      const rect = rectFromPoints(startPos, endPos)
+      this.setSelectionRect(rect)
+      selectedShapes = this.getShapesInsideRect(rect)
 
       if (selectedShapes.length > 0) {
         this.previewScript(getSelectCommand())
@@ -62,6 +67,7 @@ export default class MouseHandler {
       window.removeEventListener("mouseup", onMouseUp)
 
       this.previewScript("")
+      this.setSelectionRect(null)
 
       if (selectedShapes.length === 0) {
         // 何も選択してなかったら選択解除

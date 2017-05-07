@@ -28,12 +28,8 @@ export default class CircleShape extends Shape {
     return pointMul(this.radius, 2)
   }
 
-  get bounds() {
-    const { pos, radius, size } = this
-    return {
-      origin: pointSub(pos, radius),
-      size
-    }
+  get origin() {
+    return pointSub(this.pos, this.radius)
   }
 
   render() {

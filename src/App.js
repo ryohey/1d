@@ -8,6 +8,7 @@ import ColorButton from "./ColorButton"
 import svgToCommands from "./helpers/svgToCommands"
 import commandToText from "./Parser/commandToText"
 import Icon from "./Icon"
+import SelectionRect from "./SelectionRect"
 
 import './App.css';
 
@@ -70,7 +71,8 @@ class App extends Component {
     this.mouseHandler = new MouseHandler(
       t => this.addScript(t),
       t => this.previewScript(t),
-      rect => this.getShapesInsideRect(rect)
+      rect => this.getShapesInsideRect(rect),
+      rect => this.setState({ selectionRect: rect })
     )
 
     this.state = {
@@ -143,7 +145,7 @@ class App extends Component {
 
   render() {
     const { mouseHandler } = this
-    const { scriptText, tempScript } = this.state
+    const { scriptText, tempScript, selectionRect } = this.state
 
     const script = scriptText + "\n" + tempScript
     const commands = parseCommands(script)
@@ -281,6 +283,7 @@ class App extends Component {
               onKeyDown={this.onKeyDown}
               onMouseDown={e => mouseHandler.onMouseDownStage(e)}>
               {svgContent}
+              {selectionRect && <SelectionRect rect={selectionRect} />}
             </svg>
           </div>
           <div className="gamma">
