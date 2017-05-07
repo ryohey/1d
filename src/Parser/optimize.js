@@ -22,6 +22,12 @@ export default function optimize(commands) {
         prev.options[1] = `${parseFloat(prev.options[1]) + parseFloat(c.options[1])}`
         optimized = true
       }
+      if (c.action === "translateTo") {
+        // 後の値で上書き
+        prev.options[0] = c.options[0]
+        prev.options[1] = c.options[1]
+        optimized = true
+      }
     }
 
     // 連続していなかったらコマンドをそのまま追加
