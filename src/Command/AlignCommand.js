@@ -89,10 +89,8 @@ export default {
       case "m":
       case "y": {
         const middle = _.sum(shapes.map(s => getBoundsMiddle(s.bounds))) / shapes.length
-        shapes.forEach(s => {
-          console.log(s.bounds.size.y)
-          setOriginY(s, middle - s.bounds.size.y / 2)
-        })
+        shapes.forEach(s =>
+          setOriginY(s, middle - s.bounds.size.y / 2))
         break
       }
 

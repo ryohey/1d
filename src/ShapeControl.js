@@ -26,6 +26,7 @@ function ControlDot({ center }) {
   return <path
     d={toSVGPath(rect(center, DOT_SIZE), true)}
     fill={COLOR}
+    style={{pointerEvents: "none"}}
   />
 }
 

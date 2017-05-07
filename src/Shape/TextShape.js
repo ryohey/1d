@@ -27,6 +27,7 @@ class TextWrapper extends Component {
     const { pos, text, fontSize, brush, mouseHandler, selected, bounds } = shape
 
     return <g
+      data-shape-id={this.id}
       cursor="move"
       onMouseOver={e => mouseHandler.onMouseOver(e, shape)}
       onMouseDown={e => mouseHandler.onMouseDown(e, shape)}>

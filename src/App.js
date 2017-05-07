@@ -69,7 +69,8 @@ class App extends Component {
     super(props)
     this.mouseHandler = new MouseHandler(
       t => this.addScript(t),
-      t => this.previewScript(t)
+      t => this.previewScript(t),
+      rect => this.getShapesInsideRect(rect)
     )
 
     this.state = {
@@ -96,6 +97,34 @@ class App extends Component {
     this.setState({
       scriptText: this.state.scriptText + "\n" + lines.join("\n")
     })
+  }
+
+  getShapesInsideRect(rect) {
+    if (!this.svgComponent) {
+      return []
+    }
+
+    function intersects(bounds) {
+      function contains(point) {
+        return (rect.origin.x <= point.x &&
+                rect.origin.y <= point.y) &&
+              ((rect.origin.x + rect.size.x >= point.x) &&
+               (rect.origin.y + rect.size.y >= point.y))
+      }
+      const lt = bounds
+      const rb = {
+        x: bounds.x + bounds.width,
+        y: bounds.y + bounds.height
+      }
+      return contains(lt) || contains(rb)
+    }
+
+    const shapeElements = [...this.svgComponent.querySelectorAll("g")]
+
+    return shapeElements
+      .filter(e => e.attributes["data-shape-id"] !== undefined)
+      .filter(e => intersects(e.getBBox()))
+      .map(e => e.attributes["data-shape-id"].value)
   }
 
   onKeyDown(e) {
@@ -247,6 +276,7 @@ class App extends Component {
           </div>
           <div className="beta">
             <svg id="svg"
+              ref={c => this.svgComponent = c}
               tabIndex="0"
               onKeyDown={this.onKeyDown}
               onMouseDown={e => mouseHandler.onMouseDownStage(e)}>

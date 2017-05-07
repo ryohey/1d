@@ -39,6 +39,7 @@ export default class CircleShape extends Shape {
   render() {
     const { pos, radius, brush, mouseHandler, selected, bounds } = this
     return <g
+      data-shape-id={this.id}
       cursor="move"
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>

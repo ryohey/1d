@@ -7,6 +7,16 @@ import PathShape from "../Shape/PathShape"
  コマンドをまたいで利用する処理などをまとめる
  */
 export default class RenderState {
+  constructor(mouseHandler) {
+    this.mouseHandler = mouseHandler
+    this.lastId = 0
+    this.pos = { x: 0, y: 0 }
+    this.transform = {
+      scale: 1
+    }
+    this.shapes = []
+  }
+
   get lastShape() {
     return this.shapes[this.shapes.length - 1]
   }

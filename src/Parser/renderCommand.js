@@ -5,14 +5,7 @@ import allCommands from "../Command/Commands.js"
 import State from "./RenderState"
 
 export default function renderCommand(commands, mouseHandler) {
-  const state = new State()
-  state.lastId = 0
-  state.pos = { x: 0, y: 0 }
-  state.transform = {
-    scale: 1
-  }
-  state.shapes = []
-  state.mouseHandler = mouseHandler
+  const state = new State(mouseHandler)
 
   for (let com of commands) {
     const opts = com.options

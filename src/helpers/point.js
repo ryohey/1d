@@ -144,3 +144,18 @@ export function pointsMax(points) {
     y: _.max(points.map(p => p.y))
   }
 }
+
+export function rectFromPoints(start, end) {
+  const lt = {
+    x: Math.min(start.x, end.x),
+    y: Math.min(start.y, end.y)
+  }
+  const rb = {
+    x: Math.max(start.x, end.x),
+    y: Math.max(start.y, end.y)
+  }
+  return {
+    origin: lt,
+    size: pointSub(rb, lt)
+  }
+}

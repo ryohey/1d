@@ -35,3 +35,86 @@ it("reduces translateTo", () => {
   expect(result[0].options[0]).toEqual("5")
   expect(result[0].options[1]).toEqual("7")
 })
+
+it("reduces select1", () => {
+  const commands = [
+    {
+      action: "select1",
+      options: ["aaa"]
+    },
+    {
+      action: "select1",
+      options: ["bbb"]
+    }
+  ]
+  const result = optimize(commands)
+  expect(result.length).toEqual(1)
+  expect(result[0].action).toEqual("select1")
+  expect(result[0].options[0]).toEqual("bbb")
+})
+
+it("reduces fill", () => {
+  const commands = [
+    {
+      action: "fill",
+      options: ["red"]
+    },
+    {
+      action: "fill",
+      options: ["blue"]
+    }
+  ]
+  const result = optimize(commands)
+  expect(result.length).toEqual(1)
+  expect(result[0].action).toEqual("fill")
+  expect(result[0].options[0]).toEqual("blue")
+})
+
+it("reduces stroke", () => {
+  const commands = [
+    {
+      action: "stroke",
+      options: ["red"]
+    },
+    {
+      action: "stroke",
+      options: ["blue"]
+    }
+  ]
+  const result = optimize(commands)
+  expect(result.length).toEqual(1)
+  expect(result[0].action).toEqual("stroke")
+  expect(result[0].options[0]).toEqual("blue")
+})
+
+it("reduces resize", () => {
+  const commands = [
+    {
+      action: "resize",
+      options: ["11px", "44px"]
+    },
+    {
+      action: "resize",
+      options: ["4px", "6px"]
+    }
+  ]
+  const result = optimize(commands)
+  expect(result.length).toEqual(1)
+  expect(result[0].action).toEqual("resize")
+  expect(result[0].options[0]).toEqual("4px")
+  expect(result[0].options[1]).toEqual("6px")
+})
+
+it("removes deselectAll", () => {
+  const commands = [
+    {
+      action: "deselectAll"
+    },
+    {
+      action: "deselectAll"
+    }
+  ]
+  const result = optimize(commands)
+  expect(result.length).toEqual(1)
+  expect(result[0].action).toEqual("deselectAll")
+})

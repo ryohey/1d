@@ -1,14 +1,15 @@
-import { validateOptionWithName } from "./optionValidator"
+import { InvalidCommandError } from "../Error.js"
 
 export default {
   action: "select",
 
   validateOptions: (opts) => {
-    return validateOptionWithName(opts, ["target"])
+    if (opts.length === 0) {
+      return InvalidCommandError("target not specified")
+    }
   },
 
   perform: (state, com) => {
-    const [target] = com.options
-    state.select(target)
+    com.options.forEach(t => state.select(t))
   }
 }
