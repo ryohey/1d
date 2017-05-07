@@ -14,7 +14,7 @@ export default {
 
     const targetShapes = state.targetShapes(com)
     if (targetShapes.length === 0) {
-      return InvalidStateError("no shapes to close path")
+      return InvalidStateError("no shapes to translate")
     }
 
     targetShapes.forEach(shape =>

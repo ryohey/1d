@@ -20,7 +20,7 @@ export default class RenderState {
     if (selected.length > 0) {
       return selected
     }
-    return [this.lastShape]
+    return this.lastShape ? [this.lastShape] : []
   }
 
   get currentShape() {

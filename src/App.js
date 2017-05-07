@@ -2,56 +2,18 @@ import React, { Component } from 'react';
 import _ from "lodash"
 import renderCommand from "./Parser/renderCommand"
 import parseCommands from "./Parser/parser"
+import optimize from "./Parser/optimize"
 import MouseHandler from "./MouseHandler"
 import ColorButton from "./ColorButton"
 import svgToCommands from "./helpers/svgToCommands"
+import commandToText from "./Parser/commandToText"
 
 import './App.css';
 
 const defaultScript = `
-grid 16
-stroke rgba(0,0,0,0.03)
-
-move 1 1
-line 4 3
-line -2 1
-close
-fill blue
-name tri
-
-moveTo 10 4
-rect 3 5
-fill yellow
-name rect
-
-moveTo 5 15
-circle 2
-fill orange
-
-move 3 0
-copy
-fill lightgreen
-
-move 3 0
-copy
-strokeWidth 4px
-stroke lightgray
-
-move 3 0
-copy
-fill lightblue
-resize 5 2 0 0
-
-select1 tri
-copy
-stroke red
-
-move 0 5
-@rect copy
-stroke green
-
-translate -12 1
-@rect resize 50px 10px
+translate 1 0
+translate 1 1
+translate 10 10
 `
 
 const testSvg = `
@@ -64,6 +26,10 @@ newline
 </text>
 <circle cx="150" cy="120" r="60" fill="white" stroke="red" stroke-width="5"/>
 <ellipse cx="150" cy="120" rx="80" ry="30" fill="lightblue" stroke="green" stroke-width="5"/>
+<text x="10" y="30" font-size="15pt">
+1d test svg file content
+newline
+</text>
 </svg>
 `
 
@@ -204,6 +170,14 @@ class App extends Component {
       reader.readAsText(file)
     }
 
+    const onClickOptimize = () => {
+      const { scriptText } = this.state
+      const optimized = commandToText(optimize(parseCommands(scriptText)))
+      this.setState({
+        scriptText: optimized
+      })
+    }
+
     return (
       <div className="App">
         <div className="toolbar">
@@ -212,6 +186,7 @@ class App extends Component {
           </label>
           <div className="button" onClick={onClickRect}>rect</div>
           <div className="button" onClick={onClickCircle}>circle</div>
+          <div className="button" onClick={onClickOptimize}>clean up</div>
         </div>
         <div className="content">
           <div className="alpha">

@@ -1,23 +1,27 @@
-import SVG from "svg.js"
+import xml from "node-xml-lite"
+
 import svgPathParser from "svg-path-parser"
 import _ from "lodash"
 
 function walkElements(element, callback) {
-  for (let e of element.children) {
+  if (!(element instanceof Object)) {
+    return
+  }
+  for (let e of element.childs || []) {
     walkElements(e, callback)
   }
   callback(element)
 }
 
 function getValue(obj, def) {
-  return _.isNil(obj) ? def : obj.value
+  return _.isNil(obj) ? def : obj
 }
 
-function pathConverter(e) {
-  if (e.nodeName !== "path") {
+function pathConverter({ name, attrib }) {
+  if (name !== "path") {
     return
   }
-  const path = svgPathParser(e.attributes.d.value)
+  const path = svgPathParser(attrib.d)
   return _.flatMap(path, p => {
     switch (p.command) {
     case "moveto":
@@ -27,49 +31,50 @@ function pathConverter(e) {
     case "curveto":
       return `curveTo ${p.x} ${p.y} ${p.x1} ${p.y1} ${p.x2} ${p.y2}`
     case "closepath":
-      return `fill ${e.parentNode.fill || "black"}`
+      return `fill ${"black"}` // TODO: use current fill color
     default:
       return null
     }
   })
 }
 
-function circleConverter({ nodeName, attributes }) {
-  if (nodeName !== "circle") {
+function circleConverter({ name, attrib }) {
+  if (name !== "circle") {
     return
   }
-  const a = attributes
+  const a = attrib
   return [
-    `moveTo ${a.cx.value} ${a.cy.value}`,
-    `circle ${a.r.value}`,
+    `moveTo ${a.cx} ${a.cy}`,
+    `circle ${a.r}`,
     `fill ${getValue(a.fill, "none")}`,
     `stroke ${getValue(a.stroke, "none")}`,
     `strokeWidth ${getValue(a["stroke-width"], 0)}`
   ]
 }
 
-function ellipseConverter({ nodeName, attributes }) {
-  if (nodeName !== "ellipse") {
+function ellipseConverter({ name, attrib }) {
+  if (name !== "ellipse") {
     return
   }
-  const a = attributes
+  const a = attrib
   return [
-    `moveTo ${a.cx.value} ${a.cy.value}`,
-    `circle ${a.rx.value} ${a.ry.value}`,
+    `moveTo ${a.cx} ${a.cy}`,
+    `circle ${a.rx} ${a.ry}`,
     `fill ${getValue(a.fill, "none")}`,
     `stroke ${getValue(a.stroke, "none")}`,
     `strokeWidth ${getValue(a["stroke-width"], 0)}`
   ]
 }
 
-function textConverter({ nodeName, attributes, textContent }) {
-  if (nodeName !== "text") {
+function textConverter({ name, attrib, childs }) {
+  if (name !== "text") {
     return
   }
-  const a = attributes
+  const a = attrib
+  const text = childs[0].replace(/\n/g, "\\n")
   return [
-    `moveTo ${a.x.value} ${a.y.value}`,
-    `text "${textContent.replace(/\n/g, "\\n")}"`,
+    `moveTo ${a.x} ${a.y}`,
+    `text "${text}"`,
     `fontSize ${getValue(a["font-size"], 0)}`
   ]
 }
@@ -86,15 +91,12 @@ function findMap(arr, func) {
   return null
 }
 
-export default function svgToCommands(svgText) {
-  const canvas = document.createElement("canvas")
-  const draw = SVG(canvas)
-  draw.svg(svgText)
+export default function svgToCommands(svgText, callback) {
+  const root = xml.parseString(svgText)
   let commands = []
 
-  walkElements(draw.node, e => {
+  walkElements(root, e => {
     commands = commands.concat(findMap(plugins, p => p(e)))
   })
-
-  return commands
+  return commands.filter(c => c) // remove null
 }

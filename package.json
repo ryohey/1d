@@ -7,12 +7,13 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
+    "node-xml-lite": "0.0.7",
     "react": "^15.4.2",
     "react-color": "^2.11.1",
     "react-dom": "^15.4.2",
     "reactcss": "^1.1.1",
     "svg-path-parser": "^1.0.1",
-    "svg.js": "^2.4.0"
+    "xml2js": "^0.4.17"
   },
   "scripts": {
     "start": "react-scripts start",
