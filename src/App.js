@@ -221,6 +221,10 @@ class App extends Component {
       this.addScript(`resize ${selectedShapeSize.y}px ${e.target.value}px`)
     }
 
+    const onChangeRotation = e => {
+      this.addScript(`rotateTo ${e.target.value}`)
+    }
+
     const onFileOpen = e => {
       const reader = new FileReader()
 
@@ -349,6 +353,18 @@ class App extends Component {
                       <label>y</label>
                     </div>
                     </div>
+                </div>
+                <div className="row">
+                  <label>transform</label>
+                  <div className="input-group">
+                    <div className="named-input">
+                      <input
+                        type="number"
+                        value={selectedShape.rotation}
+                        onChange={onChangeRotation} />
+                      <label>rotate</label>
+                    </div>
+                  </div>
                 </div>
                 <div className="row">
                   <label>fill</label>

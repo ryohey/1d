@@ -19,6 +19,7 @@ export default function optimize(commands) {
         && c.action === prev.action) {
 
       if (c.action === "translate") {
+        // 値を加算
         prev.options[0] = `${parseFloat(prev.options[0]) + parseFloat(c.options[0])}`
         prev.options[1] = `${parseFloat(prev.options[1]) + parseFloat(c.options[1])}`
         optimized = true
@@ -28,6 +29,18 @@ export default function optimize(commands) {
         // 後の値で上書き
         prev.options[0] = c.options[0]
         prev.options[1] = c.options[1]
+        optimized = true
+      }
+
+      if (c.action === "rotate") {
+        // 値を加算
+        prev.options[0] = `${parseFloat(prev.options[0]) + parseFloat(c.options[0])}`
+        optimized = true
+      }
+
+      if (c.action === "rotateTo") {
+        // 後の値で上書き
+        prev.options[0] = c.options[0]
         optimized = true
       }
 
@@ -71,8 +84,17 @@ export default function optimize(commands) {
 
     if (c.action === "deselectAll" && (prev.action === "select" || prev.action === "select1")) {
       // 選択後に選択解除していたら選択を削除する
-      prev.action = "deselectAll"
-      prev.options = []
+      prev = c
+      optimized = true
+    }
+
+    if (c.action === "translateTo" && prev.action === "translate") {
+      prev = c
+      optimized = true
+    }
+
+    if (c.action === "rotateTo" && prev.action === "rotate") {
+      prev = c
       optimized = true
     }
 

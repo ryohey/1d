@@ -24,7 +24,7 @@ class TextWrapper extends Component {
       }
     }
 
-    const { pos, text, fontSize, brush, mouseHandler, selected, bounds } = shape
+    const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation } = shape
 
     return <g
       data-shape-id={this.id}
@@ -33,6 +33,7 @@ class TextWrapper extends Component {
       onMouseDown={e => mouseHandler.onMouseDown(e, shape)}>
       <text
         ref={this.textComponentDidMount}
+        transform={`rotate(${rotation})`}
         dominantBaseline="text-before-edge"
         x={pos.x}
         y={pos.y}

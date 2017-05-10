@@ -33,13 +33,14 @@ export default class CircleShape extends Shape {
   }
 
   render() {
-    const { pos, radius, brush, mouseHandler, selected, bounds } = this
+    const { pos, radius, brush, mouseHandler, selected, bounds, rotation, anchorPoint } = this
     return <g
       data-shape-id={this.id}
       cursor="move"
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <ellipse
+        transform={`rotate(${rotation} ${pos.x} ${pos.y})`}
         rx={radius.x}
         ry={radius.y}
         stroke={brush.stroke || "none"}

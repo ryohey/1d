@@ -24,6 +24,8 @@ import ellipticalArcCommand from "./EllipticalArcCommand"
 import alignCommand from "./AlignCommand"
 import deselectAllCommand from "./DeselectAllCommand"
 import distCommand from "./DistCommand"
+import rotateCommand from "./RotateCommand"
+import rotateToCommand from "./RotateToCommand"
 
 export default [
   rectCommand,
@@ -51,5 +53,7 @@ export default [
   ellipticalArcCommand,
   alignCommand,
   deselectAllCommand,
-  distCommand
+  distCommand,
+  rotateCommand,
+  rotateToCommand
 ]

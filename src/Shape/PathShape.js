@@ -33,13 +33,13 @@ export default class PathShape extends Shape {
   }
 
   render() {
-    const { pos, closed, mouseHandler, brush, selected, bounds } = this
+    const { pos, closed, mouseHandler, brush, selected, bounds, rotation } = this
     const path = toSVGPath(this.path, closed)
     return <g
       data-shape-id={this.id}
       onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
-      <g transform={`translate(${pos.x}, ${pos.y})`}>
+      <g transform={`translate(${pos.x}, ${pos.y}) rotate(${rotation})`}>
         <path
           d={path}
           stroke={brush.stroke || "none"}

@@ -1,9 +1,10 @@
 import _ from "lodash"
-import { pointCopy } from "../helpers/point"
+import { pointCopy, pointSub } from "../helpers/point"
 
 export default class Shape {
   constructor(pos) {
     this.pos = pointCopy(pos)
+    this.rotation = 0
     this.brush = {}
   }
 
