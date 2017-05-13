@@ -8,6 +8,14 @@ export default class GridShape extends Shape {
     this.scale = scale
   }
 
+  get selected() {
+    return false
+  }
+
+  set selected(v) {
+    // not selectable
+  }
+
   render() {
     const { scale, pos, brush } = this
     const paths = []

@@ -209,6 +209,11 @@ class App extends Component {
           this.redoScript()
         }
         return
+      case "a":
+        if (e.ctrlKey) {
+          this.addScript("selectAll")
+        }
+        return
       default: break
     }
   }
