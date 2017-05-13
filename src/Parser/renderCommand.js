@@ -14,7 +14,7 @@ export default function renderCommand(commands, mouseHandler) {
     // コマンドに対応する plugin を探してコマンドを実行する
     const plugin = _.find(allCommands, p => p.action === com.action)
     if (plugin) {
-      error = plugin.validateOptions(opts)
+      error = plugin.validateOptions && plugin.validateOptions(opts)
       if (!error) {
         error = plugin.perform(state, com)
       }

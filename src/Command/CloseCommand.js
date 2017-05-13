@@ -4,8 +4,6 @@ import PathShape from "../Shape/PathShape"
 export default {
   action: "close",
 
-  validateOptions: () => null,
-
   perform: (state, com) => {
     const target = state.findShape(com.target)
     const targetShapes = target ? [target] : state.currentShapes

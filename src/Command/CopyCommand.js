@@ -4,10 +4,6 @@ import { pointCopy } from "../helpers/point"
 export default {
   action: "copy",
 
-  validateOptions: (opts) => {
-    return null
-  },
-
   perform: (state, com) => {
     const { selectedShapes } = state
     if (selectedShapes.length === 0) {

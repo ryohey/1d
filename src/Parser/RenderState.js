@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 import { InvalidStateError } from "../Error.js"
 import PathShape from "../Shape/PathShape"
@@ -49,6 +50,10 @@ export default class RenderState {
     this.deselectAll()
     shape.selected = true
     this.lastId++
+  }
+
+  removeShape(shape) {
+    _.pull(this.shapes, shape)
   }
 
   findShape(nameOrId) {

@@ -156,6 +156,16 @@ class App extends Component {
       case "ArrowRight": return translate(d, 0)
       case "ArrowUp": return translate(0, -d)
       case "ArrowDown": return translate(0, d)
+      case "Escape": {
+        this.addScript("deselectAll")
+        this.changeMouseMode("default")
+        return
+      }
+      case "Backspace":
+      case "Delete": {
+        this.addScript("remove")
+        return
+      }
       default: break
     }
   }

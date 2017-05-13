@@ -26,6 +26,7 @@ import deselectAllCommand from "./DeselectAllCommand"
 import distCommand from "./DistCommand"
 import rotateCommand from "./RotateCommand"
 import rotateToCommand from "./RotateToCommand"
+import removeCommand from "./RemoveCommand"
 
 export default [
   rectCommand,
@@ -55,5 +56,6 @@ export default [
   deselectAllCommand,
   distCommand,
   rotateCommand,
-  rotateToCommand
+  rotateToCommand,
+  removeCommand
 ]
