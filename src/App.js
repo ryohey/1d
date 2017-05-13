@@ -184,6 +184,10 @@ class App extends Component {
       this.changeMouseMode("circle")
     }
 
+    const onClickLine = () => {
+      this.changeMouseMode("line")
+    }
+
     const onChangeFillColor = color => {
       this.previewScript(`fill ${color}`)
     }
@@ -290,6 +294,7 @@ class App extends Component {
           </label>
           <ToolbarButton onClick={onClickRect} title="rect" selected={this.state.mouseMode === "rect"} />
           <ToolbarButton onClick={onClickCircle} title="circle" selected={this.state.mouseMode === "circle"} />
+          <ToolbarButton onClick={onClickLine} title="line" selected={this.state.mouseMode === "line"} />
           <ToolbarButton onClick={onClickOptimize} title="clean up" />
         </div>
         <div className="content">

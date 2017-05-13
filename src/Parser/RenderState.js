@@ -72,7 +72,7 @@ export default class RenderState {
 
   preparePathShape() {
     let shape = this.currentShape
-    if (!(shape instanceof PathShape)) {
+    if (!(shape instanceof PathShape) || shape.closed) {
       shape = new PathShape()
       this.addShape(shape)
       this.addPosToCurrentShapePath()

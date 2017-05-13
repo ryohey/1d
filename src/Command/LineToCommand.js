@@ -1,4 +1,5 @@
 import { validateOptionWithName } from "./optionValidator"
+import { project } from "../helpers/point"
 
 export default {
   action: "lineTo",
@@ -8,8 +9,9 @@ export default {
   },
 
   perform: (state, com) => {
+    const [ x, y ] = com.options
     state.preparePathShape()
-    state.moveTo(com.options[0], com.options[1])
+    state.pos = project(state.transform, { x, y })
     state.addPosToCurrentShapePath()
   }
 }

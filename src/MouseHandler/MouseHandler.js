@@ -1,6 +1,7 @@
 import DefaultMouseHandler from "./DefaultMouseHandler"
 import RectMouseHandler from "./RectMouseHandler"
 import CircleMouseHandler from "./CircleMouseHandler"
+import LineMouseHandler from "./LineMouseHandler"
 
 export default class MouseHandler {
   constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode) {
@@ -9,7 +10,8 @@ export default class MouseHandler {
     this.childHandlers = {
       "default": new DefaultMouseHandler(addScript, previewScript, getShapesInsideRect, setSelectionRect),
       "rect": new RectMouseHandler(addScript, previewScript, changeMode),
-      "circle": new CircleMouseHandler(addScript, previewScript, changeMode)
+      "circle": new CircleMouseHandler(addScript, previewScript, changeMode),
+      "line": new LineMouseHandler(addScript, previewScript, changeMode),
     }
   }
 

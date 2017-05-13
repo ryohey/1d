@@ -80,6 +80,12 @@ export default function optimize(commands) {
         // 削除
         optimized = true
       }
+
+      if (c.action === "strokeWidth") {
+        // 後の値で上書き
+        prev.options[0] = c.options[0]
+        optimized = true
+      }
     }
 
     if (c.action === "deselectAll" && (prev.action === "select" || prev.action === "select1")) {

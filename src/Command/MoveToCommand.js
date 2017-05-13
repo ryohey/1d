@@ -9,8 +9,7 @@ export default {
   },
 
   perform: (state, com) => {
-    const x = com.options[0]
-    const y = com.options[1]
+    const [ x, y ] = com.options
     state.pos = project(state.transform, { x, y })
   }
 }
