@@ -9,6 +9,7 @@ import svgToCommands from "./helpers/svgToCommands"
 import commandToText from "./Parser/commandToText"
 import Icon from "./Icon"
 import SelectionRect from "./SelectionRect"
+import { downloadBlob } from "./helpers/downloadBlob"
 
 import './App.css';
 
@@ -108,8 +109,7 @@ class App extends Component {
   }
 
   get currentScript() {
-    const { scriptHistory } = this.state
-    return scriptHistory[scriptHistory.length - 1]
+    return _.last(this.state.scriptHistory)
   }
 
   setScript(script) {
@@ -228,6 +228,10 @@ class App extends Component {
       this.setScript(e.target.value)
     }
 
+    const onClickSave = () => {
+      downloadBlob(this.currentScript, "noname.1d", "text/plain")
+    }
+
     const onClickRect = () => {
       this.changeMouseMode("rect")
     }
@@ -338,6 +342,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="toolbar">
+          <ToolbarButton onClick={onClickSave} title="save" />
           <label className="button">open
             <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
           </label>
