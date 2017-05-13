@@ -58,6 +58,13 @@ export const pointDiv = extendCurve((a, b) => {
   }
 })
 
+export const pointRound = extendCurve(p => {
+  return {
+    x: Math.round(p.x),
+    y: Math.round(p.y)
+  }
+})
+
 function projectValue(transform, value) {
   return value * (transform.scale || 1)
 }

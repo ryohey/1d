@@ -1,5 +1,5 @@
 import React from "react"
-import { toSVGPath, rect, pointAdd, pointDot } from "./helpers/point"
+import { toSVGPath, rect, pointAdd, pointDot, pointRound } from "./helpers/point"
 
 const HANDLE_SIZE = 3
 const DOT_SIZE = 3
@@ -7,9 +7,13 @@ const COLOR = "rgb(37, 129, 255)"
 
 const anchors = [
   { x: 0, y: 0 },
+  { x: 0.5, y: 0 },
   { x: 1, y: 0 },
+  { x: 1, y: 0.5 },
   { x: 1, y: 1 },
+  { x: 0.5, y: 1 },
   { x: 0, y: 1 },
+  { x: 0, y: 0.5 },
 ]
 
 function ControlRect({ center, onMouseDown }) {
@@ -31,7 +35,7 @@ function ControlDot({ center }) {
 }
 
 export default function ShapeControl({ pos, anchor, size, onMouseDown }) {
-  const corners = anchors.map(a => [a, pointAdd(pos, pointDot(size, a))])
+  const corners = anchors.map(a => [a, pointRound(pointAdd(pos, pointDot(size, a)))])
   return <g transform="translate(0.5 0.5)">
     {corners.map((c, i) => {
       const next = corners[(i + 1) % corners.length]

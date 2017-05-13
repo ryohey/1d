@@ -37,7 +37,6 @@ export default class CircleShape extends Shape {
     return <g
       data-shape-id={this.id}
       cursor="move"
-      onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <ellipse
         transform={`rotate(${rotation} ${pos.x} ${pos.y})`}

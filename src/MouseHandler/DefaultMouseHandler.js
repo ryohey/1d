@@ -1,4 +1,4 @@
-import { pointFromEvent, pointSub, pointAdd, pointMul, pointDiv, pointDot, rectFromPoints } from "./helpers/point"
+import { pointFromEvent, pointSub, pointAdd, pointMul, pointDiv, pointDot, rectFromPoints } from "../helpers/point"
 
 const CENTER = { x: 0.5, y: 0.5 }
 
@@ -10,15 +10,12 @@ function anchorToDirection(a) {
   return pointDiv(pointSub(a, CENTER), CENTER)
 }
 
-export default class MouseHandler {
+export default class DefaultMouseHandler {
   constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect) {
     this.addScript = addScript
     this.previewScript = previewScript
     this.getShapesInsideRect = getShapesInsideRect
     this.setSelectionRect = setSelectionRect
-  }
-
-  onMouseOver(e, shape) {
   }
 
   onMouseDownStage(e) {
@@ -45,7 +42,6 @@ export default class MouseHandler {
 
     const onMouseMove = e => {
       const endPos = getLocalPosition(e)
-      console.log(endPos, e.clientX, e.pageX, e.offsetX)
 
       if (endPos.x === startPos.x &&
           endPos.y === startPos.y) {
@@ -82,8 +78,6 @@ export default class MouseHandler {
   }
 
   onMouseDown(downEvent, shape, anchor) {
-    downEvent.stopPropagation()
-
     const startPos = pointFromEvent(downEvent)
     let moved = false
     let tempScript

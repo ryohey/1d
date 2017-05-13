@@ -37,7 +37,6 @@ export default class PathShape extends Shape {
     const path = toSVGPath(this.path, closed)
     return <g
       data-shape-id={this.id}
-      onMouseOver={e => mouseHandler.onMouseOver(e, this)}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <g transform={`translate(${pos.x}, ${pos.y}) rotate(${rotation})`}>
         <path
