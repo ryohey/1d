@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { pointCopy, pointSub } from "../helpers/point"
+import { pointCopy } from "../helpers/point"
 
 export default class Shape {
   constructor(pos) {

@@ -1,5 +1,5 @@
 import React from "react"
-import { toSVGPath, rect, pointAdd, pointDot } from "./helpers/point"
+import { toSVGPath } from "./helpers/point"
 
 function rectPath({ origin, size }) {
   return [

@@ -33,7 +33,7 @@ export default class CircleShape extends Shape {
   }
 
   render() {
-    const { pos, radius, brush, mouseHandler, selected, bounds, rotation, anchorPoint } = this
+    const { pos, radius, brush, mouseHandler, selected, bounds, rotation } = this
     return <g
       data-shape-id={this.id}
       cursor="move"

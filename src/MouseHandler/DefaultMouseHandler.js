@@ -19,6 +19,7 @@ export default class DefaultMouseHandler {
   }
 
   onMouseDownStage(e) {
+    e.stopPropagation()
     const bounds = e.target.getBoundingClientRect()
     function getLocalPosition(e) {
       return {
@@ -28,7 +29,6 @@ export default class DefaultMouseHandler {
     }
 
     const startPos = getLocalPosition(e)
-    let moved = false
     let selectedShapes = []
 
     function getSelectCommand() {
@@ -47,7 +47,6 @@ export default class DefaultMouseHandler {
           endPos.y === startPos.y) {
         return
       }
-      moved = true
 
       const rect = rectFromPoints(startPos, endPos)
       this.setSelectionRect(rect)
@@ -78,6 +77,7 @@ export default class DefaultMouseHandler {
   }
 
   onMouseDown(downEvent, shape, anchor) {
+    downEvent.stopPropagation()
     const startPos = pointFromEvent(downEvent)
     let moved = false
     let tempScript
