@@ -1,5 +1,6 @@
 import bindMouseHandler from "../helpers/bindMouseHandler"
 
+// シェイプを作成する MouseHandler のベースクラス
 export default (createScript) => class ShapeMouseHandlerBase {
   constructor(addScript, previewScript, changeMouseMode) {
     this.addScript = addScript
@@ -8,7 +9,7 @@ export default (createScript) => class ShapeMouseHandlerBase {
   }
 
   onMouseDownStage(e) {
-    const bounds = e.target.getBoundingClientRect()
+    const bounds = e.currentTarget.getBoundingClientRect()
     function getLocalPosition(e) {
       return {
         x: e.clientX - bounds.left,

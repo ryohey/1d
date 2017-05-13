@@ -87,7 +87,8 @@ class App extends Component {
     )
 
     this.state = {
-      scriptText: defaultScript,
+      scriptHistory: [defaultScript],
+      undoHistory: [],
       tempScript: "",
       mouseMode: "default"
     }
@@ -106,15 +107,44 @@ class App extends Component {
     })
   }
 
-  addScript(line) {
+  get currentScript() {
+    const { scriptHistory } = this.state
+    return scriptHistory[scriptHistory.length - 1]
+  }
+
+  setScript(script) {
     this.setState({
-      scriptText: this.state.scriptText + "\n" + cleanupText(line)
+      scriptHistory: [...this.state.scriptHistory, script]
     })
   }
 
+  addScript(line) {
+    this.setScript(this.currentScript + "\n" + cleanupText(line))
+  }
+
   addScriptLines(lines) {
+    this.setScript(this.currentScript + "\n" + lines.map(cleanupText).join("\n"))
+  }
+
+  undoScript() {
+    const { scriptHistory, undoHistory } = this.state
+    if (scriptHistory.length <= 1) {
+      return
+    }
     this.setState({
-      scriptText: this.state.scriptText + "\n" + lines.map(cleanupText).join("\n")
+      scriptHistory: _.dropRight(scriptHistory),
+      undoHistory: [...undoHistory, this.currentScript]
+    })
+  }
+
+  redoScript() {
+    const { scriptHistory, undoHistory } = this.state
+    if (undoHistory.length < 1) {
+      return
+    }
+    this.setState({
+      scriptHistory: [...scriptHistory, _.last(undoHistory)],
+      undoHistory: _.dropRight(undoHistory)
     })
   }
 
@@ -162,19 +192,32 @@ class App extends Component {
         return
       }
       case "Backspace":
-      case "Delete": {
+      case "Delete":
         this.addScript("remove")
         return
-      }
+      case "z":
+        if (e.ctrlKey) {
+          if (e.shiftKey) {
+            this.redoScript()
+          } else {
+            this.undoScript()
+          }
+        }
+        return
+      case "y":
+        if (e.ctrlKey) {
+          this.redoScript()
+        }
+        return
       default: break
     }
   }
 
   render() {
-    const { mouseHandler } = this
-    const { scriptText, tempScript, selectionRect } = this.state
+    const { currentScript, mouseHandler } = this
+    const { tempScript, selectionRect } = this.state
 
-    const script = scriptText + "\n" + tempScript
+    const script = currentScript + "\n" + tempScript
     const commands = parseCommands(script)
     const shapes = renderCommand(commands, mouseHandler)
     const selectedShape = shapes.filter(s => s.selected)[0]
@@ -182,8 +225,7 @@ class App extends Component {
     const svgContent = shapes.map(s => s.render())
 
     const onChangeText = e => {
-      const scriptText = e.target.value
-      this.setState({ scriptText })
+      this.setScript(e.target.value)
     }
 
     const onClickRect = () => {
@@ -257,11 +299,8 @@ class App extends Component {
     }
 
     const onClickOptimize = () => {
-      const { scriptText } = this.state
-      const optimized = commandToText(optimize(parseCommands(scriptText)))
-      this.setState({
-        scriptText: optimized
-      })
+      const optimized = commandToText(optimize(parseCommands(this.currentScript)))
+      this.setScript(optimized)
     }
 
     const onClickAlignLeft = () => {
@@ -309,7 +348,7 @@ class App extends Component {
         </div>
         <div className="content">
           <div className="alpha">
-            <textarea value={scriptText} onChange={onChangeText} />
+            <textarea value={currentScript} onChange={onChangeText} />
             <div className="tempScript"><pre>{tempScript}</pre></div>
           </div>
           <div className="beta">
