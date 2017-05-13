@@ -1,4 +1,5 @@
 import { pointFromEvent, pointSub, pointAdd, pointMul, pointDiv, pointDot, rectFromPoints } from "../helpers/point"
+import bindMouseHandler from "../helpers/bindMouseHandler"
 
 const CENTER = { x: 0.5, y: 0.5 }
 
@@ -58,9 +59,6 @@ export default class DefaultMouseHandler {
     }
 
     const onMouseUp = e => {
-      window.removeEventListener("mousemove", onMouseMove)
-      window.removeEventListener("mouseup", onMouseUp)
-
       this.previewScript("")
       this.setSelectionRect(null)
 
@@ -72,8 +70,7 @@ export default class DefaultMouseHandler {
       }
     }
 
-    window.addEventListener("mousemove", onMouseMove)
-    window.addEventListener("mouseup", onMouseUp)
+    bindMouseHandler(onMouseMove, onMouseUp)
   }
 
   onMouseDown(downEvent, shape, anchor) {
@@ -107,9 +104,6 @@ export default class DefaultMouseHandler {
     }
 
     const onMouseUp = e => {
-      window.removeEventListener("mousemove", onMouseMove)
-      window.removeEventListener("mouseup", onMouseUp)
-
       if (!moved) {
         // 移動せずクリックが終了した場合は選択状態にする
         const nameOrId = shape.name || shape.id
@@ -123,7 +117,6 @@ export default class DefaultMouseHandler {
       }
     }
 
-    window.addEventListener("mousemove", onMouseMove)
-    window.addEventListener("mouseup", onMouseUp)
+    bindMouseHandler(onMouseMove, onMouseUp)
   }
 }

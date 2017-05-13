@@ -1,4 +1,4 @@
-import { pointSub } from "../helpers/point"
+import { pointSub, pointAdd, pointMul } from "../helpers/point"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 
 export default class RectMouseHandler {
@@ -18,11 +18,12 @@ export default class RectMouseHandler {
     }
 
     const startPos = getLocalPosition(e)
-    const moveTo = `moveTo ${startPos.x}px ${startPos.y}px`
 
     const rectScript = (endPos) => {
-      const delta = pointSub(endPos, startPos)
-      const rect = `rect ${delta.x}px ${delta.y}px`
+      const radius = pointMul(pointSub(endPos, startPos), 0.5)
+      const center = pointAdd(startPos, radius)
+      const moveTo = `moveTo ${center.x}px ${center.y}px`
+      const rect = `circle ${radius.x}px ${radius.y}px`
       const fill = `fill white`
       const stroke = `stroke gray`
       return [moveTo, rect, fill, stroke]

@@ -69,6 +69,12 @@ function cleanupText(text) {
   return text.replace(/[ \t]{2,}/g, "")
 }
 
+function ToolbarButton({ title, onClick, selected = false }) {
+  return <div
+    className={`button ${selected ? "selected" : ""}`}
+    onClick={onClick}>{title}</div>
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -76,20 +82,27 @@ class App extends Component {
       t => this.addScript(t),
       t => this.previewScript(t),
       rect => this.getShapesInsideRect(rect),
-      rect => this.setState({ selectionRect: rect })
+      rect => this.setState({ selectionRect: rect }),
+      mode => this.changeMouseMode(mode)
     )
 
     this.state = {
       scriptText: defaultScript,
-      tempScript: ""
+      tempScript: "",
+      mouseMode: "default"
     }
 
     this.onKeyDown = this.onKeyDown.bind(this)
   }
 
+  changeMouseMode(mode) {
+    this.setState({ mouseMode: mode })
+    this.mouseHandler.mode = mode
+  }
+
   previewScript(line) {
     this.setState({
-      tempScript: cleanupText(line)
+      tempScript: line.split("\n").map(cleanupText).join("\n")
     })
   }
 
@@ -101,7 +114,7 @@ class App extends Component {
 
   addScriptLines(lines) {
     this.setState({
-      scriptText: this.state.scriptText + "\n" + lines.join("\n")
+      scriptText: this.state.scriptText + "\n" + lines.map(cleanupText).join("\n")
     })
   }
 
@@ -164,19 +177,11 @@ class App extends Component {
     }
 
     const onClickRect = () => {
-      this.addScript(`
-        rect 30px 30px
-        fill white
-        stroke gray
-      `)
+      this.changeMouseMode("rect")
     }
 
     const onClickCircle = () => {
-      this.addScript(`
-        circle 30px 30px
-        fill white
-        stroke gray
-      `)
+      this.changeMouseMode("circle")
     }
 
     const onChangeFillColor = color => {
@@ -283,14 +288,14 @@ class App extends Component {
           <label className="button">open
             <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
           </label>
-          <div className="button" onClick={onClickRect}>rect</div>
-          <div className="button" onClick={onClickCircle}>circle</div>
-          <div className="button" onClick={onClickOptimize}>clean up</div>
+          <ToolbarButton onClick={onClickRect} title="rect" selected={this.state.mouseMode === "rect"} />
+          <ToolbarButton onClick={onClickCircle} title="circle" selected={this.state.mouseMode === "circle"} />
+          <ToolbarButton onClick={onClickOptimize} title="clean up" />
         </div>
         <div className="content">
           <div className="alpha">
             <textarea value={scriptText} onChange={onChangeText} />
-            <div className="tempScript">{tempScript}</div>
+            <div className="tempScript"><pre>{tempScript}</pre></div>
           </div>
           <div className="beta">
             <svg id="svg"
