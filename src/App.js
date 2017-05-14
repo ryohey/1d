@@ -11,6 +11,7 @@ import Icon from "./Icon"
 import SelectionRect from "./SelectionRect"
 import { downloadBlob } from "./helpers/downloadBlob"
 import { rectIntersects } from "./helpers/rect"
+import { rgbaString } from "./helpers/color"
 
 import './App.css';
 
@@ -65,6 +66,9 @@ translate 10 10
 deselectAll
 select 1 3 4 5 6 7
 dist x
+
+text "Hello World!"
+fontSize 2
 `
 
 function cleanupText(text) {
@@ -248,20 +252,20 @@ class App extends Component {
     }
 
     const onChangeFillColor = color => {
-      this.previewScript(`fill ${color}`)
+      this.previewScript(`fill ${rgbaString(color)}`)
     }
 
     const onChangeFillColorComplete = color => {
-      this.addScript(`fill ${color}`)
+      this.addScript(`fill ${rgbaString(color)}`)
       this.previewScript("")
     }
 
     const onChangeStrokeColor = color => {
-      this.previewScript(`stroke ${color}`)
+      this.previewScript(`stroke ${rgbaString(color)}`)
     }
 
     const onChangeStrokeColorComplete = color => {
-      this.addScript(`stroke ${color}`)
+      this.addScript(`stroke ${rgbaString(color)}`)
       this.previewScript("")
     }
 
