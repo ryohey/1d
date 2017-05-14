@@ -81,6 +81,10 @@ function ToolbarButton({ title, onClick, selected = false }) {
     onClick={onClick}>{title}</div>
 }
 
+function ToolbarSeparator() {
+  return <div className="ToolbarSeparator" />
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -251,6 +255,10 @@ class App extends Component {
       this.changeMouseMode("line")
     }
 
+    const onClickPath = () => {
+      this.changeMouseMode("path")
+    }
+
     const onChangeFillColor = color => {
       this.previewScript(`fill ${rgbaString(color)}`)
     }
@@ -354,9 +362,12 @@ class App extends Component {
           <label className="button">open
             <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
           </label>
+          <ToolbarSeparator />
           <ToolbarButton onClick={onClickRect} title="rect" selected={this.state.mouseMode === "rect"} />
           <ToolbarButton onClick={onClickCircle} title="circle" selected={this.state.mouseMode === "circle"} />
           <ToolbarButton onClick={onClickLine} title="line" selected={this.state.mouseMode === "line"} />
+          <ToolbarButton onClick={onClickPath} title="path" selected={this.state.mouseMode === "path"} />
+          <ToolbarSeparator />
           <ToolbarButton onClick={onClickOptimize} title="clean up" />
         </div>
         <div className="content">

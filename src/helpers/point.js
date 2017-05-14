@@ -65,6 +65,14 @@ export const pointRound = extendCurve(p => {
   }
 })
 
+export const pointNorm = p => {
+  return Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y, 2))
+}
+
+export const pointDistance = (a, b) => {
+  return pointNorm(pointSub(a, b))
+}
+
 function projectValue(transform, value) {
   return value * (transform.scale || 1)
 }

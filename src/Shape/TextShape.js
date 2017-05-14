@@ -32,7 +32,7 @@ class TextWrapper extends Component {
       onMouseDown={e => mouseHandler.onMouseDown(e, shape)}>
       <text
         ref={this.textComponentDidMount}
-        transform={`rotate(${rotation})`}
+        transform={`rotate(${rotation} ${pos.x} ${pos.y})`}
         dominantBaseline="text-before-edge"
         x={pos.x}
         y={pos.y}

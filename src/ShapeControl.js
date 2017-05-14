@@ -48,7 +48,6 @@ export default function ShapeControl({ pos, anchor, size, onMouseDown }) {
       <ControlRect
         center={c[1]}
         onMouseDown={e => {
-          e.stopPropagation()
           onMouseDown(e, c[0])
         }}
       />

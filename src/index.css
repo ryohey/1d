@@ -94,6 +94,12 @@ body, textarea, .input {
   border-bottom: 2px solid currentColor;
 }
 
+.ToolbarSeparator {
+  width: 1px;
+  background: rgba(0, 0, 0, 0.05);
+  margin: 0.5em 0.5em;
+}
+
 .gamma {
   min-width: 14em;
   box-sizing: border-box;
