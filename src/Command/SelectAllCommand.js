@@ -1,5 +1,3 @@
-import { InvalidStateError } from "../Error.js"
-
 export default {
   action: "selectAll",
 

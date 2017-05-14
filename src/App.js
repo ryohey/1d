@@ -10,6 +10,7 @@ import commandToText from "./Parser/commandToText"
 import Icon from "./Icon"
 import SelectionRect from "./SelectionRect"
 import { downloadBlob } from "./helpers/downloadBlob"
+import { rectIntersects } from "./helpers/rect"
 
 import './App.css';
 
@@ -153,26 +154,18 @@ class App extends Component {
       return []
     }
 
-    function intersects(bounds) {
-      function contains(point) {
-        return (rect.origin.x <= point.x &&
-                rect.origin.y <= point.y) &&
-              ((rect.origin.x + rect.size.x >= point.x) &&
-               (rect.origin.y + rect.size.y >= point.y))
+    function toRect(bbox) {
+      return {
+        origin: { x: bbox.x, y: bbox.y },
+        size: { x: bbox.width, y: bbox.height }
       }
-      const lt = bounds
-      const rb = {
-        x: bounds.x + bounds.width,
-        y: bounds.y + bounds.height
-      }
-      return contains(lt) || contains(rb)
     }
 
     const shapeElements = Array.from(this.svgComponent.querySelectorAll("g"))
 
     return shapeElements
       .filter(e => e.attributes["data-shape-id"] !== undefined)
-      .filter(e => intersects(e.getBBox()))
+      .filter(e => rectIntersects(rect, toRect(e.getBBox())))
       .map(e => e.attributes["data-shape-id"].value)
   }
 
@@ -235,6 +228,11 @@ class App extends Component {
 
     const onClickSave = () => {
       downloadBlob(this.currentScript, "noname.1d", "text/plain")
+    }
+
+    const onClickExport = () => {
+      const { svgComponent } = this
+      downloadBlob(svgComponent.outerHTML, "noname.svg", "image/svg+xml")
     }
 
     const onClickRect = () => {
@@ -348,6 +346,7 @@ class App extends Component {
       <div className="App">
         <div className="toolbar">
           <ToolbarButton onClick={onClickSave} title="save" />
+          <ToolbarButton onClick={onClickExport} title="export" />
           <label className="button">open
             <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
           </label>

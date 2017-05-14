@@ -55,6 +55,8 @@ export default class DefaultMouseHandler {
 
       if (selectedShapes.length > 0) {
         this.previewScript(getSelectCommand())
+      } else {
+        this.previewScript("")
       }
     }
 
