@@ -34,19 +34,28 @@ export default class CircleShape extends Shape {
 
   render() {
     const { pos, radius, brush, mouseHandler, selected, bounds, rotation } = this
+    const ellipseProps = {
+      transform: `rotate(${rotation} ${pos.x} ${pos.y})`,
+      rx: radius.x,
+      ry: radius.y,
+      strokeWidth: brush.strokeWidth || 1,
+      cx: pos.x,
+      cy: pos.y
+    }
     return <g
       data-shape-id={this.id}
       cursor="move"
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <ellipse
-        transform={`rotate(${rotation} ${pos.x} ${pos.y})`}
-        rx={radius.x}
-        ry={radius.y}
+        {...ellipseProps}
         stroke={brush.stroke || "none"}
-        strokeWidth={brush.strokeWidth || 1}
         fill={brush.fill || "none"}
-        cx={pos.x}
-        cy={pos.y}
+      />
+      {/* 当たり判定用の透明な円 */}
+      <ellipse
+        {...ellipseProps}
+        stroke="rgba(0,0,0,0)"
+        fill="rgba(0,0,0,0)"
       />
       {selected && <ShapeControl
         pos={bounds.origin}

@@ -27,13 +27,13 @@ export default class ColorButton extends Component {
   }
 
   handleChange = (color) => {
-    this.setState({ color: color.hex })
-    this.props.onChange(color.hex)
+    this.setState({ color })
+    this.props.onChange(color)
   }
 
   handleChangeComplete = (color, event) => {
-    this.setState({ color: color.hex })
-    this.props.onChangeComplete(color.hex)
+    this.setState({ color })
+    this.props.onChangeComplete(color)
   }
 
   render() {

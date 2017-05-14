@@ -38,13 +38,21 @@ export default class PathShape extends Shape {
     return <g
       data-shape-id={this.id}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
-      <g transform={`translate(${pos.x}, ${pos.y}) rotate(${rotation})`}>
+      <g
+        transform={`translate(${pos.x}, ${pos.y}) rotate(${rotation})`}
+        cursor="move">
         <path
           d={path}
-          stroke={brush.stroke || "none"}
           strokeWidth={brush.strokeWidth || 1}
+          stroke={brush.stroke || "none"}
           fill={brush.fill || "none"}
-          cursor="move"
+        />
+        {/* 当たり判定用の透明なパスシェイプ */}
+        <path
+          d={path}
+          strokeWidth={10 /* 当たり判定を広げる */ }
+          stroke="rgba(0,0,0,0)"
+          fill="rgba(0,0,0,0)"
         />
       </g>
       {selected && <ShapeControl
