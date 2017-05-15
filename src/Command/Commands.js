@@ -28,6 +28,7 @@ import rotateCommand from "./RotateCommand"
 import rotateToCommand from "./RotateToCommand"
 import removeCommand from "./RemoveCommand"
 import selectAllCommand from "./SelectAllCommand"
+import editCommand from "./EditCommand"
 
 export default [
   rectCommand,
@@ -59,5 +60,6 @@ export default [
   rotateCommand,
   rotateToCommand,
   removeCommand,
-  selectAllCommand
+  selectAllCommand,
+  editCommand
 ]

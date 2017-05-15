@@ -6,6 +6,8 @@ export default class Shape {
     this.pos = pointCopy(pos)
     this.rotation = 0
     this.brush = {}
+    this.selected = false
+    this.editing = false
   }
 
   resize() {

@@ -1,14 +1,12 @@
 import _ from "lodash"
-import { InvalidCommandError } from "../Error.js"
+import { validateOptionWithName } from "./optionValidator"
 import { project } from "../helpers/point"
 
 export default {
   action: "curveTo",
 
   validateOptions: (opts) => {
-    if (opts.length === 6) {
-      return InvalidCommandError("insufficient parameters")
-    }
+    return validateOptionWithName(opts, ["x", "y", "x1", "y1", "x2", "y2"])
   },
 
   perform: (state, com) => {

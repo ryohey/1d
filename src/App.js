@@ -67,8 +67,10 @@ deselectAll
 select 1 3 4 5 6 7
 dist x
 
+moveTo 2 2
 text "Hello World!"
 fontSize 2
+deselectAll
 `
 
 function cleanupText(text) {
@@ -259,6 +261,10 @@ class App extends Component {
       this.changeMouseMode("path")
     }
 
+    const onClickText = () => {
+      this.changeMouseMode("text")
+    }
+
     const onChangeFillColor = color => {
       this.previewScript(`fill ${rgbaString(color)}`)
     }
@@ -367,6 +373,7 @@ class App extends Component {
           <ToolbarButton onClick={onClickCircle} title="circle" selected={this.state.mouseMode === "circle"} />
           <ToolbarButton onClick={onClickLine} title="line" selected={this.state.mouseMode === "line"} />
           <ToolbarButton onClick={onClickPath} title="path" selected={this.state.mouseMode === "path"} />
+          <ToolbarButton onClick={onClickText} title="text" selected={this.state.mouseMode === "text"} />
           <ToolbarSeparator />
           <ToolbarButton onClick={onClickOptimize} title="clean up" />
         </div>

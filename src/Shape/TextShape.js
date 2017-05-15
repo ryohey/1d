@@ -2,6 +2,8 @@ import React, { Component } from "react"
 import ShapeControl from "../ShapeControl"
 import Shape from "./Shape"
 
+import "./TextShape.css"
+
 class TextWrapper extends Component {
   constructor(props) {
     super(props)
@@ -24,7 +26,19 @@ class TextWrapper extends Component {
       }
     }
 
-    const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation } = shape
+    const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation, editing } = shape
+
+    const onChangeInput = e => {
+      e.stopPropagation()
+      window.dispatchEvent(new CustomEvent("textshapechange", { detail: {
+        ...e,
+        shapeId: this.id,
+      }}))
+    }
+
+    const onKeyDownInput = e => {
+      e.stopPropagation()
+    }
 
     return <g
       data-shape-id={this.id}
@@ -39,10 +53,29 @@ class TextWrapper extends Component {
         fontSize={fontSize}
         stroke={brush.stroke || "none"}
         strokeWidth={brush.strokeWidth || 1}
-        fill={brush.fill || "black"}>
+        fill={brush.fill || "black"}
+        style={editing ? { opacity: 0 } : {}}>
         {text.replace(/\\n/g, "\n")}
       </text>
-      {selected && <ShapeControl
+      {editing &&
+        <foreignObject
+          x={bounds.origin.x}
+          y={bounds.origin.y}
+          width={bounds.size.x}
+          height={bounds.size.y}>
+          <div xmlns="http://www.w3.org/1999/xhtml" className="input-container">
+            <input
+              style={{ fontSize, color: brush.fill || "black" }}
+              onChange={onChangeInput}
+              onKeyDown={onKeyDownInput}
+              onMouseDown={e => e.stopPropagation()}
+              onMouseMove={e => e.stopPropagation()}
+              onMouseUp={e => e.stopPropagation()}
+              value={text} />
+          </div>
+        </foreignObject>
+      }
+      {!editing && selected && <ShapeControl
         pos={bounds.origin}
         size={bounds.size}
         anchor={pos}
