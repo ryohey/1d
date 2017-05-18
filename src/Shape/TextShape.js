@@ -26,13 +26,13 @@ class TextWrapper extends Component {
       }
     }
 
-    const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation, editing } = shape
+    const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation, editing, id } = shape
 
     const onChangeInput = e => {
       e.stopPropagation()
       window.dispatchEvent(new CustomEvent("textshapechange", { detail: {
         ...e,
-        shapeId: this.id,
+        shapeId: id,
       }}))
     }
 
@@ -41,7 +41,7 @@ class TextWrapper extends Component {
     }
 
     return <g
-      data-shape-id={this.id}
+      data-shape-id={id}
       cursor="move"
       onMouseDown={e => mouseHandler.onMouseDown(e, shape)}>
       <text
