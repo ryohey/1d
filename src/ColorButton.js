@@ -2,6 +2,8 @@ import React, { Component } from "react"
 import reactCSS from "reactcss"
 import { SketchPicker } from "react-color"
 
+import "./ColorButton.css"
+
 export default class ColorButton extends Component {
   constructor(props) {
     super(props)

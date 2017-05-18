@@ -70,36 +70,6 @@ body, textarea, .input {
   font-family: inherit;
 }
 
-.toolbar {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-}
-
-.toolbar .button {
-  padding: 1em 1.5em;
-  font-weight: bold;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-}
-
-.toolbar .button:hover {
-  opacity: 0.8;
-}
-
-.toolbar .button:active {
-  opacity: 0.3;
-}
-
-.toolbar .button.selected {
-  border-bottom: 2px solid currentColor;
-}
-
-.ToolbarSeparator {
-  width: 1px;
-  background: rgba(0, 0, 0, 0.05);
-  margin: 0.5em 0.5em;
-}
-
 .gamma {
   min-width: 14em;
   box-sizing: border-box;
@@ -113,17 +83,6 @@ body, textarea, .input {
 .form .row>label {
   min-width: 5em;
   font-weight: bold;
-}
-
-.ColorButton .box {
-  width: 1em;
-  height: 1em;
-}
-
-.ColorButton {
-  padding: 0.2em;
-  border: 1px solid rgba(0, 0, 0, 0.09);
-  cursor: pointer;
 }
 
 .form .row {
@@ -154,5 +113,5 @@ body, textarea, .input {
 }
 
 svg text {
-  user-select:none;
+  user-select: none;
 }

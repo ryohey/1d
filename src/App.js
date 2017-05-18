@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component } from "react"
 import _ from "lodash"
 import renderCommand from "./Parser/renderCommand"
 import parseCommands from "./Parser/parser"
 import optimize from "./Parser/optimize"
 import MouseHandler from "./MouseHandler/MouseHandler"
-import ColorButton from "./ColorButton"
 import svgToCommands from "./helpers/svgToCommands"
 import commandToText from "./Parser/commandToText"
 import Icon from "./Icon"
@@ -12,8 +11,11 @@ import SelectionRect from "./SelectionRect"
 import { downloadBlob } from "./helpers/downloadBlob"
 import { rectIntersects } from "./helpers/rect"
 import { rgbaString } from "./helpers/color"
+import ShapePropsForm from "./ShapePropsForm"
+import AlignmentToolbar from "./AlignmentToolbar"
+import MainToolbar from "./MainToolbar"
 
-import './App.css';
+import './App.css'
 
 const defaultScript = `
 grid 16
@@ -75,16 +77,6 @@ deselectAll
 
 function cleanupText(text) {
   return text.replace(/[ \t]{2,}/g, "")
-}
-
-function ToolbarButton({ title, onClick, selected = false }) {
-  return <div
-    className={`button ${selected ? "selected" : ""}`}
-    onClick={onClick}>{title}</div>
-}
-
-function ToolbarSeparator() {
-  return <div className="ToolbarSeparator" />
 }
 
 class App extends Component {
@@ -224,7 +216,7 @@ class App extends Component {
 
   render() {
     const { currentScript, mouseHandler } = this
-    const { tempScript, selectionRect } = this.state
+    const { tempScript, selectionRect, mouseMode } = this.state
 
     const script = currentScript + "\n" + tempScript
     const commands = parseCommands(script)
@@ -233,151 +225,148 @@ class App extends Component {
     const selectedShapeSize = selectedShape && selectedShape.size
     const svgContent = shapes.map(s => s.render())
 
-    const onChangeText = e => {
+    const onChangeText= e => {
       this.setScript(e.target.value)
     }
 
-    const onClickSave = () => {
-      downloadBlob(this.currentScript, "noname.1d", "text/plain")
-    }
+    const mainToolbar = <MainToolbar
+      mouseMode={mouseMode}
 
-    const onClickExport = () => {
-      const { svgComponent } = this
-      downloadBlob(svgComponent.outerHTML, "noname.svg", "image/svg+xml")
-    }
+      onClickSave={() => {
+        downloadBlob(this.currentScript, "noname.1d", "text/plain")
+      }}
 
-    const onClickRect = () => {
-      this.changeMouseMode("rect")
-    }
+      onClickExport={() => {
+        const { svgComponent } = this
+        downloadBlob(svgComponent.outerHTML, "noname.svg", "image/svg+xml")
+      }}
 
-    const onClickCircle = () => {
-      this.changeMouseMode("circle")
-    }
+      onFileOpen={e => {
+        const reader = new FileReader()
 
-    const onClickLine = () => {
-      this.changeMouseMode("line")
-    }
+        reader.onload = () => {
+          const commands = svgToCommands(reader.result)
+          this.addScriptLines(commands)
+        }
 
-    const onClickPath = () => {
-      this.changeMouseMode("path")
-    }
+        const file = e.target.files[0]
+        reader.readAsText(file)
+      }}
 
-    const onClickText = () => {
-      this.changeMouseMode("text")
-    }
+      onClickRect={() => {
+        this.changeMouseMode("rect")
+      }}
 
-    const onChangeFillColor = color => {
-      this.previewScript(`fill ${rgbaString(color)}`)
-    }
+      onClickCircle={() => {
+        this.changeMouseMode("circle")
+      }}
 
-    const onChangeFillColorComplete = color => {
-      this.addScript(`fill ${rgbaString(color)}`)
-      this.previewScript("")
-    }
+      onClickLine={() => {
+        this.changeMouseMode("line")
+      }}
 
-    const onChangeStrokeColor = color => {
-      this.previewScript(`stroke ${rgbaString(color)}`)
-    }
+      onClickPath={() => {
+        this.changeMouseMode("path")
+      }}
 
-    const onChangeStrokeColorComplete = color => {
-      this.addScript(`stroke ${rgbaString(color)}`)
-      this.previewScript("")
-    }
+      onClickText={() => {
+        this.changeMouseMode("text")
+      }}
 
-    const onChangeLineWidth = e => {
-      this.previewScript(`strokeWidth ${e.target.value}px`)
-    }
+      onClickOptimize={() => {
+        const optimized = commandToText(optimize(parseCommands(this.currentScript)))
+        this.setScript(optimized)
+      }}
+    />
 
-    const onChangeLineWidthComplete = e => {
-      this.addScript(`strokeWidth ${e.target.value}px`)
-    }
+    const shapePropsForm = <ShapePropsForm
+      selectedShape={selectedShape}
+      selectedShapeSize={selectedShapeSize}
 
-    const onChangePositionX = e => {
-      this.addScript(`translateTo ${e.target.value}px ${selectedShape.pos.y}px`)
-    }
+      onChangeFillColor={color => {
+        this.previewScript(`fill ${rgbaString(color)}`)
+      }}
 
-    const onChangePositionY = e => {
-      this.addScript(`translateTo ${selectedShape.pos.x}px ${e.target.value}px`)
-    }
+      onChangeFillColorComplete={color => {
+        this.addScript(`fill ${rgbaString(color)}`)
+        this.previewScript("")
+      }}
 
-    const onChangeSizeWidth = e => {
-      this.addScript(`resize ${e.target.value}px ${selectedShapeSize.y}px`)
-    }
+      onChangeStrokeColor={color => {
+        this.previewScript(`stroke ${rgbaString(color)}`)
+      }}
 
-    const onChangeSizeHeight = e => {
-      this.addScript(`resize ${selectedShapeSize.y}px ${e.target.value}px`)
-    }
+      onChangeStrokeColorComplete={color => {
+        this.addScript(`stroke ${rgbaString(color)}`)
+        this.previewScript("")
+      }}
 
-    const onChangeRotation = e => {
-      this.addScript(`rotateTo ${e.target.value}`)
-    }
+      onChangeLineWidth={e => {
+        this.previewScript(`strokeWidth ${e.target.value}px`)
+      }}
 
-    const onFileOpen = e => {
-      const reader = new FileReader()
+      onChangeLineWidthComplete={e => {
+        this.addScript(`strokeWidth ${e.target.value}px`)
+      }}
 
-      reader.onload = () => {
-        const commands = svgToCommands(reader.result)
-        this.addScriptLines(commands)
-      }
+      onChangePositionX={e => {
+        this.addScript(`translateTo ${e.target.value}px ${selectedShape.pos.y}px`)
+      }}
 
-      const file = e.target.files[0]
-      reader.readAsText(file)
-    }
+      onChangePositionY={e => {
+        this.addScript(`translateTo ${selectedShape.pos.x}px ${e.target.value}px`)
+      }}
 
-    const onClickOptimize = () => {
-      const optimized = commandToText(optimize(parseCommands(this.currentScript)))
-      this.setScript(optimized)
-    }
+      onChangeSizeWidth={e => {
+        this.addScript(`resize ${e.target.value}px ${selectedShapeSize.y}px`)
+      }}
 
-    const onClickAlignLeft = () => {
-      this.addScript(`align left`)
-    }
+      onChangeSizeHeight={e => {
+        this.addScript(`resize ${selectedShapeSize.y}px ${e.target.value}px`)
+      }}
 
-    const onClickAlignCenter = () => {
-      this.addScript(`align center`)
-    }
+      onChangeRotation={e => {
+        this.addScript(`rotateTo ${e.target.value}`)
+      }}
+    />
 
-    const onClickAlignRight = () => {
-      this.addScript(`align right`)
-    }
+    const alignmentToolbar = <AlignmentToolbar
+      onClickAlignLeft={() => {
+        this.addScript(`align left`)
+      }}
 
-    const onClickAlignTop = () => {
-      this.addScript(`align top`)
-    }
+      onClickAlignCenter={() => {
+        this.addScript(`align center`)
+      }}
 
-    const onClickAlignMiddle = () => {
-      this.addScript(`align middle`)
-    }
+      onClickAlignRight={() => {
+        this.addScript(`align right`)
+      }}
 
-    const onClickAlignBottom = () => {
-      this.addScript(`align bottom`)
-    }
+      onClickAlignTop={() => {
+        this.addScript(`align top`)
+      }}
 
-    const onClickDistX = () => {
-      this.addScript(`dist x`)
-    }
+      onClickAlignMiddle={() => {
+        this.addScript(`align middle`)
+      }}
 
-    const onClickDistY = () => {
-      this.addScript(`dist y`)
-    }
+      onClickAlignBottom={() => {
+        this.addScript(`align bottom`)
+      }}
+
+      onClickDistX={() => {
+        this.addScript(`dist x`)
+      }}
+
+      onClickDistY={() => {
+        this.addScript(`dist y`)
+      }}
+    />
 
     return (
       <div className="App">
-        <div className="toolbar">
-          <ToolbarButton onClick={onClickSave} title="save" />
-          <ToolbarButton onClick={onClickExport} title="export" />
-          <label className="button">open
-            <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
-          </label>
-          <ToolbarSeparator />
-          <ToolbarButton onClick={onClickRect} title="rect" selected={this.state.mouseMode === "rect"} />
-          <ToolbarButton onClick={onClickCircle} title="circle" selected={this.state.mouseMode === "circle"} />
-          <ToolbarButton onClick={onClickLine} title="line" selected={this.state.mouseMode === "line"} />
-          <ToolbarButton onClick={onClickPath} title="path" selected={this.state.mouseMode === "path"} />
-          <ToolbarButton onClick={onClickText} title="text" selected={this.state.mouseMode === "text"} />
-          <ToolbarSeparator />
-          <ToolbarButton onClick={onClickOptimize} title="clean up" />
-        </div>
+        {mainToolbar}
         <div className="content">
           <div className="alpha">
             <textarea value={currentScript} onChange={onChangeText} />
@@ -395,91 +384,10 @@ class App extends Component {
           </div>
           <div className="gamma">
             {selectedShape &&
-              <div className="form">
-                <div className="row buttons">
-                  <Icon name="reorder-vertical" onClick={onClickDistX} />
-                  <Icon name="reorder-horizontal" onClick={onClickDistY} />
-                  <Icon name="format-horizontal-align-left" onClick={onClickAlignLeft} />
-                  <Icon name="format-horizontal-align-center" onClick={onClickAlignCenter} />
-                  <Icon name="format-horizontal-align-right" onClick={onClickAlignRight} />
-                  <Icon name="format-vertical-align-top" onClick={onClickAlignTop} />
-                  <Icon name="format-vertical-align-center" onClick={onClickAlignMiddle} />
-                  <Icon name="format-vertical-align-bottom" onClick={onClickAlignBottom} />
-                </div>
+              <div>
+                {alignmentToolbar}
                 <div className="separator" />
-                <div className="row">
-                  <label>size</label>
-                  <div className="input-group">
-                    <div className="named-input">
-                      <input
-                        type="number"
-                        value={selectedShapeSize.x}
-                        onChange={onChangeSizeWidth} />
-                      <label>width</label>
-                    </div>
-                    <div className="named-input">
-                      <input
-                        type="number"
-                        value={selectedShapeSize.y}
-                        onChange={onChangeSizeHeight} />
-                      <label>height</label>
-                    </div>
-                    </div>
-                </div>
-                <div className="row">
-                  <label>position</label>
-                  <div className="input-group">
-                    <div className="named-input">
-                      <input
-                        type="number"
-                        value={selectedShape.pos.x}
-                        onChange={onChangePositionX} />
-                      <label>x</label>
-                    </div>
-                    <div className="named-input">
-                      <input
-                        type="number"
-                        value={selectedShape.pos.y}
-                        onChange={onChangePositionY} />
-                      <label>y</label>
-                    </div>
-                    </div>
-                </div>
-                <div className="row">
-                  <label>transform</label>
-                  <div className="input-group">
-                    <div className="named-input">
-                      <input
-                        type="number"
-                        value={selectedShape.rotation}
-                        onChange={onChangeRotation} />
-                      <label>rotate</label>
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <label>fill</label>
-                  <ColorButton
-                    color={selectedShape.brush.fill}
-                    onChange={onChangeFillColor}
-                    onChangeComplete={onChangeFillColorComplete} />
-                </div>
-                <div className="row">
-                  <label>stroke</label>
-                  <ColorButton
-                    color={selectedShape.brush.stroke}
-                    onChange={onChangeStrokeColor}
-                    onChangeComplete={onChangeStrokeColorComplete} />
-                </div>
-                <div className="row">
-                  <label>line width</label>
-                  <input
-                    type="range"
-                    min={0} max={10}
-                    value={selectedShape.brush.strokeWidth || 0}
-                    onInput={onChangeLineWidth}
-                    onMouseUp={onChangeLineWidthComplete} />
-                </div>
+                {shapePropsForm}
               </div>
             }
           </div>
