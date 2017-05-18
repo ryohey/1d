@@ -29,6 +29,7 @@ import rotateToCommand from "./RotateToCommand"
 import removeCommand from "./RemoveCommand"
 import selectAllCommand from "./SelectAllCommand"
 import editCommand from "./EditCommand"
+import changeTextCommand from "./ChangeTextCommand"
 
 export default [
   rectCommand,
@@ -61,5 +62,6 @@ export default [
   rotateToCommand,
   removeCommand,
   selectAllCommand,
-  editCommand
+  editCommand,
+  changeTextCommand
 ]
