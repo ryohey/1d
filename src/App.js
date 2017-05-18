@@ -95,7 +95,7 @@ class App extends Component {
       t => this.previewScript(t),
       rect => this.getShapesInsideRect(rect),
       rect => this.setState({ selectionRect: rect }),
-      mode => this.changeMouseMode(mode)
+      (mode, opts) => this.changeMouseMode(mode, opts)
     )
 
     this.state = {
@@ -108,9 +108,10 @@ class App extends Component {
     this.onKeyDown = this.onKeyDown.bind(this)
   }
 
-  changeMouseMode(mode) {
+  changeMouseMode(mode, options) {
     this.setState({ mouseMode: mode })
     this.mouseHandler.mode = mode
+    this.mouseHandler.options = options
   }
 
   previewScript(line) {

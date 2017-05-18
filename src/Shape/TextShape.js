@@ -40,9 +40,19 @@ class TextWrapper extends Component {
       e.stopPropagation()
     }
 
+    const onDoubleClick = e => {
+      e.stopPropagation()
+      window.dispatchEvent(new CustomEvent("textshapedoubleclick", { detail: {
+        ...e,
+        shapeId: id,
+        text
+      }}))
+    }
+
     return <g
       data-shape-id={id}
       cursor="move"
+      onDoubleClick={onDoubleClick}
       onMouseDown={e => mouseHandler.onMouseDown(e, shape)}>
       <text
         ref={this.textComponentDidMount}

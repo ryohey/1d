@@ -10,13 +10,17 @@ export default class MouseHandler {
     this.mode = "default"
 
     this.childHandlers = {
-      "default": new DefaultMouseHandler(addScript, previewScript, getShapesInsideRect, setSelectionRect),
+      "default": new DefaultMouseHandler(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode),
       "rect": new RectMouseHandler(addScript, previewScript, changeMode),
       "circle": new CircleMouseHandler(addScript, previewScript, changeMode),
       "line": new LineMouseHandler(addScript, previewScript, changeMode),
       "path": new PathMouseHandler(addScript, previewScript, changeMode),
       "text": new TextMouseHandler(addScript, previewScript, changeMode)
     }
+  }
+
+  set options(options) {
+    Object.assign(this.childHandlers[this.mode], options)
   }
 
   onMouseDownStage(e) {

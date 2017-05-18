@@ -12,11 +12,21 @@ function anchorToDirection(a) {
 }
 
 export default class DefaultMouseHandler {
-  constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect) {
+  constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode) {
     this.addScript = addScript
     this.previewScript = previewScript
     this.getShapesInsideRect = getShapesInsideRect
     this.setSelectionRect = setSelectionRect
+    this.changeMode = changeMode
+
+    window.addEventListener("textshapedoubleclick", e => {
+      this.changeMode("text", {
+        state: {
+          shapeId: e.detail.shapeId,
+          text: e.detail.text
+        }
+      })
+    })
   }
 
   onMouseDownStage(e) {
