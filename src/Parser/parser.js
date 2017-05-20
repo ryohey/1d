@@ -1,4 +1,5 @@
 import _ from "lodash"
+import shlex from "../helpers/Shlex"
 
 /**
   parse text to command objects
@@ -17,7 +18,7 @@ export default function parseCommands(text) {
       return
     }
 
-    const words = line.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g)
+    const words = shlex(line)
     let target = null
     let action
     let options
