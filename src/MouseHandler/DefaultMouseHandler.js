@@ -1,5 +1,6 @@
 import { pointFromEvent, pointSub, pointAdd, pointMul, pointDiv, pointDot, rectFromPoints } from "../helpers/point"
 import bindMouseHandler from "../helpers/bindMouseHandler"
+import TextShape from "../Shape/TextShape"
 
 const CENTER = { x: 0.5, y: 0.5 }
 
@@ -12,21 +13,13 @@ function anchorToDirection(a) {
 }
 
 export default class DefaultMouseHandler {
-  constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode) {
+  constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode, startTextEditing) {
     this.addScript = addScript
     this.previewScript = previewScript
     this.getShapesInsideRect = getShapesInsideRect
     this.setSelectionRect = setSelectionRect
     this.changeMode = changeMode
-
-    window.addEventListener("textshapedoubleclick", e => {
-      this.changeMode("text", {
-        state: {
-          shapeId: e.detail.shapeId,
-          text: e.detail.text
-        }
-      })
-    })
+    this.startTextEditing = startTextEditing
   }
 
   onMouseDownStage(e) {
@@ -130,5 +123,14 @@ export default class DefaultMouseHandler {
     }
 
     bindMouseHandler(onMouseMove, onMouseUp)
+  }
+
+  onDoubleClick(e, shape) {
+    e.stopPropagation()
+
+    if (shape instanceof TextShape) {
+      this.changeMode("text")
+      this.startTextEditing(shape.id, shape.text)
+    }
   }
 }

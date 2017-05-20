@@ -9,8 +9,12 @@ export default class MouseHandler {
   constructor(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode) {
     this.mode = "default"
 
+    const startTextEditing = (shapeId, text) => {
+      this.childHandlers["text"].beginEditing(shapeId, text)
+    }
+
     this.childHandlers = {
-      "default": new DefaultMouseHandler(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode),
+      "default": new DefaultMouseHandler(addScript, previewScript, getShapesInsideRect, setSelectionRect, changeMode, startTextEditing),
       "rect": new RectMouseHandler(addScript, previewScript, changeMode),
       "circle": new CircleMouseHandler(addScript, previewScript, changeMode),
       "line": new LineMouseHandler(addScript, previewScript, changeMode),
@@ -29,5 +33,17 @@ export default class MouseHandler {
 
   onMouseDown(e, shape, anchor) {
     this.childHandlers[this.mode].onMouseDown(e, shape, anchor)
+  }
+
+  onDoubleClick(e, shape) {
+    this.childHandlers[this.mode].onDoubleClick(e, shape)
+  }
+
+  onKeyDownTextInput(e, shape) {
+    this.childHandlers[this.mode].onKeyDownTextInput(e, shape)
+  }
+
+  onChangeTextInput(e, shape) {
+    this.childHandlers[this.mode].onChangeTextInput(e, shape)
   }
 }

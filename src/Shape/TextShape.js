@@ -28,31 +28,12 @@ class TextWrapper extends Component {
 
     const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation, editing, id } = shape
 
-    const onChangeInput = e => {
-      e.stopPropagation()
-      window.dispatchEvent(new CustomEvent("textshapechange", { detail: {
-        ...e,
-        shapeId: id,
-      }}))
-    }
-
-    const onKeyDownInput = e => {
-      e.stopPropagation()
-    }
-
-    const onDoubleClick = e => {
-      e.stopPropagation()
-      window.dispatchEvent(new CustomEvent("textshapedoubleclick", { detail: {
-        ...e,
-        shapeId: id,
-        text
-      }}))
-    }
+    const isEditing = editing && selected
 
     return <g
       data-shape-id={id}
       cursor="move"
-      onDoubleClick={onDoubleClick}
+      onDoubleClick={e => mouseHandler.onDoubleClick(e, shape)}
       onMouseDown={e => mouseHandler.onMouseDown(e, shape)}>
       <text
         ref={this.textComponentDidMount}
@@ -64,10 +45,10 @@ class TextWrapper extends Component {
         stroke={brush.stroke || "none"}
         strokeWidth={brush.strokeWidth || 1}
         fill={brush.fill || "black"}
-        style={editing ? { opacity: 0 } : {}}>
+        style={isEditing ? { opacity: 0 } : {}}>
         {text.replace(/\\n/g, "\n")}
       </text>
-      {editing &&
+      {isEditing &&
         <foreignObject
           x={bounds.origin.x}
           y={bounds.origin.y}
@@ -76,8 +57,8 @@ class TextWrapper extends Component {
           <div xmlns="http://www.w3.org/1999/xhtml" className="input-container">
             <input
               style={{ fontSize, color: brush.fill || "black" }}
-              onChange={onChangeInput}
-              onKeyDown={onKeyDownInput}
+              onChange={e => mouseHandler.onChangeTextInput(e, shape)}
+              onKeyDown={e => mouseHandler.onKeyDownTextInput(e, shape)}
               onMouseDown={e => e.stopPropagation()}
               onMouseMove={e => e.stopPropagation()}
               onMouseUp={e => e.stopPropagation()}

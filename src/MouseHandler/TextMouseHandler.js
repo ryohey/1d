@@ -7,28 +7,36 @@ export default class TextMouseHandler {
     this.changeMouseMode = changeMouseMode
     this.state = null
     this.startPos = null
-    this.onTextShapeChange = this.onTextShapeChange.bind(this)
-  }
-
-  onTextShapeChange(e) {
-    if (this.state) {
-      this.state.text = e.detail.target.value
-      this.updatePreview()
-    }
   }
 
   updatePreview() {
     this.previewScript(this.buildScript(true).join("\n"))
   }
 
+  beginEditing(shapeId, text, position) {
+    this.state = {
+      text,
+      shapeId,
+      position
+    }
+    this.updatePreview()
+  }
+
+  endEditing() {
+    this.addScript(this.buildScript().join("\n"))
+    this.previewScript("")
+    this.changeMouseMode("default")
+    this.state = null
+  }
+
   buildScript(editing = false) {
-    const { startPos, text, shapeId } = this.state
+    const { position, text, shapeId } = this.state
     if (shapeId) {
       const base = `@${shapeId} changeText "${text}"`
       return editing ? [`edit`, base] : [base]
     }
     const base = [
-      `moveTo ${startPos.x}px ${startPos.y}px`,
+      `moveTo ${position.x}px ${position.y}px`,
       `text "${text}"`,
       `fontSize 1`
     ]
@@ -43,36 +51,29 @@ export default class TextMouseHandler {
         y: e.clientY - bounds.top
       }
     }
-
     const startPos = getLocalPosition(e)
 
     if (!this.state) {
-      this.state = {
-        text: "Hello World",
-        startPos
-      }
-      this.updatePreview()
-      window.addEventListener("textshapechange", this.onTextShapeChange)
+      this.beginEditing(undefined, "Hello World", startPos)
     } else {
-      this.addScript(this.buildScript().join("\n"))
-      this.previewScript("")
-      this.changeMouseMode("default")
-      this.state = null
-      window.removeEventListener("textshapechange", this.onTextShapeChange)
-      return
+      this.endEditing()
     }
-
-    const onMouseMove = e => {
-      const endPos = getLocalPosition(e)
-    }
-
-    const onMouseUp = e => {
-      const endPos = getLocalPosition(e)
-    }
-
-    bindMouseHandler(onMouseMove, onMouseUp)
   }
 
   onMouseDown() {
+  }
+
+  onChangeTextInput(e, shape) {
+    e.stopPropagation()
+
+    if (!this.state) {
+      return
+    }
+    this.state.text = e.target.value
+    this.updatePreview()
+  }
+
+  onKeyDownTextInput(e, shape) {
+    e.stopPropagation()
   }
 }
