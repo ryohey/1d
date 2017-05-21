@@ -1,19 +1,22 @@
 import React, { Component } from "react"
 import _ from "lodash"
+
+import optimize from "./Parser/optimize"
 import renderCommand from "./Parser/renderCommand"
 import parseCommands from "./Parser/parser"
-import optimize from "./Parser/optimize"
-import MouseHandler from "./MouseHandler/MouseHandler"
-import svgToCommands from "./helpers/svgToCommands"
 import commandToText from "./Parser/commandToText"
-import Icon from "./Icon"
+
+import MouseHandler from "./MouseHandler/MouseHandler"
 import SelectionRect from "./SelectionRect"
+
+import svgToCommands from "./helpers/svgToCommands"
+import { rgbaString } from "./helpers/color"
 import { downloadBlob } from "./helpers/downloadBlob"
 import { rectIntersects } from "./helpers/rect"
-import { rgbaString } from "./helpers/color"
-import ShapePropsForm from "./ShapePropsForm"
-import AlignmentToolbar from "./AlignmentToolbar"
-import MainToolbar from "./MainToolbar"
+
+import MainToolbar from "./components/MainToolbar"
+import ShapePropsForm from "./components/ShapePropsForm"
+import AlignmentToolbar from "./components/AlignmentToolbar"
 
 import './App.css'
 

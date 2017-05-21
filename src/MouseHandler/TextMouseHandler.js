@@ -1,5 +1,3 @@
-import bindMouseHandler from "../helpers/bindMouseHandler"
-
 export default class TextMouseHandler {
   constructor(addScript, previewScript, changeMouseMode) {
     this.addScript = addScript

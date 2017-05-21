@@ -47,15 +47,10 @@ export default class PathMouseHandler {
     this.previewScript(pointsToScript(this.points).join("\n"))
 
     const onMouseMove = e => {
-      const endPos = getLocalPosition(e)
-
       // TODO: change curve
     }
 
     const onMouseUp = e => {
-      const endPos = getLocalPosition(e)
-      // const script = createScript(startPos, endPos)
-      // this.addScript(script.join("\n"))
     }
 
     bindMouseHandler(onMouseMove, onMouseUp)
