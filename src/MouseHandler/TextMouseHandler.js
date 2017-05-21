@@ -75,5 +75,9 @@ export default class TextMouseHandler {
 
   onKeyDownTextInput(e, shape) {
     e.stopPropagation()
+
+    if (e.key === "Enter" && e.ctrlKey) {
+      this.endEditing()
+    }
   }
 }
