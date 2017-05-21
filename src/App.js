@@ -331,6 +331,14 @@ class App extends Component {
       onChangeRotation={e => {
         this.addScript(`rotateTo ${e.target.value}`)
       }}
+
+      onChangeFontSize={e => {
+        this.addScript(`fontSize ${e.target.value}px`)
+      }}
+
+      onChangeFontFamily={e => {
+        this.addScript(`fontFamily "${e.target.value}"`)
+      }}
     />
 
     const alignmentToolbar = <AlignmentToolbar

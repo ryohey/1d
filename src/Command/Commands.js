@@ -30,6 +30,7 @@ import removeCommand from "./RemoveCommand"
 import selectAllCommand from "./SelectAllCommand"
 import editCommand from "./EditCommand"
 import changeTextCommand from "./ChangeTextCommand"
+import fontFamilyCommand from "./FontFamilyCommand"
 
 export default [
   rectCommand,
@@ -63,5 +64,6 @@ export default [
   removeCommand,
   selectAllCommand,
   editCommand,
-  changeTextCommand
+  changeTextCommand,
+  fontFamilyCommand
 ]

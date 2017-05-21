@@ -1,6 +1,7 @@
 import React from "react"
 import ColorButton from "./ColorButton"
 import TextShape from "../Shape/TextShape"
+import FontSelect from "./FontSelect"
 
 function Row({ children, label }) {
   return <div className="row">
@@ -27,16 +28,27 @@ function NamedInput({ label, children }) {
   </div>
 }
 
-function TextPropsForm({ shape, onChangeFontSize }) {
+function TextPropsForm({ shape, onChangeFontSize, onChangeFontFamily }) {
   return <div>
     <Row label="font size">
       <NumberInput value={shape.fontSize} onChange={onChangeFontSize} />
     </Row>
     <Row label="font">
-      <select>
-        <option>
-        </option>
-      </select>
+      <FontSelect fonts={[
+        "Georgia",
+        "Palatino Linotype", "Book Antiqua", "Palatino",
+        "Times New Roman", "Times",
+        "Arial", "Helvetica",
+        "Arial Black", "Gadget",
+        "Comic Sans MS",
+        "Impact", "Charcoal",
+        "Lucida Sans Unicode", "Lucida Grande",
+        "Tahoma", "Geneva",
+        "Trebuchet MS",
+        "Verdana",
+        "Courier New", "Courier",
+        "Lucida Console", "Monaco"
+      ]} value={shape.fontFamily} onChange={onChangeFontFamily} />
     </Row>
   </div>
 }
@@ -54,7 +66,9 @@ export default function ShapePropsForm({
   onChangeStrokeColor,
   onChangeStrokeColorComplete,
   onChangeLineWidth,
-  onChangeLineWidthComplete
+  onChangeLineWidthComplete,
+  onChangeFontSize,
+  onChangeFontFamily
 }) {
   return <div className="form ShapePropsForm">
     <Row label="size">
@@ -117,6 +131,8 @@ export default function ShapePropsForm({
     {selectedShape instanceof TextShape &&
       <TextPropsForm
         shape={selectedShape}
+        onChangeFontSize={onChangeFontSize}
+        onChangeFontFamily={onChangeFontFamily}
       />
     }
   </div>

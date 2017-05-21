@@ -26,7 +26,7 @@ class TextWrapper extends Component {
       }
     }
 
-    const { pos, text, fontSize, brush, mouseHandler, selected, bounds, rotation, editing, id } = shape
+    const { pos, text, fontSize, fontFamily, brush, mouseHandler, selected, bounds, rotation, editing, id } = shape
 
     const isEditing = editing && selected
 
@@ -42,6 +42,7 @@ class TextWrapper extends Component {
         x={pos.x}
         y={pos.y}
         fontSize={fontSize}
+        fontFamily={fontFamily}
         stroke={brush.stroke || "none"}
         strokeWidth={brush.strokeWidth || 1}
         fill={brush.fill || "black"}
@@ -56,7 +57,7 @@ class TextWrapper extends Component {
           height={bounds.size.y}>
           <div xmlns="http://www.w3.org/1999/xhtml" className="input-container">
             <input
-              style={{ fontSize, color: brush.fill || "black" }}
+              style={{ fontSize, fontFamily, color: brush.fill || "black" }}
               onChange={e => mouseHandler.onChangeTextInput(e, shape)}
               onKeyDown={e => mouseHandler.onKeyDownTextInput(e, shape)}
               onMouseDown={e => e.stopPropagation()}
