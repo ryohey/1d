@@ -13,6 +13,7 @@
     "react-color": "^2.11.1",
     "react-dom": "^15.4.2",
     "reactcss": "^1.1.1",
+    "resize-observer-polyfill": "^1.4.2",
     "svg-path-parser": "^1.0.1",
     "xml2js": "^0.4.17"
   },

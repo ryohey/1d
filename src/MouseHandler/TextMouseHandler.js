@@ -15,13 +15,20 @@ export default class TextMouseHandler {
     this.state = {
       text,
       shapeId,
-      position
+      position,
+      initialText: text
     }
     this.updatePreview()
   }
 
   endEditing() {
-    this.addScript(this.buildScript().join("\n"))
+    const { shapeId, text, initialText } = this.state
+
+    // 既存のテキストシェイプの編集でテキストが変化したときだけスクリプトを追加する
+    if (shapeId === undefined || text !== initialText) {
+      this.addScript(this.buildScript().join("\n"))
+    }
+
     this.previewScript("")
     this.changeMouseMode("default")
     this.state = null
