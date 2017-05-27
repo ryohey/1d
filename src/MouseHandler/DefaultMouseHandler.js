@@ -103,7 +103,7 @@ export default class DefaultMouseHandler {
       } else {
         // 移動
         const delta = pointSub(pointFromEvent(e), startPos)
-        tempScript = `@${nameOrId} translate ${delta.x}px ${delta.y}px`
+        tempScript = `select ${nameOrId}\ntranslate ${delta.x}px ${delta.y}px`
         this.previewScript(tempScript)
       }
     }
