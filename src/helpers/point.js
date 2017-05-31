@@ -112,8 +112,8 @@ function conform(obj, keys) {
 
 function toPathCommand(p) {
   if (p.command === "curveto") {
-    if (conform(p, ["x1", "y1", "x2", "y2"])) {
-      return `C${p.x1} ${p.y1} ${p.x2} ${p.y2} ${p.x} ${p.y}`
+    if (conform(p, ["x", "y", "c1", "c2"])) {
+      return `C${p.c2.x} ${p.c2.y} ${p.c1.x} ${p.c1.y} ${p.x} ${p.y}`
     } else {
       console.warn("invalid curve: ", p)
     }

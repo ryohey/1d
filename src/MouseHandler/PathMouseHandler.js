@@ -2,12 +2,22 @@ import _ from "lodash"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 import { pointDistance } from "../helpers/point"
 
+function commandFromPoint(p) {
+  if (p.c1 && p.c2) {
+    return `curveTo ${p.x}px ${p.y}px ${p.c1.x}px ${p.c1.y}px ${p.c2.x}px ${p.c2.y}px`
+  }
+  return `lineTo ${p.x}px ${p.y}px`
+}
+
 function pointsToScript(points, fillColor="rgba(0,0,0,0.1)", strokeColor = "gray", lineWidth = 2) {
+  if (points.length === 0) {
+    return []
+  }
   const head = _.head(points)
   const tail = _.tail(points)
   return [
     `moveTo ${head.x}px ${head.y}px`,
-    ...tail.map(p => `lineTo ${p.x}px ${p.y}px`),
+    ...tail.map(commandFromPoint),
     `strokeWidth 2px`,
     `fill rgba(0,0,0,0.1)`,
     `stroke gray`,
@@ -22,6 +32,20 @@ export default class PathMouseHandler {
     this.points = []
   }
 
+  updatePreview() {
+    this.previewScript(pointsToScript(this.points).join("\n"))
+  }
+
+  endEditing() {
+    this.previewScript("")
+    this.addScript([
+      ...pointsToScript(this.points),
+      `close`
+    ].join("\n"))
+    this.points = []
+    this.changeMode("default")
+  }
+
   onMouseDownStage(e) {
     const bounds = e.currentTarget.getBoundingClientRect()
     function getLocalPosition(e) {
@@ -33,21 +57,20 @@ export default class PathMouseHandler {
 
     const startPos = getLocalPosition(e)
 
+    // 最初の点をクリックしたらパスを閉じて終了
     if (this.points.length > 0 && pointDistance(startPos, this.points[0]) < 5) {
-      this.addScript([
-        ...pointsToScript(this.points),
-        `close`
-      ].join("\n"))
-      this.points = []
-      this.changeMode("default")
+      this.endEditing()
     }
 
     this.points.push(startPos)
-
-    this.previewScript(pointsToScript(this.points).join("\n"))
+    this.updatePreview()
 
     const onMouseMove = e => {
       // TODO: change curve
+      const p = _.last(this.points)
+      p.c1 = getLocalPosition(e)
+      p.c2 = getLocalPosition(e)
+      this.updatePreview()
     }
 
     const onMouseUp = e => {

@@ -10,14 +10,14 @@ export default {
   },
 
   perform: (state, com) => {
-    const { transform, currentShape } = state
+    const { transform } = state
     const [x, y, x1, y1, x2, y2] = com.options
     state.preparePathShape()
     const p = project(transform, { x, y })
     const c1 = project(transform, { x: x1, y: y1 })
     const c2 = project(transform, { x: x2, y: y2 })
     state.move(x, y)
-    currentShape.path.push({
+    state.currentShape.path.push({
       x: p.x, y: p.y,
       c1, c2,
       command: "curveto",
