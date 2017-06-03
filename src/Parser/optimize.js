@@ -44,12 +44,6 @@ export default function optimize(commands) {
         optimized = true
       }
 
-      if (c.action === "select1") {
-        // 後の値で上書き
-        prev.options[0] = c.options[0]
-        optimized = true
-      }
-
       if (c.action === "fill") {
         // 後の値で上書き
         prev.options[0] = c.options[0]
@@ -71,6 +65,11 @@ export default function optimize(commands) {
         optimized = true
       }
 
+      if (c.action === "deselect" && prev.options[0] === c.options[0]) {
+        // 削除
+        optimized = true
+      }
+
       if (c.action === "deselectAll") {
         // 削除
         optimized = true
@@ -88,7 +87,7 @@ export default function optimize(commands) {
       }
     }
 
-    if (c.action === "deselectAll" && (prev.action === "select" || prev.action === "select1")) {
+    if (c.action === "deselectAll" && prev.action === "select") {
       // 選択後に選択解除していたら選択を削除する
       prev = c
       optimized = true

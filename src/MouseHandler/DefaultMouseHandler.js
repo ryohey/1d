@@ -113,8 +113,8 @@ export default class DefaultMouseHandler {
         // 移動せずクリックが終了した場合は選択状態にする
         const nameOrId = shape.name || shape.id
         // shift を押していたら複数選択
-        const com = e.shiftKey ? "select" : "select1"
-        this.addScript(`${com} ${nameOrId}`)
+        const deselect = e.shiftKey ? "" : `deselectAll\n`
+        this.addScript(`${deselect}select ${nameOrId}`)
       } else {
         // 移動してクリックが終了した場合は target の移動・リサイズを確定する
         this.addScript(tempScript)

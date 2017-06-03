@@ -36,21 +36,21 @@ it("reduces translateTo", () => {
   expect(result[0].options[1]).toEqual("7")
 })
 
-it("reduces select1", () => {
+it("reduces deselect", () => {
   const commands = [
     {
-      action: "select1",
+      action: "deselect",
       options: ["aaa"]
     },
     {
-      action: "select1",
-      options: ["bbb"]
+      action: "deselect",
+      options: ["aaa"]
     }
   ]
   const result = optimize(commands)
   expect(result.length).toEqual(1)
-  expect(result[0].action).toEqual("select1")
-  expect(result[0].options[0]).toEqual("bbb")
+  expect(result[0].action).toEqual("deselect")
+  expect(result[0].options[0]).toEqual("aaa")
 })
 
 it("reduces fill", () => {

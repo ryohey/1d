@@ -18,7 +18,7 @@ import fillCommand from "./FillCommand"
 import strokeWidthCommand from "./StrokeWidthCommand"
 import nameCommand from "./NameCommand"
 import selectCommand from "./SelectCommand"
-import select1Command from "./Select1Command"
+import deselectCommand from "./DeselectCommand"
 import smoothCurveToCommand from "./SmoothCurveToCommand"
 import ellipticalArcCommand from "./EllipticalArcCommand"
 import alignCommand from "./AlignCommand"
@@ -53,7 +53,7 @@ export default [
   strokeWidthCommand,
   nameCommand,
   selectCommand,
-  select1Command,
+  deselectCommand,
   smoothCurveToCommand,
   ellipticalArcCommand,
   alignCommand,
