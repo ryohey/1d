@@ -1,24 +1,16 @@
 import _ from "lodash"
 
 function doWithKey(a, b, key, func) {
-  if (a[key] !== undefined) {
+  if (a[key] !== undefined && b[key] !== undefined) {
     return func(a[key], b[key])
   }
   return undefined
 }
 
-// x, y をもつオブジェクトに対する関数を曲線のコントロールポイントにも適用する関数に拡張する
-function extendCurve(func) {
-  return function(a, b) {
-    const p = func(a, b)
-    p.c = doWithKey(a, b, "c", func)
-    p.c1 = doWithKey(a, b, "c1", func)
-    p.c2 = doWithKey(a, b, "c2", func)
-    return p
-  }
-}
+// 渡された関数を1番目の引数のオブジェクトを func を適用した結果で上書きする関数にする
+const applyLeft = func => (a, b) => ({ a, ...func(a, b) })
 
-export const pointAdd = extendCurve((a, b) => {
+export const pointAdd = applyLeft((a, b) => {
   return {
     x: a.x + b.x,
     y: a.y + b.y,
@@ -26,7 +18,7 @@ export const pointAdd = extendCurve((a, b) => {
 })
 
 // a - b
-export const pointSub = extendCurve((a, b) => {
+export const pointSub = applyLeft((a, b) => {
   return {
     x: a.x - b.x,
     y: a.y - b.y,
@@ -37,28 +29,28 @@ export function pointCopy(a) {
   return _.clone(a)
 }
 
-export const pointMul = extendCurve((p, s) => {
+export const pointMul = applyLeft((p, s) => {
   return {
     x: p.x * s,
     y: p.y * s
   }
 })
 
-export const pointDot = extendCurve((a, b) => {
+export const pointDot = applyLeft((a, b) => {
   return {
     x: a.x * b.x,
     y: a.y * b.y
   }
 })
 
-export const pointDiv = extendCurve((a, b) => {
+export const pointDiv = applyLeft((a, b) => {
   return {
     x: a.x / b.x,
     y: a.y / b.y
   }
 })
 
-export const pointRound = extendCurve(p => {
+export const pointRound = applyLeft(p => {
   return {
     x: Math.round(p.x),
     y: Math.round(p.y)
@@ -106,19 +98,59 @@ export function project(transform, value) {
   return resolveDimension(transform, value)
 }
 
-function conform(obj, keys) {
-  return keys.filter(key => !_.has(obj, key)).length === 0
-}
-
 function toPathCommand(p) {
-  if (p.command === "curveto") {
-    if (conform(p, ["x", "y", "c1", "c2"])) {
-      return `C${p.c2.x} ${p.c2.y} ${p.c1.x} ${p.c1.y} ${p.x} ${p.y}`
-    } else {
-      console.warn("invalid curve: ", p)
-    }
+  if (isPointCurve(p)) {
+    return `C${p.c1.x} ${p.c1.y} ${p.c2.x} ${p.c2.y} ${p.x} ${p.y}`
   }
   return `L${p.x} ${p.y}`
+}
+
+function isPointCurve(p) {
+  return p.c1 !== undefined && p.c2 !== undefined
+}
+
+/**
+
+ SVG の 3次ベジェ曲線は C1 が前の点のコントロールポイント、C2 が今の点のコントロールポイントになっているので、コントロールポイントを1つ分後にずらす
+
+ [
+   { x: 1, y: 2 },
+   { x: 4, y: 4, c1: { x: 999, y: 111 }, c2: { x: 555, y: 22} },
+   { x: 6, y: 7, c1: { x: 999, y: 111 }, c2: { x: 555, y: 22} },
+ ]
+
+ としたら出力は
+
+  [
+    { x: 1, y: 2 },
+    { x: 4, y: 4, c2: { x: 999, y: 111 } },
+    { x: 6, y: 7, c1: { x: 555, y: 22 }, c2: { x: 999, y: 111 } },
+  ]
+
+  となる
+
+
+ */
+function fixCurve(points) {
+  return points.map((p, i) => {
+    const prev = points[i - 1]
+    const result = {
+      x: p.x,
+      y: p.y
+    }
+
+    // 前の点が control point をもつなら c1 をこの点に持ってくる
+    if (prev && isPointCurve(prev)) {
+      result.c1 = prev.c2
+    }
+
+    // この点が control point をもつなら c2 を c1 にする
+    if (isPointCurve(p)) {
+      result.c2 = p.c1
+    }
+
+    return result
+  })
 }
 
 /**
@@ -126,7 +158,7 @@ function toPathCommand(p) {
   => M10 20 L40 30 L9 54
 */
 export function toSVGPath(points, closed = false) {
-  const path = [`M${points[0].x} ${points[0].y}`, ..._.tail(points).map(toPathCommand)]
+  const path = [`M${points[0].x} ${points[0].y}`, ...fixCurve(_.tail(points)).map(toPathCommand)]
   return `${path.join(" ")}${closed ? " Z" : ""}`
 }
 

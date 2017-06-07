@@ -2,7 +2,7 @@ import React from "react"
 import Shape from "./Shape"
 import _ from "lodash"
 import { pointMul, pointSub, pointAdd, pointDot } from "../helpers/point"
-import ShapeControl from "../ShapeControl"
+import ShapeControl from "../components/ShapeControl"
 
 // スケーリングした時の位置のずれを計算する
 export function moveByAnchor(pos, delta, anchor) {

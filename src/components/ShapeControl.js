@@ -1,5 +1,5 @@
 import React from "react"
-import { toSVGPath, rect, pointAdd, pointDot, pointRound } from "./helpers/point"
+import { toSVGPath, rect, pointAdd, pointDot, pointRound } from "../helpers/point"
 
 const HANDLE_SIZE = 3
 const DOT_SIZE = 3

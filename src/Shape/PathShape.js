@@ -1,8 +1,38 @@
 import React from "react"
 import Shape from "./Shape"
-import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath, pointsMax, pointsMin } from "../helpers/point"
-import ShapeControl from "../ShapeControl"
+import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath, pointsMax, pointsMin, rect } from "../helpers/point"
+import ShapeControl from "../components/ShapeControl"
 import _ from "lodash"
+
+const HANDLE_SIZE = 3
+const COLOR = "rgb(37, 129, 255)"
+const COLOR2 = "rgb(255, 129, 37)"
+
+// c1, c2 を持つ object だけにする
+function filterControlPoints(points) {
+  return points.filter(p => p.c1 !== undefined && p.c2 !== undefined)
+}
+
+function CurveControl({ point }) {
+  const c1 = point.c1
+  const c2 = point.c2
+  return <g>
+    <path d={toSVGPath([point, c1])} stroke={COLOR} strokeWidth={1} />
+    <path d={toSVGPath([point, c2])} stroke={COLOR2} strokeWidth={1} />
+    <ControlRect center={c1} />
+    <ControlRect center={c2} />
+  </g>
+}
+
+function ControlRect({ center, onMouseDown }) {
+  return <path
+    d={toSVGPath(rect(center, HANDLE_SIZE), true)}
+    stroke={COLOR}
+    fill="white"
+    cursor="pointer"
+    onMouseDown={onMouseDown}
+  />
+}
 
 export default class PathShape extends Shape {
   constructor(pos = { x: 0, y: 0 }, path = [], closed = false) {
@@ -35,6 +65,8 @@ export default class PathShape extends Shape {
   render() {
     const { pos, closed, mouseHandler, brush, selected, bounds, rotation } = this
     const path = toSVGPath(this.path, closed)
+    const controlPoints = filterControlPoints(this.path)
+
     return <g
       data-shape-id={this.id}
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
@@ -47,6 +79,7 @@ export default class PathShape extends Shape {
           stroke={brush.stroke || "none"}
           fill={brush.fill || "none"}
         />
+        {selected && controlPoints.map(p => <CurveControl point={p} />)}
         {/* 当たり判定用の透明なパスシェイプ */}
         <path
           d={path}

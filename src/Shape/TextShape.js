@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import ShapeControl from "../ShapeControl"
+import ShapeControl from "../components/ShapeControl"
 import Shape from "./Shape"
 import ResizeObserver from "resize-observer-polyfill"
 

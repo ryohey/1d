@@ -1,6 +1,6 @@
 import _ from "lodash"
 import bindMouseHandler from "../helpers/bindMouseHandler"
-import { pointDistance } from "../helpers/point"
+import { pointDistance, pointAdd, pointMul, pointSub } from "../helpers/point"
 
 function commandFromPoint(p) {
   if (p.c1 && p.c2) {
@@ -66,10 +66,11 @@ export default class PathMouseHandler {
     this.updatePreview()
 
     const onMouseMove = e => {
-      // TODO: change curve
       const p = _.last(this.points)
-      p.c1 = getLocalPosition(e)
-      p.c2 = getLocalPosition(e)
+      const c2 = pointSub(getLocalPosition(e), p)
+      const c1 = pointMul(c2, -1)
+      p.c1 = c1
+      p.c2 = c2
       this.updatePreview()
     }
 

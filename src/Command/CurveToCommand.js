@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { validateOptionWithName } from "./optionValidator"
-import { project } from "../helpers/point"
+import { project, pointAdd } from "../helpers/point"
 
 export default {
   action: "curveTo",
@@ -16,10 +16,12 @@ export default {
     const p = project(transform, { x, y })
     const c1 = project(transform, { x: x1, y: y1 })
     const c2 = project(transform, { x: x2, y: y2 })
-    state.move(x, y)
+    state.pos = p
     state.currentShape.path.push({
-      x: p.x, y: p.y,
-      c1, c2,
+      x: p.x,
+      y: p.y,
+      c1: pointAdd(c1, p),
+      c2: pointAdd(c2, p),
       command: "curveto",
       code: "C"
     })
