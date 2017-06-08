@@ -27,5 +27,5 @@ export default function renderCommand(commands, mouseHandler) {
     }
   }
 
-  return state.shapes
+  return state.shapes.sort((a, b) => a.zIndex - b.zIndex)
 }

@@ -31,6 +31,8 @@ import selectAllCommand from "./SelectAllCommand"
 import editCommand from "./EditCommand"
 import changeTextCommand from "./ChangeTextCommand"
 import fontFamilyCommand from "./FontFamilyCommand"
+import bringToFrontCommand from "./BringToFrontCommand"
+import sendToBackCommand from "./SendToBackCommand"
 
 export default [
   rectCommand,
@@ -65,5 +67,7 @@ export default [
   selectAllCommand,
   editCommand,
   changeTextCommand,
-  fontFamilyCommand
+  fontFamilyCommand,
+  bringToFrontCommand,
+  sendToBackCommand
 ]

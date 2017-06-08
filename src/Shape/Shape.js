@@ -8,6 +8,7 @@ export default class Shape {
     this.brush = {}
     this.selected = false
     this.editing = false
+    this.zIndex = 0
   }
 
   resize() {
