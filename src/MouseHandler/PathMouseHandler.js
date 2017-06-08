@@ -1,6 +1,6 @@
 import _ from "lodash"
 import bindMouseHandler from "../helpers/bindMouseHandler"
-import { pointDistance, pointAdd, pointMul, pointSub } from "../helpers/point"
+import { pointDistance, pointMul, pointSub } from "../helpers/point"
 
 function commandFromPoint(p) {
   if (p.c1 && p.c2) {

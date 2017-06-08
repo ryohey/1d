@@ -1,6 +1,10 @@
 import _ from "lodash"
 import shlex from "../helpers/Shlex"
 
+function cleanup(text) {
+  return text.replace(/ +$/, "")
+}
+
 /**
   parse text to command objects
 
@@ -18,7 +22,7 @@ export default function parseCommands(text) {
       return
     }
 
-    const words = shlex(line)
+    const words = shlex(cleanup(line))
     let target = null
     let action
     let options

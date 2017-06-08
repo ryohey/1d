@@ -85,6 +85,12 @@ export default function optimize(commands) {
         prev.options[0] = c.options[0]
         optimized = true
       }
+
+      if (c.action === "fontSize") {
+        // 後の値で上書き
+        prev.options[0] = c.options[0]
+        optimized = true
+      }
     }
 
     if (c.action === "deselectAll" && prev.action === "select") {

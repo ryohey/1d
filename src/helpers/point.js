@@ -1,12 +1,5 @@
 import _ from "lodash"
 
-function doWithKey(a, b, key, func) {
-  if (a[key] !== undefined && b[key] !== undefined) {
-    return func(a[key], b[key])
-  }
-  return undefined
-}
-
 // 渡された関数を1番目の引数のオブジェクトを func を適用した結果で上書きする関数にする
 const applyLeft = func => (a, b) => ({ a, ...func(a, b) })
 
