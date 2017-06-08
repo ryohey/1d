@@ -33,6 +33,7 @@ import changeText from "./ChangeTextCommand"
 import fontFamily from "./FontFamilyCommand"
 import bringToFront from "./BringToFrontCommand"
 import sendToBack from "./SendToBackCommand"
+import comment from "./CommentCommand"
 
 export default [
   rect,
@@ -69,5 +70,6 @@ export default [
   changeText,
   fontFamily,
   bringToFront,
-  sendToBack
+  sendToBack,
+  comment
 ]

@@ -27,7 +27,11 @@ export default function parseCommands(text) {
     let action
     let options
 
-    if (words[0].startsWith("@") && words.length > 1) {
+    if (words[0].startsWith("#") || words[0].startsWith("//")) {
+      // skip comment line
+      action = "comment"
+      options = words
+    } else if (words[0].startsWith("@") && words.length > 1) {
       target = words[0].slice(1, words[0].length)
       action = words[1]
       options = words.slice(2, words.length)

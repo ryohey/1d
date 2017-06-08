@@ -9,6 +9,19 @@ function flatJoin(arr, sep) {
   return arr.filter(x => x).join(sep)
 }
 
+function restoreComment(action) {
+  if (action === "comment") {
+    return null
+  }
+  return action
+}
+
 export default function commandToText(commands) {
-  return commands.map(c => flatJoin([c.target && `@${c.target}`, c.action, ...c.options.map(wrapQuote)], " ")).join("\n")
+  return commands
+    .map(c => flatJoin([
+      c.target && `@${c.target}`,
+      restoreComment(c.action),
+      ...c.options.map(wrapQuote)
+    ], " "))
+    .join("\n")
 }
