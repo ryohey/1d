@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import { Point } from "paper"
 import ShapeControl from "../components/ShapeControl"
 import Shape from "./Shape"
 import ResizeObserver from "resize-observer-polyfill"
@@ -23,10 +24,7 @@ class TextWrapper extends Component {
     this.ro = new ResizeObserver((entries, observer) => {
       const { width, height } = entries[0].contentRect
       this.setState({
-        shapeSize: {
-          x: width,
-          y: height
-        }
+        shapeSize: new Point(width, height)
       })
     })
     this.ro.observe(this.textComponent)
@@ -101,11 +99,11 @@ class TextWrapper extends Component {
 }
 
 export default class TextShape extends Shape {
-  constructor(pos = { x: 0, y: 0 }, text = "") {
+  constructor(pos, text = "") {
     super(pos)
     this.text = text
     this.fontSize = 0
-    this._size = { x: 0, y: 0 }
+    this._size = new Point(0, 0)
   }
 
   get size() {

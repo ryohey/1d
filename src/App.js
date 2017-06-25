@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import _ from "lodash"
+import { Point } from "paper"
 
 import optimize from "./Parser/optimize"
 import renderCommand from "./Parser/renderCommand"
@@ -167,8 +168,8 @@ class App extends Component {
 
     function toRect(bbox) {
       return {
-        origin: { x: bbox.x, y: bbox.y },
-        size: { x: bbox.width, y: bbox.height }
+        origin: new Point(bbox),
+        size: new Point(bbox.width, bbox.height)
       }
     }
 

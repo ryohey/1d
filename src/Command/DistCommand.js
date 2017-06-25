@@ -1,7 +1,7 @@
 import _ from "lodash"
+import { Point } from "paper"
 import { validateOptionWithName } from "./optionValidator"
 import { InvalidStateError } from "../Error.js"
-import { pointMul, pointSub, pointAdd } from "../helpers/point"
 import { getRectCenter, getRectBottom, getRectRight, getRectMiddle } from "../helpers/rect"
 
 function range(num) {
@@ -15,7 +15,7 @@ function range(num) {
 // start から end を繋ぐ線分を等分する num 個の点を返す
 function dist(start, end, num) {
   return range(num - 1).map(i =>
-    pointAdd(start, pointMul(pointSub(end, start), i / (num - 1))))
+    start.add(end.subtract(start).multiply(i / (num - 1))))
 }
 
 export default {
@@ -40,8 +40,8 @@ export default {
         const leftRect = _.minBy(arr, b => b.origin.x)
         const rightRect = _.maxBy(arr, getRectRight)
         const list = dist(
-          { x: getRectCenter(leftRect), y: 0 },
-          { x: getRectCenter(rightRect), y: 0 },
+          new Point(getRectCenter(leftRect), 0),
+          new Point(getRectCenter(rightRect), 0),
           shapes.length)
         shapes
           .sort((a, b) => a.origin.x > b.origin.x)
@@ -54,8 +54,8 @@ export default {
         const topRect = _.minBy(arr, b => b.origin.y)
         const bottomRect = _.maxBy(arr, getRectBottom)
         const list = dist(
-          { x: 0, y: getRectMiddle(topRect) },
-          { x: 0, y: getRectMiddle(bottomRect) },
+          new Point(0, getRectMiddle(topRect)),
+          new Point(0, getRectMiddle(bottomRect)),
           shapes.length)
         shapes
           .sort((a, b) => a.origin.y > b.origin.y)

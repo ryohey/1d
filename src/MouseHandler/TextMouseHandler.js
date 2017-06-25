@@ -1,3 +1,5 @@
+import { Point } from "paper"
+
 export default class TextMouseHandler {
   constructor(addScript, previewScript, changeMouseMode) {
     this.addScript = addScript
@@ -51,10 +53,10 @@ export default class TextMouseHandler {
   onMouseDownStage(e) {
     const bounds = e.currentTarget.getBoundingClientRect()
     function getLocalPosition(e) {
-      return {
-        x: e.clientX - bounds.left,
-        y: e.clientY - bounds.top
-      }
+      return new Point(
+        e.clientX - bounds.left,
+        e.clientY - bounds.top
+      )
     }
     const startPos = getLocalPosition(e)
 

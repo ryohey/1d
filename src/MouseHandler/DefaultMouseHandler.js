@@ -1,8 +1,9 @@
+import { Point } from "paper"
 import { pointFromEvent, pointSub, pointAdd, pointMul, pointDiv, pointDot, rectFromPoints } from "../helpers/point"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 import TextShape from "../Shape/TextShape"
 
-const CENTER = { x: 0.5, y: 0.5 }
+const CENTER = new Point(0.5, 0.5)
 
 function invertAnchor(a) {
   return pointAdd(pointMul(pointSub(a, CENTER), -1), CENTER)
@@ -26,10 +27,10 @@ export default class DefaultMouseHandler {
     e.stopPropagation()
     const bounds = e.target.getBoundingClientRect()
     function getLocalPosition(e) {
-      return {
-        x: e.clientX - bounds.left,
-        y: e.clientY - bounds.top
-      }
+      return new Point(
+        e.clientX - bounds.left,
+        e.clientY - bounds.top
+      )
     }
 
     const startPos = getLocalPosition(e)
@@ -41,7 +42,7 @@ export default class DefaultMouseHandler {
 
     this.setSelectionRect({
       origin: startPos,
-      size: { x: 0, y: 0 }
+      size: new Point(0, 0)
     })
 
     const onMouseMove = e => {

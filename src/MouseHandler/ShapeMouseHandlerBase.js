@@ -1,3 +1,4 @@
+import { Point } from "paper"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 
 // シェイプを作成する MouseHandler のベースクラス
@@ -11,10 +12,10 @@ export default (createScript) => class ShapeMouseHandlerBase {
   onMouseDownStage(e) {
     const bounds = e.currentTarget.getBoundingClientRect()
     function getLocalPosition(e) {
-      return {
-        x: e.clientX - bounds.left,
-        y: e.clientY - bounds.top
-      }
+      return new Point(
+        e.clientX - bounds.left,
+        e.clientY - bounds.top
+      )
     }
 
     const startPos = getLocalPosition(e)

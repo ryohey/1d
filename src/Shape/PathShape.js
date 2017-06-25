@@ -35,7 +35,7 @@ function ControlRect({ center, onMouseDown }) {
 }
 
 export default class PathShape extends Shape {
-  constructor(pos = { x: 0, y: 0 }, path = [], closed = false) {
+  constructor(pos, path = [], closed = false) {
     super(pos)
     this.path = path
     this.closed = closed

@@ -1,3 +1,4 @@
+import { Point } from "paper"
 import { InvalidCommandError, InvalidStateError } from "../Error.js"
 import { project } from "../helpers/point"
 
@@ -12,8 +13,9 @@ export default {
 
   perform: (state, com) => {
     const [x, y, anchorX = 0.5, anchorY = 0.5] = com.options
-    const anchor = { x: anchorX, y: anchorY }
+    const anchor = new Point(anchorX, anchorY)
     const { transform } = state
+    const p = project(transform, { x, y })
 
     const targetShapes = state.targetShapes(com)
     if (targetShapes.length === 0) {
@@ -21,6 +23,6 @@ export default {
     }
 
     targetShapes.forEach(shape =>
-      shape.resize(project(transform, { x, y }), anchor))
+      shape.resize(new Point(p), anchor))
   }
 }

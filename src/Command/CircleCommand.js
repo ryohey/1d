@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { Point } from "paper"
 import { InvalidCommandError } from "../Error.js"
 import { project } from "../helpers/point"
 import CircleShape from "../Shape/CircleShape"
@@ -15,7 +16,7 @@ export default {
   perform: (state, com) => {
     const opts = com.options
     const rx = project(state.transform, opts[0])
-    const radius = { x: rx, y: rx }
+    const radius = new Point(rx, rx)
     if (!_.isNil(opts[1])) {
       radius.y = project(state.transform, opts[1])
     }

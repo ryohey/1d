@@ -1,12 +1,13 @@
 import React from "react"
+import { Point } from "paper"
 import { toSVGPath } from "./helpers/point"
 
 function rectPath({ origin, size }) {
   return [
     origin,
-    { x: origin.x + size.x, y: origin.y },
-    { x: origin.x + size.x, y: origin.y + size.y },
-    { x: origin.x, y: origin.y + size.y },
+    new Point(origin.x + size.x, origin.y),
+    new Point(origin.x + size.x, origin.y + size.y),
+    new Point(origin.x, origin.y + size.y),
   ]
 }
 

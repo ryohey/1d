@@ -1,6 +1,7 @@
 import React from "react"
-import Shape from "./Shape"
 import _ from "lodash"
+import { Point } from "paper"
+import Shape from "./Shape"
 import { pointMul, pointSub, pointAdd, pointDot } from "../helpers/point"
 import ShapeControl from "../components/ShapeControl"
 
@@ -8,11 +9,11 @@ import ShapeControl from "../components/ShapeControl"
 export function moveByAnchor(pos, delta, anchor) {
   return pointAdd(pos,
     pointDot(delta,
-      pointSub(anchor, { x: 0.5, y: 0.5 })))
+      pointSub(anchor, new Point(0.5, 0.5))))
 }
 
 export default class CircleShape extends Shape {
-  constructor(pos = { x: 0, y: 0 }, radius) {
+  constructor(pos, radius) {
     super(pos)
     this.radius = radius
   }

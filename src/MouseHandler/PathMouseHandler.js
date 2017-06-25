@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { Point } from "paper"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 import { pointDistance, pointMul, pointSub } from "../helpers/point"
 
@@ -49,10 +50,10 @@ export default class PathMouseHandler {
   onMouseDownStage(e) {
     const bounds = e.currentTarget.getBoundingClientRect()
     function getLocalPosition(e) {
-      return {
-        x: e.clientX - bounds.left,
-        y: e.clientY - bounds.top
-      }
+      return new Point(
+        e.clientX - bounds.left,
+        e.clientY - bounds.top
+      )
     }
 
     const startPos = getLocalPosition(e)

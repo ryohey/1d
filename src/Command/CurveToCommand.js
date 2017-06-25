@@ -1,6 +1,7 @@
 import _ from "lodash"
+import { Point } from "paper"
 import { validateOptionWithName } from "./optionValidator"
-import { project, pointAdd } from "../helpers/point"
+import { project } from "../helpers/point"
 
 export default {
   action: "curveTo",
@@ -13,15 +14,15 @@ export default {
     const { transform } = state
     const [x, y, x1, y1, x2, y2] = com.options
     state.preparePathShape()
-    const p = project(transform, { x, y })
-    const c1 = project(transform, { x: x1, y: y1 })
-    const c2 = project(transform, { x: x2, y: y2 })
+    const p = project(transform, new Point(x, y))
+    const c1 = project(transform, new Point(x1, y1))
+    const c2 = project(transform, new Point(x2, y2))
     state.pos = p
     state.currentShape.path.push({
       x: p.x,
       y: p.y,
-      c1: pointAdd(c1, p),
-      c2: pointAdd(c2, p),
+      c1: c1.add(p),
+      c2: c2.add(p),
       command: "curveto",
       code: "C"
     })

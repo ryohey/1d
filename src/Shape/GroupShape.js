@@ -1,11 +1,12 @@
 import React from "react"
+import { Point } from "paper"
 import Shape from "./Shape"
 import { toSVGPath, pointDiv, pointDot, pointSub, pointMul } from "../helpers/point"
 import { rectUnion, rectPoints } from "../helpers/rect"
 import ShapeControl from "../components/ShapeControl"
 
 export default class GroupShape extends Shape {
-  constructor(pos = { x: 0, y: 0 }, shapes = []) {
+  constructor(pos = new Point(0, 0), shapes = []) {
     super(pos)
     this.shapes = shapes
   }

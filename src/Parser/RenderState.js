@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { Point } from "paper"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 import { InvalidStateError } from "../Error.js"
 import PathShape from "../Shape/PathShape"
@@ -12,7 +13,7 @@ export default class RenderState {
   constructor(mouseHandler) {
     this.mouseHandler = mouseHandler
     this.lastId = 0
-    this.pos = { x: 0, y: 0 }
+    this.pos = new Point(0, 0)
     this.transform = {
       scale: 1
     }

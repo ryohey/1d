@@ -1,4 +1,5 @@
 import React from "react"
+import { Point } from "paper"
 import { toSVGPath, rect, pointAdd, pointDot, pointRound } from "../helpers/point"
 
 const HANDLE_SIZE = 3
@@ -6,14 +7,14 @@ const DOT_SIZE = 3
 const COLOR = "rgb(37, 129, 255)"
 
 const anchors = [
-  { x: 0, y: 0 },
-  { x: 0.5, y: 0 },
-  { x: 1, y: 0 },
-  { x: 1, y: 0.5 },
-  { x: 1, y: 1 },
-  { x: 0.5, y: 1 },
-  { x: 0, y: 1 },
-  { x: 0, y: 0.5 },
+  new Point(0, 0),
+  new Point(0.5, 0),
+  new Point(1, 0),
+  new Point(1, 0.5),
+  new Point(1, 1),
+  new Point(0.5, 1),
+  new Point(0, 1),
+  new Point(0, 0.5)
 ]
 
 function ControlRect({ center, onMouseDown }) {

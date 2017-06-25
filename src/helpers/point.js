@@ -1,4 +1,5 @@
 import _ from "lodash"
+import { Point } from "paper"
 
 // 渡された関数を1番目の引数のオブジェクトを func を適用した結果で上書きする関数にする
 const applyLeft = func => (a, b) => ({ a, ...func(a, b) })
@@ -92,10 +93,10 @@ function resolveDimension(transform, value) {
 */
 export function project(transform, value) {
   if (value instanceof Object) {
-    return {
-      x: resolveDimension(transform, value.x),
-      y: resolveDimension(transform, value.y)
-    }
+    return new Point(
+      resolveDimension(transform, value.x),
+      resolveDimension(transform, value.y)
+    )
   }
   return resolveDimension(transform, value)
 }
