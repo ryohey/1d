@@ -34,6 +34,7 @@ import fontFamily from "./FontFamilyCommand"
 import bringToFront from "./BringToFrontCommand"
 import sendToBack from "./SendToBackCommand"
 import comment from "./CommentCommand"
+import group from "./GroupCommand"
 
 export default [
   rect,
@@ -71,5 +72,6 @@ export default [
   fontFamily,
   bringToFront,
   sendToBack,
-  comment
+  comment,
+  group
 ]

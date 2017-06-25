@@ -90,8 +90,7 @@ class TextWrapper extends Component {
         </foreignObject>
       }
       {!editing && selected && <ShapeControl
-        pos={bounds.origin}
-        size={bounds.size}
+        rect={bounds}
         anchor={pos}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, shape, anchor)

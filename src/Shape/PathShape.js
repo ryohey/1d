@@ -1,6 +1,6 @@
 import React from "react"
 import Shape from "./Shape"
-import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath, pointsMax, pointsMin, rect } from "../helpers/point"
+import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath, pointsMax, pointsMin, pointMul, rect } from "../helpers/point"
 import ShapeControl from "../components/ShapeControl"
 import _ from "lodash"
 
@@ -89,8 +89,8 @@ export default class PathShape extends Shape {
         />
       </g>
       {selected && <ShapeControl
-        pos={bounds.origin}
-        size={bounds.size}
+        rect={bounds}
+        rotation={rotation}
         anchor={pos}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, this, anchor)

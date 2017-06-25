@@ -58,8 +58,7 @@ export default class CircleShape extends Shape {
         fill="rgba(0,0,0,0)"
       />
       {selected && <ShapeControl
-        pos={bounds.origin}
-        size={bounds.size}
+        rect={bounds}
         anchor={pos}
         onMouseDown={(e, anchor) => {
           mouseHandler.onMouseDown(e, this, anchor)

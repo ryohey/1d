@@ -34,9 +34,9 @@ function ControlDot({ center }) {
   />
 }
 
-export default function ShapeControl({ pos, anchor, size, onMouseDown }) {
-  const corners = anchors.map(a => [a, pointRound(pointAdd(pos, pointDot(size, a)))])
-  return <g transform="translate(0.5 0.5)">
+export default function ShapeControl({ rect, anchor, rotation, onMouseDown }) {
+  const corners = anchors.map(a => [a, pointRound(pointAdd(rect.origin, pointDot(rect.size, a)))])
+  return <g transform={`translate(0.5 0.5) rotate(${rotation})`}>
     {corners.map((c, i) => {
       const next = corners[(i + 1) % corners.length]
       return <path

@@ -2,6 +2,7 @@ import _ from "lodash"
 import { pointCopy, pointAdd, project } from "../helpers/point"
 import { InvalidStateError } from "../Error.js"
 import PathShape from "../Shape/PathShape"
+import GroupShape from "../Shape/GroupShape"
 
 /**
  コマンド実行中に生成された Shape などの状態を
@@ -90,5 +91,12 @@ export default class RenderState {
       return InvalidStateError("no shapes to select")
     }
     found.selected = true
+  }
+
+  // 与えられた shape をグループ化する
+  createGroup(shapes) {
+    this.shapes = this.shapes.filter(s => !shapes.includes(s))
+    shapes.forEach(s => s.selected = false)
+    this.addShape(new GroupShape(this.pos, shapes))
   }
 }

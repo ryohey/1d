@@ -20,3 +20,34 @@ export function rectIntersects(a, b) {
       && a.origin.y <= b.origin.y + b.size.y
       && b.origin.y <= a.origin.y + a.size.y
 }
+
+export function rectUnion(a, b) {
+  const x = Math.min(a.origin.x, b.origin.x)
+  const y = Math.min(a.origin.y, b.origin.y)
+  return {
+    origin: { x, y },
+    size: {
+      x: Math.max(getRectRight(a), getRectRight(b)) - x,
+      y: Math.max(getRectBottom(a), getRectBottom(b)) - y,
+    }
+  }
+}
+
+export function rectPoints(rect) {
+  const rt = {
+    x: getRectRight(rect),
+    y: rect.origin.y
+  }
+
+  const rb = {
+    x: rt.x,
+    y: getRectBottom(rect)
+  }
+
+  const lb = {
+    x: rect.origin.x,
+    y: rb.y
+  }
+
+  return [rect.origin, rt, rb, lb]
+}

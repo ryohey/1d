@@ -58,6 +58,15 @@ export const pointDistance = (a, b) => {
   return pointNorm(pointSub(a, b))
 }
 
+export const pointRotate = (point, center, angle) => {
+  const delta = pointSub(point, center)
+  const rot = {
+    x: delta.x * Math.cos(angle) - delta.y * Math.sin(angle),
+    y: delta.x * Math.sin(angle) + delta.y * Math.cos(angle)
+  }
+  return pointAdd(rot, center)
+}
+
 function projectValue(transform, value) {
   return value * (transform.scale || 1)
 }
@@ -183,6 +192,11 @@ export function pointsMax(points) {
     x: _.max(points.map(p => p.x)),
     y: _.max(points.map(p => p.y))
   }
+}
+
+export function pointsCenter(points) {
+  const min = pointsMin(points)
+  return pointAdd(min, pointMul(pointSub(pointsMax(points), min), 0.5))
 }
 
 export function rectFromPoints(start, end) {
