@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { Point } from "paper"
-import { pointCopy, pointAdd, project } from "../helpers/point"
+import { project } from "../helpers/point"
 import { InvalidStateError } from "../Error.js"
 import PathShape from "../Shape/PathShape"
 import GroupShape from "../Shape/GroupShape"
@@ -70,11 +70,11 @@ export default class RenderState {
   }
 
   move(x, y) {
-    this.pos = pointAdd(this.pos, project(this.transform, { x, y }))
+    this.pos = this.pos.add(project(this.transform, { x, y }))
   }
 
   addPosToCurrentShapePath() {
-    this.currentShape.path.push(pointCopy(this.pos))
+    this.currentShape.path.push(new Point(this.pos))
   }
 
   preparePathShape() {

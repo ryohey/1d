@@ -1,10 +1,9 @@
 import _ from "lodash"
 import { Point } from "paper"
-import { pointCopy } from "../helpers/point"
 
 export default class Shape {
   constructor(pos = new Point(0, 0)) {
-    this.pos = pointCopy(pos)
+    this.pos = pos.clone()
     this.rotation = 0
     this.brush = {}
     this.selected = false

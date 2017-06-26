@@ -1,16 +1,16 @@
 import { Point } from "paper"
-import { pointFromEvent, pointSub, pointAdd, pointMul, pointDiv, pointDot, rectFromPoints } from "../helpers/point"
+import { pointFromEvent, rectFromPoints } from "../helpers/point"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 import TextShape from "../Shape/TextShape"
 
 const CENTER = new Point(0.5, 0.5)
 
 function invertAnchor(a) {
-  return pointAdd(pointMul(pointSub(a, CENTER), -1), CENTER)
+  return a.subtract(CENTER).multiply(-1).add(CENTER)
 }
 
 function anchorToDirection(a) {
-  return pointDiv(pointSub(a, CENTER), CENTER)
+  return a.subtract(CENTER).divide(CENTER)
 }
 
 export default class DefaultMouseHandler {
@@ -95,15 +95,15 @@ export default class DefaultMouseHandler {
 
       if (anchor) {
         // リサイズ
-        const moving = pointSub(pointFromEvent(e), startPos)
+        const moving = pointFromEvent(e).subtract(startPos)
         const anchor2 = invertAnchor(anchor)
-        const delta = pointDot(moving, anchorToDirection(anchor))
-        const size = pointAdd(delta, shape.size)
+        const delta = moving.multiply(anchorToDirection(anchor))
+        const size = delta.add(shape.size)
         tempScript = `@${nameOrId} resize ${size.x}px ${size.y}px ${anchor2.x} ${anchor2.y}`
         this.previewScript(tempScript)
       } else {
         // 移動
-        const delta = pointSub(pointFromEvent(e), startPos)
+        const delta = pointFromEvent(e).subtract(startPos)
         tempScript = `select ${nameOrId}\ntranslate ${delta.x}px ${delta.y}px`
         this.previewScript(tempScript)
       }

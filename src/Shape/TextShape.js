@@ -44,6 +44,7 @@ class TextWrapper extends Component {
     const { pos, text, fontSize, fontFamily, brush, mouseHandler, selected, bounds, rotation, editing, id } = shape
 
     const isEditing = editing && selected
+    console.log(bounds)
 
     return <g
       data-shape-id={id}

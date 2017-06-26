@@ -2,14 +2,13 @@ import React from "react"
 import _ from "lodash"
 import { Point } from "paper"
 import Shape from "./Shape"
-import { pointMul, pointSub, pointAdd, pointDot } from "../helpers/point"
 import ShapeControl from "../components/ShapeControl"
 
 // スケーリングした時の位置のずれを計算する
 export function moveByAnchor(pos, delta, anchor) {
-  return pointAdd(pos,
-    pointDot(delta,
-      pointSub(anchor, new Point(0.5, 0.5))))
+  return delta
+    .multiply(anchor.subtract(new Point(0.5, 0.5)))
+    .add(pos)
 }
 
 export default class CircleShape extends Shape {
@@ -19,18 +18,18 @@ export default class CircleShape extends Shape {
   }
 
   resize(size, anchor) {
-    const radius = pointMul(size, 0.5)
-    const delta = pointMul(pointSub(this.radius, radius), 2)
+    const radius = size.multiply(0.5)
+    const delta = this.radius.subtract(radius).multiply(2)
     this.radius = radius
     this.pos = moveByAnchor(this.pos, delta, anchor)
   }
 
   get size() {
-    return pointMul(this.radius, 2)
+    return this.radius.multiply(2)
   }
 
   get origin() {
-    return pointSub(this.pos, this.radius)
+    return this.pos.subtract(this.radius)
   }
 
   render() {
@@ -43,6 +42,7 @@ export default class CircleShape extends Shape {
       cx: pos.x,
       cy: pos.y
     }
+    console.log(bounds)
     return <g
       data-shape-id={this.id}
       cursor="move"

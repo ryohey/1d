@@ -1,6 +1,6 @@
 import React from "react"
 import { Point } from "paper"
-import { toSVGPath, rect, pointAdd, pointDot, pointRound } from "../helpers/point"
+import { toSVGPath, rect, pointRound } from "../helpers/point"
 
 const HANDLE_SIZE = 3
 const DOT_SIZE = 3
@@ -36,7 +36,7 @@ function ControlDot({ center }) {
 }
 
 export default function ShapeControl({ rect, anchor, rotation, onMouseDown }) {
-  const corners = anchors.map(a => [a, pointRound(pointAdd(rect.origin, pointDot(rect.size, a)))])
+  const corners = anchors.map(a => [a, pointRound(rect.size.multiply(a).add(rect.origin))])
   return <g transform={`translate(0.5 0.5) rotate(${rotation})`}>
     {corners.map((c, i) => {
       const next = corners[(i + 1) % corners.length]

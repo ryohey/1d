@@ -1,6 +1,6 @@
 import { validateOptionWithName } from "./optionValidator"
 import { InvalidStateError } from "../Error.js"
-import { project, pointAdd } from "../helpers/point"
+import { project } from "../helpers/point"
 
 export default {
   action: "translate",
@@ -18,6 +18,6 @@ export default {
     }
 
     targetShapes.forEach(shape =>
-      shape.pos = pointAdd(shape.pos, project(state.transform, { x, y })))
+      shape.pos = shape.pos.add(project(state.transform, { x, y })))
   }
 }

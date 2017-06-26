@@ -1,3 +1,5 @@
+import { Point } from "paper"
+
 export function getRectCenter(rect) {
   return rect.origin.x + rect.size.x / 2
 }
@@ -25,29 +27,29 @@ export function rectUnion(a, b) {
   const x = Math.min(a.origin.x, b.origin.x)
   const y = Math.min(a.origin.y, b.origin.y)
   return {
-    origin: { x, y },
-    size: {
-      x: Math.max(getRectRight(a), getRectRight(b)) - x,
-      y: Math.max(getRectBottom(a), getRectBottom(b)) - y,
-    }
+    origin: new Point(x, y),
+    size: new Point(
+      Math.max(getRectRight(a), getRectRight(b)) - x,
+      Math.max(getRectBottom(a), getRectBottom(b)) - y,
+    )
   }
 }
 
 export function rectPoints(rect) {
-  const rt = {
-    x: getRectRight(rect),
-    y: rect.origin.y
-  }
+  const rt = new Point(
+    getRectRight(rect),
+    rect.origin.y
+  )
 
-  const rb = {
-    x: rt.x,
-    y: getRectBottom(rect)
-  }
+  const rb = new Point(
+    rt.x,
+    getRectBottom(rect)
+  )
 
-  const lb = {
-    x: rect.origin.x,
-    y: rb.y
-  }
+  const lb = new Point(
+    rect.origin.x,
+    rb.y
+  )
 
   return [rect.origin, rt, rb, lb]
 }

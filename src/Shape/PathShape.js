@@ -1,6 +1,6 @@
 import React from "react"
 import Shape from "./Shape"
-import { pointAdd, pointSub, pointDot, pointDiv, toSVGPath, pointsMax, pointsMin, pointMul, rect } from "../helpers/point"
+import { toSVGPath, pointsMax, pointsMin, rect } from "../helpers/point"
 import ShapeControl from "../components/ShapeControl"
 import _ from "lodash"
 
@@ -45,27 +45,30 @@ export default class PathShape extends Shape {
     // TODO: support curveto
     const leftTop = pointsMin(this.path)
     const rightBottom = pointsMax(this.path)
-    const originalSize = pointSub(rightBottom, leftTop)
-    const scale = pointDiv(size, originalSize)
+    const originalSize = rightBottom.subtract(leftTop)
+    const scale = size.divide(originalSize)
     this.path = this.path.map(p =>
-      pointAdd(pointDot(pointSub(p, leftTop), scale), leftTop)
+      p.subtract(leftTop).multiply(scale).add(leftTop)
     )
-    const delta = pointSub(originalSize, size)
-    this.pos = pointAdd(this.pos, pointDot(delta, anchor))
+    this.pos = originalSize
+      .subtract(size)
+      .multiply(anchor)
+      .add(this.pos)
   }
 
   get size() {
-    return pointSub(pointsMax(this.path), pointsMin(this.path))
+    return pointsMax(this.path).subtract(pointsMin(this.path))
   }
 
   get origin() {
-    return pointAdd(this.pos, pointsMin(this.path))
+    return this.pos.add(pointsMin(this.path))
   }
 
   render() {
     const { pos, closed, mouseHandler, brush, selected, bounds, rotation } = this
     const path = toSVGPath(this.path, closed)
     const controlPoints = filterControlPoints(this.path)
+    console.log(bounds)
 
     return <g
       data-shape-id={this.id}

@@ -1,7 +1,7 @@
 import React from "react"
 import { Point } from "paper"
 import Shape from "./Shape"
-import { pointMul, pointAdd, toSVGPath } from "../helpers/point"
+import { toSVGPath } from "../helpers/point"
 
 export default class GridShape extends Shape {
   constructor(pos = new Point(0, 0), scale = 1) {
@@ -28,7 +28,7 @@ export default class GridShape extends Shape {
       paths.push([new Point(0, y), new Point(far, y)])
     }
     const path = paths
-      .map(path => path.map(p => pointMul(pointAdd(p, pos), scale)))
+      .map(path => path.map(p => p.add(pos).multiply(scale)))
       .map(toSVGPath)
       .join(" ")
 

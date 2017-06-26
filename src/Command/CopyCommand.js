@@ -1,5 +1,4 @@
 import { InvalidStateError } from "../Error.js"
-import { pointCopy } from "../helpers/point"
 
 export default {
   action: "copy",
@@ -11,7 +10,7 @@ export default {
     }
     selectedShapes.forEach(shape => {
       const newShape = shape.clone()
-      newShape.pos = pointCopy(state.pos)
+      newShape.pos = state.pos.clone()
       state.addShape(newShape)
     })
   }

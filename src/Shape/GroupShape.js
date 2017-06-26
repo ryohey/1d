@@ -1,7 +1,7 @@
 import React from "react"
 import { Point } from "paper"
 import Shape from "./Shape"
-import { toSVGPath, pointDiv, pointDot, pointSub, pointMul } from "../helpers/point"
+import { toSVGPath } from "../helpers/point"
 import { rectUnion, rectPoints } from "../helpers/rect"
 import ShapeControl from "../components/ShapeControl"
 
@@ -25,15 +25,16 @@ export default class GroupShape extends Shape {
 
   resize(size, anchor) {
     const { bounds } = this
-    const delta = pointDiv(size, bounds.size)
+    const delta = size.divide(bounds.size)
     this.shapes.forEach(s => s.resize(
-      pointDot(s.size, delta),
-      pointMul(pointDiv(pointSub(s.origin, bounds.origin), s.size), -1)
+      s.size.multiply(delta),
+      s.origin.subtract(bounds.origin).divide(s.size).multiply(-1)
     ))
   }
 
   render() {
     const { id, pos, mouseHandler, selected, bounds } = this
+    console.log(bounds)
 
     return <g
       data-shape-id={id}

@@ -2,47 +2,7 @@ import _ from "lodash"
 import { Point } from "paper"
 
 // 渡された関数を1番目の引数のオブジェクトを func を適用した結果で上書きする関数にする
-const applyLeft = func => (a, b) => ({ a, ...func(a, b) })
-
-export const pointAdd = applyLeft((a, b) => {
-  return {
-    x: a.x + b.x,
-    y: a.y + b.y,
-  }
-})
-
-// a - b
-export const pointSub = applyLeft((a, b) => {
-  return {
-    x: a.x - b.x,
-    y: a.y - b.y,
-  }
-})
-
-export function pointCopy(a) {
-  return _.clone(a)
-}
-
-export const pointMul = applyLeft((p, s) => {
-  return {
-    x: p.x * s,
-    y: p.y * s
-  }
-})
-
-export const pointDot = applyLeft((a, b) => {
-  return {
-    x: a.x * b.x,
-    y: a.y * b.y
-  }
-})
-
-export const pointDiv = applyLeft((a, b) => {
-  return {
-    x: a.x / b.x,
-    y: a.y / b.y
-  }
-})
+const applyLeft = func => (a, b) => (new Point(func(a, b)))
 
 export const pointRound = applyLeft(p => {
   return {
@@ -56,16 +16,16 @@ export const pointNorm = p => {
 }
 
 export const pointDistance = (a, b) => {
-  return pointNorm(pointSub(a, b))
+  return pointNorm(a.subtract(b))
 }
 
 export const pointRotate = (point, center, angle) => {
-  const delta = pointSub(point, center)
-  const rot = {
-    x: delta.x * Math.cos(angle) - delta.y * Math.sin(angle),
-    y: delta.x * Math.sin(angle) + delta.y * Math.cos(angle)
-  }
-  return pointAdd(rot, center)
+  const delta = point.subtract(center)
+  const rot = new Point(
+    delta.x * Math.cos(angle) - delta.y * Math.sin(angle),
+    delta.x * Math.sin(angle) + delta.y * Math.cos(angle)
+  )
+  return rot.add(center)
 }
 
 function projectValue(transform, value) {
@@ -167,37 +127,34 @@ export function toSVGPath(points, closed = false) {
 
 export function rect(center, size) {
   return [
-    { x: center.x - size, y: center.y - size },
-    { x: center.x + size, y: center.y - size },
-    { x: center.x + size, y: center.y + size },
-    { x: center.x - size, y: center.y + size }
+    new Point(center.x - size, center.y - size),
+    new Point(center.x + size, center.y - size),
+    new Point(center.x + size, center.y + size),
+    new Point(center.x - size, center.y + size)
   ]
 }
 
 export function pointFromEvent(e) {
-  return {
-    x: e.clientX,
-    y: e.clientY
-  }
+  return new Point(e.clientX, e.clientY)
 }
 
 export function pointsMin(points) {
-  return {
-    x: _.min(points.map(p => p.x)),
-    y: _.min(points.map(p => p.y))
-  }
+  return new Point(
+    _.min(points.map(p => p.x)),
+    _.min(points.map(p => p.y))
+  )
 }
 
 export function pointsMax(points) {
-  return {
-    x: _.max(points.map(p => p.x)),
-    y: _.max(points.map(p => p.y))
-  }
+  return new Point(
+    _.max(points.map(p => p.x)),
+    _.max(points.map(p => p.y))
+  )
 }
 
 export function pointsCenter(points) {
   const min = pointsMin(points)
-  return pointAdd(min, pointMul(pointSub(pointsMax(points), min), 0.5))
+  return pointsMax(points).subtract(min).multiply(0.5).add(min)
 }
 
 export function rectFromPoints(start, end) {
@@ -210,7 +167,7 @@ export function rectFromPoints(start, end) {
     y: Math.max(start.y, end.y)
   }
   return {
-    origin: lt,
-    size: pointSub(rb, lt)
+    origin: new Point(lt),
+    size: rb.subtract(lt)
   }
 }
