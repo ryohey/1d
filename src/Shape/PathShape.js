@@ -1,4 +1,5 @@
 import React from "react"
+import { Rectangle } from "paper"
 import Shape from "./Shape"
 import { toSVGPath, pointsMax, pointsMin, rect } from "../helpers/point"
 import ShapeControl from "../components/ShapeControl"
@@ -56,19 +57,16 @@ export default class PathShape extends Shape {
       .add(this.pos)
   }
 
-  get size() {
-    return pointsMax(this.path).subtract(pointsMin(this.path))
-  }
-
-  get origin() {
-    return this.pos.add(pointsMin(this.path))
+  get bounds() {
+    return new Rectangle(
+      pointsMin(this.path).add(this.pos),
+      pointsMax(this.path).add(this.pos))
   }
 
   render() {
     const { pos, closed, mouseHandler, brush, selected, bounds, rotation } = this
     const path = toSVGPath(this.path, closed)
     const controlPoints = filterControlPoints(this.path)
-    console.log(bounds)
 
     return <g
       data-shape-id={this.id}

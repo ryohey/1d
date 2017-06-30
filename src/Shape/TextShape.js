@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { Point } from "paper"
+import { Rectangle, Size } from "paper"
 import ShapeControl from "../components/ShapeControl"
 import Shape from "./Shape"
 import ResizeObserver from "resize-observer-polyfill"
@@ -24,7 +24,7 @@ class TextWrapper extends Component {
     this.ro = new ResizeObserver((entries, observer) => {
       const { width, height } = entries[0].contentRect
       this.setState({
-        shapeSize: new Point(width, height)
+        shapeSize: new Size(width, height)
       })
     })
     this.ro.observe(this.textComponent)
@@ -39,12 +39,11 @@ class TextWrapper extends Component {
     const { shapeSize } = this.state
 
     // shape は毎回再生成されるので size をセットしなおす
-    shape._size = shapeSize || shape._size
+    shape._size = shapeSize
 
     const { pos, text, fontSize, fontFamily, brush, mouseHandler, selected, bounds, rotation, editing, id } = shape
 
     const isEditing = editing && selected
-    console.log(bounds)
 
     return <g
       data-shape-id={id}
@@ -67,10 +66,10 @@ class TextWrapper extends Component {
       </text>
       {isEditing &&
         <foreignObject
-          x={bounds.origin.x}
-          y={bounds.origin.y}
-          width={bounds.size.x}
-          height={bounds.size.y}>
+          x={bounds.x}
+          y={bounds.y}
+          width={bounds.width}
+          height={bounds.height}>
           <div xmlns="http://www.w3.org/1999/xhtml" className="input-container">
             <input
               style={{
@@ -104,19 +103,15 @@ export default class TextShape extends Shape {
     super(pos)
     this.text = text
     this.fontSize = 0
-    this._size = new Point(0, 0)
+    this._size = new Size(0, 0)
   }
 
-  get size() {
-    return this._size
-  }
-
-  get origin() {
-    return this.pos
+  get bounds() {
+    return new Rectangle(this.pos, this._size)
   }
 
   resize(size, anchor) {
-    this.fontSize = size.y / 1.2
+    this.fontSize = size.height / 1.2
   }
 
   render() {

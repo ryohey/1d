@@ -2,7 +2,7 @@ import React from "react"
 import { Point } from "paper"
 import Shape from "./Shape"
 import { toSVGPath } from "../helpers/point"
-import { rectUnion, rectPoints } from "../helpers/rect"
+import { rectPoints } from "../helpers/rect"
 import ShapeControl from "../components/ShapeControl"
 
 export default class GroupShape extends Shape {
@@ -12,29 +12,20 @@ export default class GroupShape extends Shape {
   }
 
   get bounds() {
-    return this.shapes.reduce(rectUnion)
-  }
-
-  get size() {
-    return this.bounds.size
-  }
-
-  get origin() {
-    return this.bounds.origin
+    return this.shapes.map(s => s.bounds).reduce((a, b) => a.unite(b))
   }
 
   resize(size, anchor) {
     const { bounds } = this
     const delta = size.divide(bounds.size)
     this.shapes.forEach(s => s.resize(
-      s.size.multiply(delta),
-      s.origin.subtract(bounds.origin).divide(s.size).multiply(-1)
+      s.bounds.size.multiply(delta),
+      s.bounds.point.subtract(bounds.point).divide(s.bounds.size).multiply(-1)
     ))
   }
 
   render() {
     const { id, pos, mouseHandler, selected, bounds } = this
-    console.log(bounds)
 
     return <g
       data-shape-id={id}

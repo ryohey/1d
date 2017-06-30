@@ -1,5 +1,5 @@
-import { Point } from "paper"
-import { pointFromEvent, rectFromPoints } from "../helpers/point"
+import { Point, Rectangle, Size } from "paper"
+import { pointFromEvent } from "../helpers/point"
 import bindMouseHandler from "../helpers/bindMouseHandler"
 import TextShape from "../Shape/TextShape"
 
@@ -40,10 +40,7 @@ export default class DefaultMouseHandler {
       return `select ${selectedShapes.join(" ")}`
     }
 
-    this.setSelectionRect({
-      origin: startPos,
-      size: new Point(0, 0)
-    })
+    this.setSelectionRect(new Rectangle(startPos, new Size(0, 0)))
 
     const onMouseMove = e => {
       const endPos = getLocalPosition(e)
@@ -53,7 +50,7 @@ export default class DefaultMouseHandler {
         return
       }
 
-      const rect = rectFromPoints(startPos, endPos)
+      const rect = new Rectangle(startPos, endPos)
       this.setSelectionRect(rect)
       selectedShapes = this.getShapesInsideRect(rect)
 
@@ -98,7 +95,7 @@ export default class DefaultMouseHandler {
         const moving = pointFromEvent(e).subtract(startPos)
         const anchor2 = invertAnchor(anchor)
         const delta = moving.multiply(anchorToDirection(anchor))
-        const size = delta.add(shape.size)
+        const size = delta.add(shape.bounds.size)
         tempScript = `@${nameOrId} resize ${size.x}px ${size.y}px ${anchor2.x} ${anchor2.y}`
         this.previewScript(tempScript)
       } else {

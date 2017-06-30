@@ -1,6 +1,6 @@
 import React from "react"
 import _ from "lodash"
-import { Point } from "paper"
+import { Point, Rectangle } from "paper"
 import Shape from "./Shape"
 import ShapeControl from "../components/ShapeControl"
 
@@ -24,12 +24,10 @@ export default class CircleShape extends Shape {
     this.pos = moveByAnchor(this.pos, delta, anchor)
   }
 
-  get size() {
-    return this.radius.multiply(2)
-  }
-
-  get origin() {
-    return this.pos.subtract(this.radius)
+  get bounds() {
+    return new Rectangle(
+      this.pos.subtract(this.radius),
+      this.pos.add(this.radius))
   }
 
   render() {
@@ -42,19 +40,20 @@ export default class CircleShape extends Shape {
       cx: pos.x,
       cy: pos.y
     }
-    console.log(bounds)
     return <g
       data-shape-id={this.id}
       cursor="move"
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}>
       <ellipse
         {...ellipseProps}
+        key="content"
         stroke={brush.stroke || "none"}
         fill={brush.fill || "none"}
       />
       {/* 当たり判定用の透明な円 */}
       <ellipse
         {...ellipseProps}
+        key="hitTest"
         stroke="rgba(0,0,0,0)"
         fill="rgba(0,0,0,0)"
       />

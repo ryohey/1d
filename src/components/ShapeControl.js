@@ -35,18 +35,20 @@ function ControlDot({ center }) {
   />
 }
 
-export default function ShapeControl({ rect, anchor, rotation, onMouseDown }) {
-  const corners = anchors.map(a => [a, pointRound(rect.size.multiply(a).add(rect.origin))])
+export default function ShapeControl({ rect, anchor, rotation = 0, onMouseDown }) {
+  const corners = anchors.map(a => [a, pointRound(a.multiply(rect.size).add(rect.point))])
   return <g transform={`translate(0.5 0.5) rotate(${rotation})`}>
     {corners.map((c, i) => {
       const next = corners[(i + 1) % corners.length]
       return <path
+        key={i}
         d={toSVGPath([c[1], next[1]])}
         stroke={COLOR}
       />
     })}
-    {corners.map(c =>
+    {corners.map((c, i) =>
       <ControlRect
+        key={i}
         center={c[1]}
         onMouseDown={e => {
           onMouseDown(e, c[0])

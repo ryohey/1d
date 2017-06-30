@@ -2,7 +2,6 @@ import _ from "lodash"
 import { Point } from "paper"
 import { validateOptionWithName } from "./optionValidator"
 import { InvalidStateError } from "../Error.js"
-import { getRectCenter, getRectBottom, getRectRight, getRectMiddle } from "../helpers/rect"
 
 function range(num) {
   const arr = []
@@ -37,28 +36,28 @@ export default {
     switch(axis) {
       case "x": {
         const arr = shapes.map(s => s.bounds)
-        const leftRect = _.minBy(arr, b => b.origin.x)
-        const rightRect = _.maxBy(arr, getRectRight)
+        const leftRect = _.minBy(arr, r => r.point.x)
+        const rightRect = _.maxBy(arr, r => r.getRight())
         const list = dist(
-          new Point(getRectCenter(leftRect), 0),
-          new Point(getRectCenter(rightRect), 0),
+          new Point(leftRect.center, 0),
+          new Point(rightRect.center, 0),
           shapes.length)
         shapes
-          .sort((a, b) => a.origin.x > b.origin.x)
+          .sort((a, b) => a.bounds.x > b.bounds.x)
           .forEach((shape, i) =>
-            shape.originX = list[i].x - shape.size.x / 2)
+            shape.originX = list[i].x - shape.bounds.width / 2)
         break
       }
       case "y": {
         const arr = shapes.map(s => s.bounds)
-        const topRect = _.minBy(arr, b => b.origin.y)
-        const bottomRect = _.maxBy(arr, getRectBottom)
+        const topRect = _.minBy(arr, r => r.point.y)
+        const bottomRect = _.maxBy(arr, r => r.getBottom())
         const list = dist(
-          new Point(0, getRectMiddle(topRect)),
-          new Point(0, getRectMiddle(bottomRect)),
+          new Point(0, topRect.centerY),
+          new Point(0, bottomRect.centerY),
           shapes.length)
         shapes
-          .sort((a, b) => a.origin.y > b.origin.y)
+          .sort((a, b) => a.bounds.y > b.bounds.y)
           .forEach((shape, i) =>
             shape.originY = list[i].y - shape.size.y / 2)
         break

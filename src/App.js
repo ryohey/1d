@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import _ from "lodash"
-import { Point } from "paper"
+import { Point, Rectangle, Size } from "paper"
 
 import optimize from "./Parser/optimize"
 import renderCommand from "./Parser/renderCommand"
@@ -13,7 +13,6 @@ import SelectionRect from "./SelectionRect"
 import svgToCommands from "./helpers/svgToCommands"
 import { rgbaString } from "./helpers/color"
 import { downloadBlob } from "./helpers/downloadBlob"
-import { rectIntersects } from "./helpers/rect"
 
 import MainToolbar from "./components/MainToolbar"
 import ShapePropsForm from "./components/ShapePropsForm"
@@ -167,17 +166,17 @@ class App extends Component {
     }
 
     function toRect(bbox) {
-      return {
-        origin: new Point(bbox),
-        size: new Point(bbox.width, bbox.height)
-      }
+      return new Rectangle(
+        new Point(bbox),
+        new Size(bbox.width, bbox.height)
+      )
     }
 
     const shapeElements = Array.from(this.svgComponent.querySelectorAll("g"))
 
     return shapeElements
       .filter(e => e.attributes["data-shape-id"] !== undefined)
-      .filter(e => rectIntersects(rect, toRect(e.getBBox())))
+      .filter(e => rect.intersects(toRect(e.getBBox())))
       .map(e => e.attributes["data-shape-id"].value)
   }
 
@@ -231,7 +230,7 @@ class App extends Component {
     const commands = parseCommands(script)
     const shapes = renderCommand(commands, mouseHandler)
     const selectedShape = shapes.filter(s => s.selected)[0]
-    const selectedShapeSize = selectedShape && selectedShape.size
+    const selectedShapeSize = selectedShape && selectedShape.bounds.size
     const svgContent = shapes.map(s => s.render())
 
     const onChangeText= e => {

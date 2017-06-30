@@ -11,23 +11,6 @@ export const pointRound = applyLeft(p => {
   }
 })
 
-export const pointNorm = p => {
-  return Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.y, 2))
-}
-
-export const pointDistance = (a, b) => {
-  return pointNorm(a.subtract(b))
-}
-
-export const pointRotate = (point, center, angle) => {
-  const delta = point.subtract(center)
-  const rot = new Point(
-    delta.x * Math.cos(angle) - delta.y * Math.sin(angle),
-    delta.x * Math.sin(angle) + delta.y * Math.cos(angle)
-  )
-  return rot.add(center)
-}
-
 function projectValue(transform, value) {
   return value * (transform.scale || 1)
 }
@@ -155,19 +138,4 @@ export function pointsMax(points) {
 export function pointsCenter(points) {
   const min = pointsMin(points)
   return pointsMax(points).subtract(min).multiply(0.5).add(min)
-}
-
-export function rectFromPoints(start, end) {
-  const lt = {
-    x: Math.min(start.x, end.x),
-    y: Math.min(start.y, end.y)
-  }
-  const rb = {
-    x: Math.max(start.x, end.x),
-    y: Math.max(start.y, end.y)
-  }
-  return {
-    origin: new Point(lt),
-    size: rb.subtract(lt)
-  }
 }

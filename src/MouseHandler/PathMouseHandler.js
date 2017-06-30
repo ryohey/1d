@@ -1,7 +1,6 @@
 import _ from "lodash"
 import { Point } from "paper"
 import bindMouseHandler from "../helpers/bindMouseHandler"
-import { pointDistance, pointMul, pointSub } from "../helpers/point"
 
 function commandFromPoint(p) {
   if (p.c1 && p.c2) {
@@ -59,7 +58,7 @@ export default class PathMouseHandler {
     const startPos = getLocalPosition(e)
 
     // 最初の点をクリックしたらパスを閉じて終了
-    if (this.points.length > 0 && pointDistance(startPos, this.points[0]) < 5) {
+    if (this.points.length > 0 && startPos.getDistance(this.points[0]) < 5) {
       this.endEditing()
     }
 
@@ -68,8 +67,8 @@ export default class PathMouseHandler {
 
     const onMouseMove = e => {
       const p = _.last(this.points)
-      const c2 = pointSub(getLocalPosition(e), p)
-      const c1 = pointMul(c2, -1)
+      const c2 = getLocalPosition(e).subtract(p)
+      const c1 = c2.multiply(-1)
       p.c1 = c1
       p.c2 = c2
       this.updatePreview()
