@@ -19,7 +19,7 @@ export default class CircleShape extends Shape {
 
   resize(size, anchor) {
     const radius = size.multiply(0.5)
-    const delta = this.radius.subtract(radius).multiply(2)
+    const delta = new Point(this.radius.subtract(radius).multiply(2))
     this.radius = radius
     this.pos = moveByAnchor(this.pos, delta, anchor)
   }
@@ -34,8 +34,8 @@ export default class CircleShape extends Shape {
     const { pos, radius, brush, mouseHandler, selected, bounds, rotation } = this
     const ellipseProps = {
       transform: `rotate(${rotation} ${pos.x} ${pos.y})`,
-      rx: radius.x,
-      ry: radius.y,
+      rx: radius.width,
+      ry: radius.height,
       strokeWidth: brush.strokeWidth || 1,
       cx: pos.x,
       cy: pos.y

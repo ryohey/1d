@@ -21,30 +21,28 @@ export default {
       case "top":
       case "t": {
         const y = _.min(shapes.map(s => s.bounds.y))
-        shapes.forEach(s => s.originY = y)
+        shapes.forEach(s => s.pos.y += y - s.bounds.y)
         break
       }
 
       case "bottom":
       case "b": {
         const bottom = _.max(shapes.map(s => s.bounds.bottom))
-        shapes.forEach(s =>
-          s.originY = bottom - s.size.y)
+        shapes.forEach(s => s.pos.y += bottom - s.bounds.bottom)
         break
       }
 
       case "left":
       case "l": {
         const x = _.min(shapes.map(s => s.bounds.x))
-        shapes.forEach(s => s.originX = x)
+        shapes.forEach(s => s.pos.x += x - s.bounds.x)
         break
       }
 
       case "right":
       case "r": {
         const right = _.max(shapes.map(s => s.bounds.right))
-        shapes.forEach(s =>
-          s.originX = right - s.size.x)
+        shapes.forEach(s => s.pos.x += right - s.bounds.right)
         break
       }
 
@@ -52,8 +50,7 @@ export default {
       case "c":
       case "x": {
         const center = _.sum(shapes.map(s => s.bounds.centerX)) / shapes.length
-        shapes.forEach(s =>
-          s.originX = center - s.size.x / 2)
+        shapes.forEach(s => s.pos.x += center - s.bounds.centerX)
         break
       }
 
@@ -61,8 +58,7 @@ export default {
       case "m":
       case "y": {
         const middle = _.sum(shapes.map(s => s.bounds.centerY)) / shapes.length
-        shapes.forEach(s =>
-          s.originY = middle - s.size.y / 2)
+        shapes.forEach(s => s.pos.y += middle - s.bounds.centerY)
         break
       }
 

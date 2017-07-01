@@ -1,4 +1,4 @@
-import { Point } from "paper"
+import { Point, Size } from "paper"
 import { InvalidCommandError, InvalidStateError } from "../Error.js"
 import { project } from "../helpers/point"
 
@@ -23,6 +23,6 @@ export default {
     }
 
     targetShapes.forEach(shape =>
-      shape.resize(new Point(p), anchor))
+      shape.resize(new Size(p), anchor))
   }
 }

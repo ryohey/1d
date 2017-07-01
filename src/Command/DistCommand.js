@@ -45,7 +45,7 @@ export default {
         shapes
           .sort((a, b) => a.bounds.x > b.bounds.x)
           .forEach((shape, i) =>
-            shape.originX = list[i].x - shape.bounds.width / 2)
+            shape.pos.x += list[i].x - shape.bounds.centerX)
         break
       }
       case "y": {
@@ -59,7 +59,7 @@ export default {
         shapes
           .sort((a, b) => a.bounds.y > b.bounds.y)
           .forEach((shape, i) =>
-            shape.originY = list[i].y - shape.size.y / 2)
+            shape.pos.y += list[i].y - shape.bounds.centerY)
         break
       }
       default:
