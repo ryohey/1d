@@ -74,7 +74,7 @@ export default class RenderState {
   }
 
   addPosToCurrentShapePath() {
-    this.currentShape.path.push(new Point(this.pos))
+    this.currentShape.path.push(this.pos.clone())
   }
 
   preparePathShape() {
@@ -98,6 +98,6 @@ export default class RenderState {
   createGroup(shapes) {
     this.shapes = this.shapes.filter(s => !shapes.includes(s))
     shapes.forEach(s => s.selected = false)
-    this.addShape(new GroupShape(this.pos, shapes))
+    this.addShape(new GroupShape(new Point(0, 0), shapes))
   }
 }

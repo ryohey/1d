@@ -30,6 +30,7 @@ export default class GroupShape extends Shape {
     return <g
       data-shape-id={id}
       cursor="move"
+      className="group"
       onMouseDown={e => mouseHandler.onMouseDown(e, this)}
       transform={`translate(${pos.x}, ${pos.y})`}>
       {this.shapes.map(s => s.render())}

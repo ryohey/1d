@@ -83,6 +83,16 @@ select 3 4 5 6
 group
 `
 
+function checkSVGParent({ parentNode }, test) {
+  if (parentNode.tagName === "svg") {
+    return false
+  }
+  if (test(parentNode)) {
+    return true
+  }
+  return checkSVGParent(parentNode, test)
+}
+
 function cleanupText(text) {
   return text.replace(/[ \t]{2,}/g, "")
 }
@@ -174,13 +184,18 @@ class App extends Component {
 
     const shapeElements = Array.from(this.svgComponent.querySelectorAll("g"))
 
+    function isInGroup(e) {
+      return checkSVGParent(e, p => _.get(p, "attributes.class.value") === "group")
+    }
+
     return shapeElements
-      .filter(e => e.attributes["data-shape-id"] !== undefined)
+      .filter(e => e.attributes["data-shape-id"] !== undefined && !isInGroup(e))
       .filter(e => rect.intersects(toRect(e.getBBox())))
       .map(e => e.attributes["data-shape-id"].value)
   }
 
   onKeyDown(e) {
+    e.preventDefault()
     const d = e.shiftKey ? 10 : 1
     const translate = (dx, dy) => {
       this.addScript(`translate ${dx} ${dy}`)
@@ -216,6 +231,11 @@ class App extends Component {
       case "a":
         if (e.ctrlKey) {
           this.addScript("selectAll")
+        }
+        return
+      case "g":
+        if (e.ctrlKey) {
+          this.addScript("group")
         }
         return
       default: break
