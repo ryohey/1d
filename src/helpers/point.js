@@ -20,7 +20,7 @@ function resolveDimension(transform, value) {
     return 0
   }
   const v = parseFloat(value)
-  if (value.endsWith("px")) {
+  if (_.isString(value) && value.endsWith("px")) {
     return v
   }
   if (!_.isNaN(v)) {
