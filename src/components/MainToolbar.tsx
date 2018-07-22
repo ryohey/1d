@@ -1,11 +1,22 @@
-import React from "react"
+import React, { SFC } from "react"
 
 import "./MainToolbar.css"
 
-function ToolbarButton({ title, onClick, selected = false }) {
-  return <div
-    className={`button ${selected ? "selected" : ""}`}
-    onClick={onClick}>{title}</div>
+interface ToolbarButtonProps {
+  onClick?: () => void
+  selected?: boolean
+}
+
+const ToolbarButton: SFC<ToolbarButtonProps> = ({
+  children,
+  onClick,
+  selected = false
+}) => {
+  return (
+    <div className={`button ${selected ? "selected" : ""}`} onClick={onClick}>
+      {children}
+    </div>
+  )
 }
 
 function ToolbarSeparator() {
@@ -24,19 +35,42 @@ export default function MainToolbar({
   onClickText,
   onClickOptimize
 }) {
-  return <div className="toolbar">
-    <ToolbarButton onClick={onClickSave} title="save" />
-    <ToolbarButton onClick={onClickExport} title="export" />
-    <label className="button">open
-      <input style={{display: "none"}} type="file" onChange={onFileOpen} accept=".svg" />
-    </label>
-    <ToolbarSeparator />
-    <ToolbarButton onClick={onClickRect} title="rect" selected={mouseMode === "rect"} />
-    <ToolbarButton onClick={onClickCircle} title="circle" selected={mouseMode === "circle"} />
-    <ToolbarButton onClick={onClickLine} title="line" selected={mouseMode === "line"} />
-    <ToolbarButton onClick={onClickPath} title="path" selected={mouseMode === "path"} />
-    <ToolbarButton onClick={onClickText} title="text" selected={mouseMode === "text"} />
-    <ToolbarSeparator />
-    <ToolbarButton onClick={onClickOptimize} title="clean up" />
-  </div>
+  return (
+    <div className="toolbar">
+      <ToolbarButton onClick={onClickSave}>save</ToolbarButton>
+      <ToolbarButton onClick={onClickExport}>export</ToolbarButton>
+      <label className="button">
+        open
+        <input
+          style={{ display: "none" }}
+          type="file"
+          onChange={onFileOpen}
+          accept=".svg"
+        />
+      </label>
+      <ToolbarSeparator />
+      <ToolbarButton onClick={onClickRect} selected={mouseMode === "rect"}>
+        rect
+      </ToolbarButton>
+      <ToolbarButton onClick={onClickCircle} selected={mouseMode === "circle"}>
+        circle
+      </ToolbarButton>
+      <ToolbarButton onClick={onClickLine} selected={mouseMode === "line"}>
+        line
+      </ToolbarButton>
+      <ToolbarButton onClick={onClickPath} selected={mouseMode === "path"}>
+        path
+      </ToolbarButton>
+      <ToolbarButton onClick={onClickText} selected={mouseMode === "text"}>
+        text
+      </ToolbarButton>
+      <ToolbarSeparator />
+      <ToolbarButton onClick={onClickOptimize}>clean up</ToolbarButton>
+      <ToolbarButton>
+        <a href="https://github.com/ryohey/1d" target="_blank">
+          GitHub
+        </a>
+      </ToolbarButton>
+    </div>
+  )
 }
