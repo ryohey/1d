@@ -2,6 +2,8 @@
 
 ジオメトリックデザインツール
 
+![screenshot](https://user-images.githubusercontent.com/5355966/43045016-8a5888b8-8deb-11e8-8339-aa2d57065acc.png)
+
 ## キーボード入力
 
 例
